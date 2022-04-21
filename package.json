@@ -1,6 +1,6 @@
 {
   "name": "playpass",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Playpass provides simple tooling and services to help build your next game quickly.",
   "bin": {
     "playpass": "dist/cjs/cli/index.js"
@@ -35,6 +35,7 @@
   },
   "homepage": "https://playpass.games",
   "dependencies": {
+    "@iarna/toml": "^2.2.5",
     "@playpass/replicant-lite": "^1.1.0",
     "archiver": "^5.3.0",
     "axios": "^0.26.1",

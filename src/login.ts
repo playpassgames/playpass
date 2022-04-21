@@ -85,7 +85,7 @@ export function logout () {
     onLogout();
 }
 
-export async function initLogin (projectId: string): Promise<void> {
+export async function initLogin (gameId: string): Promise<void> {
     // Pull the credentials out of async storage
     const CREDS_KEY = "replicantCreds";
     let replicantCreds = await internalStorage.get(CREDS_KEY) as string;
@@ -100,7 +100,7 @@ export async function initLogin (projectId: string): Promise<void> {
     }
 
     replicantClient = await ReplicantLite.create({
-        appName: projectId,
+        appName: gameId,
 
         replicant: {
             storageOverride: {

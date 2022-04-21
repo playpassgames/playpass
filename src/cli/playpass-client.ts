@@ -7,7 +7,7 @@ import axios, {AxiosResponse} from "axios";
 const PLAYPASS_API_HOST = process.env.PLAYPASS_API_HOST || "https://creators-api.playpass.games";
 
 export type Game = {
-    id: number,
+    id: string,
     name: string,
     config: {
         [key: string]: string
@@ -72,10 +72,10 @@ export default class PlaypassClient {
             .then((a: AxiosResponse<Game>) => a.data);
     }
 
-    public async upload(game: string, prefix?: string, customDomain?: string): Promise<Deployment> {
+    public async upload(gameId: string, prefix?: string, customDomain?: string): Promise<Deployment> {
         return axios.request({
             method: "POST",
-            url: `${this.host}/api/v1/games/${game}/upload`,
+            url: `${this.host}/api/v1/games/${gameId}/upload`,
             headers: {
                 "X-API-TOKEN": this.authToken
             },
