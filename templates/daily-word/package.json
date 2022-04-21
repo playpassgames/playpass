@@ -1,0 +1,18 @@
+{
+  "name": "daily-word",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "start": "vite --open --host",
+    "build": "vite build",
+    "test": "eslint src",
+    "lint": "eslint --fix src"
+  },
+  "dependencies": {
+    "playpass": "file:../.."
+  },
+  "devDependencies": {
+    "eslint": "^8.11.0",
+    "vite": "^2.8.0"
+  }
+}
