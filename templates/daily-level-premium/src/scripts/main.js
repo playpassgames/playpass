@@ -163,7 +163,7 @@ function onPlayAgainClick () {
 (async function () {
     // Initialize the Playpass SDK
     await playpass.init({
-        gameId: "YOUR_GAME_ID",
+        gameId: "YOUR_GAME_ID", // Do not edit!
         stripeAccount: STRIPE_ACCOUNT_ID,
     });
 

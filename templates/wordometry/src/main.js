@@ -121,7 +121,7 @@ function onLogoutClick () {
 (async function () {
     // Initialize the Playpass SDK
     await playpass.init({
-        gameId: "YOUR_GAME_ID",
+        gameId: "YOUR_GAME_ID", // Do not edit!
     });
 
     // Take new users to help screen first

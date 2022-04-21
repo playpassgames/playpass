@@ -16,7 +16,7 @@ async function onSaveResult(result) {
 
 (async () => {
     await playpass.init({
-        gameId: "YOUR_GAME_ID",
+        gameId: "YOUR_GAME_ID", // Do not edit!
     });
 
     const sawTutorial = await playpass.storage.get("sawTutorial");
