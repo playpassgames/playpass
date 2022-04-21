@@ -16,7 +16,7 @@ async function onSaveResult(result) {
 
 (async () => {
     await playpass.init({
-        projectId: "YOUR_PROJECT_ID",
+        gameId: "YOUR_GAME_ID",
     });
 
     const sawTutorial = await playpass.storage.get("sawTutorial");

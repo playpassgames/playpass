@@ -86,7 +86,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
         if (ext != ".js" && ext != ".jsx" && ext != ".ts" && ext != ".tsx") {
             return null;
         }
-        return replace("YOUR_PROJECT_ID", game.id);
+        return replace("YOUR_GAME_ID", game.id);
     };
 
     const templatesDir = `${__dirname}/../../../templates`;
