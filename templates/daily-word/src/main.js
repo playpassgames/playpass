@@ -1,13 +1,17 @@
 import * as playpass from "playpass";
 import "./style.css";
 
-import { Daily, getHoursMinutesSecondsFromMS, getTimeUntilTomorrowMS } from "./daily";
-import { getRandomWord, isValidWord } from "./dictionary";
+import { Daily } from "./daily";
+import { isValidWord } from "./dictionary";
 import { Grid } from "./grid";
 import { Keyboard } from "./keyboard";
+import { getHoursUntil, getMinutesUntil, getNextGameTime, getSecondsUntil } from "./timer";
 
-const daily = new Daily();
-const correctAnswer = getRandomWord(daily.random());
+const daily = new Daily(Date.parse('2022-04-21T12:00:00'));
+
+const words = [ 'PIZZA', 'GAMER', 'PLAYS', 'LOSER', 'HAPPY', 'POWER' ];
+
+const correctAnswer = words[daily.day % words.length];
 
 let state = null;
 
@@ -69,7 +73,10 @@ async function showMainScreen () {
 }
 
 function updateClock() {
-    const [h,m,s] = getHoursMinutesSecondsFromMS(getTimeUntilTomorrowMS());
+    const next = getNextGameTime();
+    const h = getHoursUntil(next);
+    const m = getMinutesUntil(next);
+    const s = getSecondsUntil(next);
     document.querySelector("#timeLeft").textContent = h + "h " +
         m.toString().padStart(2,0) + "m "+s.toString().padStart(2, 0) + "s";
 }
@@ -104,7 +111,7 @@ function onShareClick () {
     const link = playpass.createLink();
 
     // Share some text along with our link
-    const text = "Daily Word #" + daily.day + " " + (Grid.isLost(state) ? "X" : state.marks.length.toString()) +
+    const text = "Daily Word #" + (daily.day + 1) + " " + (Grid.isLost(state) ? "X" : state.marks.length.toString()) +
         "/6\n\n" + state.marks.map(
         str => str.replace(/n/g, "⬜").replace(/b/g, "🟩").replace(/c/g, "🟨"))
         .join("\n") + "\n\n" + link;

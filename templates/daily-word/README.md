@@ -1,8 +1,8 @@
-# Daily Dice project template
+# Daily Word project template
 
-This is an example of how to use the Playpass SDK to build a simple daily level game.
+This is an example of how to use the Playpass SDK to build a simple daily word game.
 
-Preview: https://daily-level--template.playpass.games
+Preview: https://daily-word--template.playpass.games
 
 ## Features
 

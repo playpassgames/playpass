@@ -1,6 +1,3 @@
-export function getRandomWord (random) {
-    return WORDS[Math.floor(WORDS.length * random)];
-}
 
 export function isValidWord (word) {
     // Binary search

@@ -1,34 +1,9 @@
 import * as playpass from "playpass";
-
-const dayMS = 1000 * 60 * 60 * 24;
-
-const getNowLocalMS = () => {
-    return Date.now() - ((new Date()).getTimezoneOffset() * 60 * 1000);
-};
-
-const todayNumber = () => {
-    return ((getNowLocalMS() / dayMS) >>> 0) - 19100;
-};
-
-export const getTimeUntilTomorrowMS = () => {
-    const nowMS = getNowLocalMS();
-    const today = (nowMS / dayMS) >>> 0;
-    return (today + 1) * dayMS - nowMS;
-};
-
-export const getHoursMinutesSecondsFromMS = (ms) => {
-    const totalSeconds = (ms / 1000) >>> 0;
-
-    const h = ((totalSeconds / (60 * 60)) >>> 0);
-    const m = (((totalSeconds / 60) >>> 0) % 60);
-    const s = (totalSeconds % 60);
-
-    return [h, m, s];
-};
+import { getCurrentDay, getDay } from "./timer";
 
 export class Daily {
-    constructor () {
-        this.day = todayNumber();
+    constructor (firstDate) {
+        this.day = getCurrentDay() - getDay(firstDate);
     }
 
     /** Loads an object from storage, returning null if there was no object previously saved today. */
