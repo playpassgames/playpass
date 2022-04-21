@@ -11,7 +11,8 @@ started takes under a minute!
 
 ## 2. Create your first project
 
-To create a new project, run `playpass create`. You'll be prompted to choose a starter template.
+To create a new project, run `playpass create`. You'll be prompted to choose a starter template.  
+These starter templates contain usage examples of the Playpass SDK. (See the Next steps section below for more details)
 
 ## 3. Deploy your game
 
@@ -21,9 +22,10 @@ To learn more about deploying, check out the full [deployment guide](/deploy).
 
 ## Next steps
 
-Upgrade your game by integrating Playpass features:
+Test out the features included in the starter templates:
+- [Share button](/share) to allow your game to grow virally.
+- [Create accounts and login](/account) to identify the same player across multiple devices.
+- [Store player data](/storage) to enable persistent player in-game state and more!
 
-- Add a [share button](/share) to allow your game to grow virally.
-- Enable your players to [create accounts and login](/account) to save progress across their devices.
-- Stay tuned for more features coming soon!
+## Stay tuned for more features coming soon!
 <!-- - Earn money by [collecting payments](/payments) from players. -->
