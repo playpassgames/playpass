@@ -38,13 +38,10 @@ program
 program
     .command("deploy")
     .option("--prefix <prefix>", "Prefix to prepend to the subdomain URL")
-    .option("--customDomain <customDomain>", "Custom domain ID to be configured")
-    // Disabled until we figure out how best to handle invalidations for custom domains on the new
-    // infra. For now, create CloudFront invalidations manually if needed.
-    // .option('--cloudfront <distributionId>', 'Custom Cloudfront distribution, for games hosted on a custom domain')
+    // .option("--customDomain <customDomain>", "Custom domain ID to be configured")
     .description("Deploy a built game")
     .action(deploy);
-
+/*
 program
     .command("get-domains")
     .action(getDomains);
@@ -61,7 +58,7 @@ program
     .requiredOption("--privateKey <privateKeyPath>", "Path to the PEM-encoded certificate private key")
     .option("--certificateChain <certificateChainPath>", "Path to the PEM-encoded full certificate chain")
     .action(domain);
-
+*/
 program
     .name("playpass")
     .description(
