@@ -40,23 +40,22 @@ function packageDir(publishDir: string): Promise<Buffer> {
 export async function deploy(opts: { prefix?: string, customDomain?: string }): Promise<void> {
     const json = JSON.parse(await fs.readFile(path.join(process.cwd(), "package.json"), "utf8"));
 
-    if (!json.name) {
+    if (!json.gameId && !json.name) {
         throw new Error("Missing name field from package.json");
     }
-    const project = slugify(json.name);
-    const subdomain = opts.prefix ? `${slugify(opts.prefix)}--${project}` : project;
+    const gameId = json.gameId ?? json.name;
 
     const token = await requireToken();
     const playpassClient = new PlaypassClient(token);
-    // console.log('Using token: ' + token);
-
-    console.log(`Uploading ${project}...`);
-
     const games = await playpassClient.getGames();
-    const game = games.find(a => a.name === project);
+    const game = games.find(a => a.id === gameId);
     if (!game) {
-        await playpassClient.create(project);
+        throw new Error(`Game with id ${gameId} does not exist.`);
     }
+
+    const subdomain = opts.prefix ? `${slugify(opts.prefix)}--${game.name}` : game.name;
+
+    console.log(`Uploading ${game.name}...`);
 
     const archivedFile = await packageDir(PUBLISH_DIR);
 
@@ -66,7 +65,7 @@ export async function deploy(opts: { prefix?: string, customDomain?: string }): 
 
     // console.log(`Package created ${bytes(archivedFile.length)}`);
 
-    const deployment = await playpassClient.upload(project, opts.prefix, opts.customDomain);
+    const deployment = await playpassClient.upload(gameId, opts.prefix, opts.customDomain);
     const response = await fetch(deployment.uploadUrl, {
         method: "PUT",
         body: archivedFile
