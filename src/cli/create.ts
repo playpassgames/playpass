@@ -27,28 +27,28 @@ async function prompt (obj: Partial<PromptObject>): Promise<string> {
 }
 
 export async function create (destDir: string | undefined, opts: { template?: string }): Promise<void> {
-    let gameName: string;
+    let subdomain: string;
 
     if (!destDir) {
         // No directory param provided, prompt them for a project ID and use it to form the dest dir
-        gameName = slugify(await prompt({
+        subdomain = slugify(await prompt({
             type: "text",
             message: "What will we call your project?",
             initial: "my-game",
         }));
-        destDir = path.resolve(gameName);
+        destDir = path.resolve(subdomain);
 
     } else {
         // They provided a dest dir, infer the project ID from it and make sure it's absolute
-        gameName = slugify(path.basename(destDir));
+        subdomain = slugify(path.basename(destDir));
         destDir = path.resolve(destDir);
     }
 
     const token = await requireToken();
     const playpassClient = new PlaypassClient(token);
     try {
-        await playpassClient.checkGame(gameName);
-        console.error(`Subdomain ${gameName}.playpass.games already exists. Please use a different name.`);
+        await playpassClient.checkGame(subdomain);
+        console.error(`Subdomain ${subdomain}.playpass.games already exists. Please use a different name.`);
         return;
     } catch (e) {
         // Continue
@@ -56,9 +56,9 @@ export async function create (destDir: string | undefined, opts: { template?: st
 
     let game: Game;
     try {
-        game = await playpassClient.create(gameName);
+        game = await playpassClient.create(subdomain);
     } catch (e) {
-        throw new Error("Failed to create game ${gameName}, please try again");
+        throw new Error("Failed to create game ${subdomain}, please try again");
     }
 
     const template = opts.template || await prompt({
@@ -101,7 +101,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
 
     // Also, update package.json. This is only to have a sensible default and not used by Playpass
     const json = JSON.parse(await fs.readFile(destDir+"/package.json", "utf8"));
-    json.name = gameName;
+    json.name = subdomain;
     await fs.writeFile(destDir+"/package.json", JSON.stringify(json, null, "  "));
 
     console.log("Installing NPM dependencies, this may take a minute...");
