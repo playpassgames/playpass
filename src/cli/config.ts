@@ -1,3 +1,7 @@
+//
+// Playpass (c) Playco
+// https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
+
 import fs from "fs/promises";
 import toml from "@iarna/toml";
 
