@@ -48,7 +48,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
     const playpassClient = new PlaypassClient(token);
     try {
         await playpassClient.checkGame(gameName);
-        console.error(`Project ${gameName} already exists. Please use a different name.`);
+        console.error(`Subdomain ${gameName}.playpass.games already exists. Please use a different name.`);
         return;
     } catch (e) {
         // Continue
