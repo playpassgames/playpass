@@ -42,15 +42,8 @@ export async function deploy(opts: { prefix?: string, customDomain?: string }): 
 
     const token = await requireToken();
     const playpassClient = new PlaypassClient(token);
-    const games = await playpassClient.getGames();
-    const game = games.find(a => a.id === config.game_id);
-    if (!game) {
-        throw new Error(`Game with ID ${config.game_id} does not exist.`);
-    }
 
-    const subdomain = opts.prefix ? `${slugify(opts.prefix)}--${game.name}` : game.name;
-
-    console.log(`Uploading ${game.name}...`);
+    console.log("Uploading game...");
 
     const archivedFile = await packageDir(PUBLISH_DIR);
 
@@ -77,5 +70,5 @@ export async function deploy(opts: { prefix?: string, customDomain?: string }): 
         console.log("Please create an alias record that points to it in your DNS provider.");
     }
 
-    console.log(`${kleur.green("✔")} Deployed to https://${subdomain}.playpass.games`);
+    console.log(`${kleur.green("✔")} Deployed to https://${deployment.gameUrl}`);
 }
