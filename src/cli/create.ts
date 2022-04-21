@@ -58,8 +58,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
     try {
         game = await playpassClient.create(gameName);
     } catch (e) {
-        console.error(`Failed to create game ${gameName}`, e);
-        return;
+        throw new Error("Failed to create game ${gameName}, please try again");
     }
     const projectId = game.id;
 
