@@ -6,7 +6,7 @@ started takes under a minute!
 ## 1. Install Playpass
 
 - Install the `playpass` CLI by running `npm install -g playpass`.
-- Join our Discord server by using [this invite link](https://discord.gg/M8DMeVyyAj).
+- Join our Discord server by using <a href="https://discord.gg/M8DMeVyyAj" target="_blank">this invite link</a>.
 - Login with your Discord account by running `playpass login`.
 
 ## 2. Create your first project
