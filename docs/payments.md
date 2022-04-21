@@ -1,4 +1,4 @@
-# Receive Payments
+# (**Coming Soon**) Receive Payments
 
 ## API reference
 

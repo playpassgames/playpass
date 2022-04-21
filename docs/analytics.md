@@ -1,4 +1,4 @@
-# Analytics
+# (**Coming Soon**) Analytics
 
 Analytics can be accessed on your game's dashboard. The dashboard includes basic stats such as:
 
