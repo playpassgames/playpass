@@ -1,0 +1,44 @@
+site_dir: dist/docs
+
+site_name: Playpass SDK
+
+nav:
+    - Quickstart: index.md
+    # - Integration: integration.md
+    - Create Your First Game:
+        # - Start a New Project: create.md
+        - Add a Share Button: share.md
+        - Store Player Data: storage.md
+        - Add a Login Button: account.md
+        # - Receive Payments: payments.md
+        - Deploy Your Game: deploy.md
+    - Reference:
+        - API: api/index.md
+        # - Analytics: analytics.md
+        # - Feature Flags: feature-flags.md
+        # - Groups: groups.md
+        # - Hosting: hosting.md
+        # - Sharing: sharing.md
+        # - Storage: storage.md
+
+markdown_extensions:
+    - toc:
+        toc_depth: 3
+        permalink: true
+    - pymdownx.highlight:
+        anchor_linenums: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.superfences
+
+extra:
+    generator: false
+
+theme:
+    name: "material"
+    palette:
+        primary: orange
+        accent: deep orange
+    features:
+        - navigation.sections
+        - toc.integrate

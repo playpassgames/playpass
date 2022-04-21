@@ -1,0 +1,28 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "header"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "indent": ["error", 4],
+    "linebreak-style": ["error", "unix"],
+    "quotes": ["error", "double"],
+    "semi": ["error", "always", { "omitLastInOneLineBlock": true }],
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { "args": "none" }]
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*", "test/**/*"],
+      "rules": {
+        "header/header": ["error", "line", ["", " Playpass (c) Playco", " https://github.com/playpassgames/playpass/blob/main/LICENSE.txt"], 2]
+      }
+    }
+  ]
+}

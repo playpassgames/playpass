@@ -1,0 +1,78 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '16'
+                  cache: 'npm'
+
+            - run: npm ci
+            - run: npm run build
+            - run: npm test
+
+            - name: CLI sanity check
+              run: |
+                  playpass="./dist/cjs/cli/index.js"
+                  $playpass help
+                  # $playpass create /tmp/test-playpass-create --template daily-level
+
+            - name: Build kitchen-sink
+              run: |
+                  npm ci
+                  npm run build
+                  npm test --if-present
+              working-directory: test/kitchen-sink
+
+            - name: Build templates
+              run: |
+                  for package in templates/*/package.json; do
+                      cd `dirname "$package"`
+                      npm ci
+                      npm run build
+                      npm test --if-present
+                      cd -
+                  done
+
+            - name: Build docs
+              run: |
+                  pip install mkdocs-material
+                  npm run docs
+
+            - name: Deploy kitchen-sink to https://kitchen-sink.playpass.games
+              if: github.ref == 'refs/heads/main'
+              run: |
+                  playpass="../../dist/cjs/cli/index.js"
+                  $playpass deploy
+              working-directory: test/kitchen-sink
+              env:
+                  PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}
+
+            - name: Deploy templates to https://<TEMPLATE>--template.playpass.games
+              if: github.ref == 'refs/heads/main'
+              run: |
+                  playpass="../../dist/cjs/cli/index.js"
+                  for package in templates/*/package.json; do
+                      cd `dirname "$package"`
+                      $playpass deploy --prefix `basename $PWD`
+                      cd -
+                  done
+              env:
+                  PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}
+
+            - name: Deploy docs
+              if: github.ref == 'refs/heads/main'
+              run: |
+                  pip install awscli
+                  aws s3 sync dist/docs/ s3://playco-sdk-documentation/ --delete
+                  aws cloudfront create-invalidation --distribution-id E2EGL7UEW6JUEO --paths '/*'
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.DOCS_AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.DOCS_AWS_SECRET_ACCESS_KEY }}

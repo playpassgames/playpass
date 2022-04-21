@@ -1,0 +1,83 @@
+{
+  "name": "playpass",
+  "version": "1.0.2",
+  "description": "Playpass provides simple tooling and services to help build your next game quickly.",
+  "bin": {
+    "playpass": "dist/cjs/cli/index.js"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "engines": {
+    "node": ">= 16"
+  },
+  "scripts": {
+    "build": "rm -rf ./dist && npm-run-all --parallel build:esm build:cjs build:iife",
+    "build:iife": "esbuild --global-name=playpass --bundle --minify --outfile=dist/playpass.min.js src/index.ts",
+    "build:esm": "tsc",
+    "build:cjs": "tsc --module commonjs --outDir ./dist/cjs && echo '#!/usr/bin/env node' | cat - dist/cjs/cli/index.js > dist/cjs/cli/index.js.new && mv dist/cjs/cli/index.js.new dist/cjs/cli/index.js && chmod +x dist/cjs/cli/index.js",
+    "build:watch": "rm -rf ./dist && tsc --watch",
+    "lint": "eslint . --fix",
+    "prepare": "npm run build",
+    "release": "np",
+    "test": "eslint . && jest",
+    "test:watch": "jest --watch --coverage=false",
+    "docs": "typedoc && mkdocs build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/playpassgames/playpass.git"
+  },
+  "author": "Playco",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/playpassgames/playpass/issues"
+  },
+  "homepage": "https://playpass.games",
+  "dependencies": {
+    "@playpass/replicant-lite": "^1.1.0",
+    "archiver": "^5.3.0",
+    "axios": "^0.26.1",
+    "bytes": "^3.1.2",
+    "commander": "^9.0.0",
+    "cross-fetch": "^3.1.5",
+    "koa": "^2.13.4",
+    "lit": "^2.2.1",
+    "open": "^8.4.0",
+    "prompts": "^2.4.2",
+    "recursive-copy": "^2.0.14",
+    "stream-replace": "^1.0.0"
+  },
+  "devDependencies": {
+    "@play-co/gcinstant": "^16.1.1",
+    "@types/archiver": "^5.3.1",
+    "@types/axios": "^0.14.0",
+    "@types/bytes": "^3.1.1",
+    "@types/jest": "^26.0.15",
+    "@types/koa": "^2.13.4",
+    "@types/node": "^16.11.7",
+    "@types/prompts": "^2.0.14",
+    "@typescript-eslint/eslint-plugin": "^5.12.1",
+    "@typescript-eslint/parser": "^5.12.1",
+    "esbuild": "^0.14.36",
+    "esbuild-jest": "^0.5.0",
+    "eslint": "^8.9.0",
+    "eslint-plugin-header": "^3.1.1",
+    "eslint-plugin-react": "^7.29.4",
+    "fake-indexeddb": "^3.1.7",
+    "jest": "^26.6.1",
+    "np": "^7.6.0",
+    "npm-run-all": "^4.1.5",
+    "typedoc": "^0.22.13",
+    "typedoc-plugin-markdown": "^3.11.14",
+    "typescript": "^4.5.5"
+  },
+  "files": [
+    "README.md",
+    "dist/cjs",
+    "dist/esm",
+    "dist/playpass.min.js",
+    "src",
+    "templates"
+  ]
+}

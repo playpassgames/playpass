@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+  <title>Birdle</title>
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+
+  <header>
+    <div id="helpBtn"></div>
+    <h1>🐦 Birdle</h1>
+    <div id="statsBtn"></div>
+    <div id="settingsBtn"></div>
+  </header>
+
+  <div class="screen" id="playingScreen">
+    <p>Try to guess today's bird.</p>
+    <h3>
+      Hint: it contains the letter <span id="hint">X</span>.
+      Tries left <span id="triesLeft">5</span>
+    </h3>
+
+    <h2>🐦 <span id="inputWord"></span></h2>
+
+    <div class="keyboard">
+      <div>
+        <div>Q</div>
+        <div>W</div>
+        <div>E</div>
+        <div>R</div>
+        <div>T</div>
+        <div>Y</div>
+        <div>U</div>
+        <div>I</div>
+        <div>O</div>
+        <div>P</div>
+      </div>
+      <div>
+        <div>A</div>
+        <div>S</div>
+        <div>D</div>
+        <div>F</div>
+        <div>G</div>
+        <div>H</div>
+        <div>J</div>
+        <div>K</div>
+        <div>L</div>
+      </div>
+      <div>
+        <div style="width: 65px">Enter</div>
+        <div>Z</div>
+        <div>X</div>
+        <div>C</div>
+        <div>V</div>
+        <div>B</div>
+        <div>N</div>
+        <div>M</div>
+        <div style="width: 65px">Delete</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="resultScreen">
+    <h1 id="resultLine1">Today's bird was ...</h1>
+    <h2 id="resultLine2">Your attempts: ...</h2>
+    <button id="shareBtn">🗨️ Share</button>
+    <p><span id="timeLeft">12h 34m 56s</span> until next bird</p>
+  </div>
+
+  <div class="screen" id="helpScreen">
+    <h2>Welcome to Birdle!</h2>
+    <p>This is an example of how to use the Playpass SDK to build a simple daily level word game.</p>
+    <p>Each day, there's a different bird to guess. You have 5 tries to get it right!</p>
+    <button id="helpBackBtn">Continue</button>
+  </div>
+
+  <div class="screen" id="statsScreen">
+    <h2>Stats</h2>
+    <p>You have rolled 999 points over 123 days.</p>
+    <button id="statsBackBtn">Back</button>
+  </div>
+
+  <div class="screen" id="settingsScreen">
+    <h2>Settings</h2>
+    <div class="showIfLoggedOut">
+      <div>Login to save or transfer your game progress.</div>
+      <button id="loginBtn">📱 Login</button>
+    </div>
+    <div class="showIfLoggedIn">
+      <div>You are logged in, your progress will be saved.</div>
+      <button id="logoutBtn">Logout</button>
+    </div>
+    <button id="settingsBackBtn">Back</button>
+  </div>
+
+</body>
+</html>

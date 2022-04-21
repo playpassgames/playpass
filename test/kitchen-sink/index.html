@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Kitchen Sink</title>
+  <script type="module" src="/main.ts"></script>
+</head>
+<body>
+  <h1>SDK Tests</h1>
+
+  <p>This page contains tests for different SDK functions.</p>
+
+  <h2>Storage</h2>
+  <p><code>playpass.storage.get("counter") == <span id="getCounter">...</span></code></p>
+  <p><button id="incrementCounter"><code>Increment counter</code></button></p>
+  <p><button id="removeCounter"><code>Remove counter</code></button></p>
+
+  <h2>Authentication</h2>
+
+  <!-- <p><code>playpass.getPlayerId() == <span id="getPlayerId">...</span></code></p> -->
+  <p><code>playpass.account.isLoggedIn() == <span id="isLoggedIn">...</span></code></p>
+  <p><button id="login"><code>playpass.account.login()</code></button></p>
+  <p><button id="logout"><code>playpass.account.logout()</code></button></p>
+
+  <h2>Sharing</h2>
+
+  <p><code>playpass.getLinkData() == <span id="getLinkData">...</span></code></p>
+  <p><button id="share"><code>playpass.share()</code></button></p>
+
+  <h2>Subscription</h2>
+
+  <p>
+    <label for="productId">Product ID:</label>
+    <input type="text" id="productId">
+  </p>
+  <p><button id="subscribe"><code>playpass.payments.purchase()</code></button></p>
+  <p><button id="cancelSub"><code>playpass.payments.cancelSubscription()</code></button></p>
+
+  <p><code>playpass.payments.getSubscription() == <span id="currentSub">...</span></code></p>
+
+  <h2>Extra Content</h2>
+
+  <p>Here's some placeholder content to make this page long enough to scroll.</p>
+
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  <img src="https://placekitten.com/200">
+  <img src="https://placekitten.com/240">
+  <img src="https://placekitten.com/160">
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  <img src="https://placekitten.com/200">
+  <img src="https://placekitten.com/240">
+  <img src="https://placekitten.com/160">
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+</body>
+</html>

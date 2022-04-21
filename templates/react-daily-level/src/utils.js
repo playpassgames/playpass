@@ -1,0 +1,1 @@
+export const DICE_EMOJI = [ "⚀", "⚁", "⚂", "⚃", "⚄", "⚅" ];
