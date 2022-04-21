@@ -46,7 +46,7 @@ function send (body: RequestData) {
 
 export class PlaypassAnalytics implements Analytics {
     private initialized = false;
-    private projectId: string | undefined = undefined;
+    private gameId: string | undefined = undefined;
 
     private eventQueue: Array<EventData> = [];
     private userProps: Record<string,unknown> = {};
@@ -101,18 +101,18 @@ export class PlaypassAnalytics implements Analytics {
         };
     }
 
-    init (projectId: string | undefined) {
+    init (gameId: string | undefined) {
         this.initialized = true;
-        this.projectId = projectId;
+        this.gameId = gameId;
         this.flush();
     }
 
     flush () {
         if (this.eventQueue.length) {
             // console.log("Will send events", this.eventQueue.slice());
-            if (this.projectId) {
+            if (this.gameId) {
                 send({
-                    project_id: this.projectId,
+                    project_id: this.gameId,
                     events: this.eventQueue,
                 });
             }

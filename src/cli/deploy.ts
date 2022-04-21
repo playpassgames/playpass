@@ -4,13 +4,13 @@
 
 import kleur from "kleur";
 import archiver from "archiver";
-import fs from "fs/promises";
 import * as path from "path";
 import bytes from "bytes";
 import fetch from "cross-fetch";
 
-import {requireToken} from "./auth";
-import {slugify} from "./utils";
+import { requireToken } from "./auth";
+import { loadConfig } from "./config";
+import { slugify } from "./utils";
 import PlaypassClient from "./playpass-client";
 
 // TODO(2022-02-22): Put this in a project config or infer
@@ -38,19 +38,14 @@ function packageDir(publishDir: string): Promise<Buffer> {
 }
 
 export async function deploy(opts: { prefix?: string, customDomain?: string }): Promise<void> {
-    const json = JSON.parse(await fs.readFile(path.join(process.cwd(), "package.json"), "utf8"));
-
-    if (!json.gameId && !json.name) {
-        throw new Error("Missing name field from package.json");
-    }
-    const gameId = json.gameId ?? json.name;
+    const config = await loadConfig(path.join(process.cwd(), "playpass.toml"));
 
     const token = await requireToken();
     const playpassClient = new PlaypassClient(token);
     const games = await playpassClient.getGames();
-    const game = games.find(a => a.id === gameId);
+    const game = games.find(a => a.id === config.game_id);
     if (!game) {
-        throw new Error(`Game with id ${gameId} does not exist.`);
+        throw new Error(`Game with ID ${config.game_id} does not exist.`);
     }
 
     const subdomain = opts.prefix ? `${slugify(opts.prefix)}--${game.name}` : game.name;
@@ -65,7 +60,7 @@ export async function deploy(opts: { prefix?: string, customDomain?: string }): 
 
     // console.log(`Package created ${bytes(archivedFile.length)}`);
 
-    const deployment = await playpassClient.upload(gameId, opts.prefix, opts.customDomain);
+    const deployment = await playpassClient.upload(config.game_id, opts.prefix, opts.customDomain);
     const response = await fetch(deployment.uploadUrl, {
         method: "PUT",
         body: archivedFile
