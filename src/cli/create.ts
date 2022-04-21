@@ -60,7 +60,6 @@ export async function create (destDir: string | undefined, opts: { template?: st
     } catch (e) {
         throw new Error("Failed to create game ${gameName}, please try again");
     }
-    const projectId = game.id;
 
     const template = opts.template || await prompt({
         type: "select",
@@ -87,17 +86,22 @@ export async function create (destDir: string | undefined, opts: { template?: st
         if (ext != ".js" && ext != ".jsx" && ext != ".ts" && ext != ".tsx") {
             return null;
         }
-        return replace("YOUR_PROJECT_ID", projectId);
+        return replace("YOUR_PROJECT_ID", game.id);
     };
 
     const templatesDir = `${__dirname}/../../../templates`;
     await copy(`${templatesDir}/${template}`, destDir, { dot: true, transform });
     await copy(`${templatesDir}/common`, destDir, { dot: true });
 
-    // Update package.json
+    // Generate an initial playpass.toml
+    await fs.writeFile(destDir+"/playpass.toml", [
+        "# Your game's unique identifier. This should never change.",
+        `game_id = "${game.id}"`,
+    ].join("\n") + "\n");
+
+    // Also, update package.json. This is only to have a sensible default and not used by Playpass
     const json = JSON.parse(await fs.readFile(destDir+"/package.json", "utf8"));
     json.name = gameName;
-    json.gameId = projectId;
     await fs.writeFile(destDir+"/package.json", JSON.stringify(json, null, "  "));
 
     console.log("Installing NPM dependencies, this may take a minute...");
