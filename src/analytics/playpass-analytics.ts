@@ -75,9 +75,9 @@ export class PlaypassAnalytics implements Analytics {
         }
 
         const defaultEventProperties = {
-          page: document.location.href,
-          referrer: document.referrer,
-        }
+            page: document.location.href,
+            referrer: document.referrer,
+        };
 
         this.eventQueue.push({
             user_id: getPlayerId(),
