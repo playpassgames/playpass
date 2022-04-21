@@ -19,6 +19,8 @@ type EventData = {
     session_id: string;
     event_time: string; // ISO timestamp
     event_type: string;
+    page: string;
+    referrer: string;
     event_properties: Record<string,unknown>;
     user_properties: Record<string,unknown>;
 }
@@ -74,12 +76,19 @@ export class PlaypassAnalytics implements Analytics {
             setTimeout(() => { this.flush() }, SEND_DELAY);
         }
 
+        const defaultEventProperties = {
+            page: document.location.href,
+            referrer: document.referrer,
+        };
+
         this.eventQueue.push({
             user_id: getPlayerId(),
             session_id: this.sessionId,
             event_time: new Date().toISOString(),
             event_type: name,
-            event_properties: props || {},
+            page: document.location.href,
+            referrer: document.referrer,
+            event_properties: (props || {}),
             user_properties: this.userProps,
         });
     }
