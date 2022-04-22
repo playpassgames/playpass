@@ -12,8 +12,3 @@ Preview: https://word-daily-level--template.playpass.games
 - Players can play once per day.
 - A share button to share the results.
 - A login button on the settings screen.
-
-## TODO
-
-- Organize project structure a bit.
-- Add subscriptions(?)
