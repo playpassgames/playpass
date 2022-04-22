@@ -3,26 +3,48 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
-  <title>Birdle</title>
+  <title>Daily Word</title>
   <script type="module" src="/src/main.js"></script>
 </head>
 <body>
 
   <header>
     <div id="helpBtn"></div>
-    <h1>🐦 Birdle</h1>
+    <h1>Daily Word</h1>
     <div id="statsBtn"></div>
     <div id="settingsBtn"></div>
   </header>
 
-  <div class="screen" id="playingScreen">
-    <p>Try to guess today's bird.</p>
-    <h3>
-      Hint: it contains the letter <span id="hint">X</span>.
-      Tries left <span id="triesLeft">5</span>
-    </h3>
+  <div class="screen" id="resultScreen">
+    <h1 id="resultLine1">Today's word was ...</h1>
+    <button id="shareBtn">🗨️ Share</button>
+    <p><span id="timeLeft">12h 34m 56s</span> until next word.</p>
+  </div>
 
-    <h2>🐦 <span id="inputWord"></span></h2>
+  <div class="screen" id="playingScreen">
+    <h2>Try to guess today's 5 letter word</h2>
+    <h2 id="answer"></h2>
+
+    <div class="grid">
+      <div>
+        <div> </div><div> </div><div> </div><div> </div><div> </div>
+      </div>
+      <div>
+        <div> </div><div> </div><div> </div><div> </div><div> </div>
+      </div>
+      <div>
+        <div> </div><div> </div><div> </div><div> </div><div> </div>
+      </div>
+      <div>
+        <div> </div><div> </div><div> </div><div> </div><div> </div>
+      </div>
+      <div>
+        <div> </div><div> </div><div> </div><div> </div><div> </div>
+      </div>
+      <div>
+        <div> </div><div> </div><div> </div><div> </div><div> </div>
+      </div>
+    </div>
 
     <div class="keyboard">
       <div>
@@ -62,23 +84,16 @@
     </div>
   </div>
 
-  <div class="screen" id="resultScreen">
-    <h1 id="resultLine1">Today's bird was ...</h1>
-    <h2 id="resultLine2">Your attempts: ...</h2>
-    <button id="shareBtn">🗨️ Share</button>
-    <p><span id="timeLeft">12h 34m 56s</span> until next bird</p>
-  </div>
-
   <div class="screen" id="helpScreen">
-    <h2>Welcome to Birdle!</h2>
+    <h2>Welcome to Daily Word!</h2>
     <p>This is an example of how to use the Playpass SDK to build a simple daily level word game.</p>
-    <p>Each day, there's a different bird to guess. You have 5 tries to get it right!</p>
+    <p>Each day, there's a different 5 letter word to guess You have 6 tries to get it right!</p>
     <button id="helpBackBtn">Continue</button>
   </div>
 
   <div class="screen" id="statsScreen">
     <h2>Stats</h2>
-    <p>You have rolled 999 points over 123 days.</p>
+    <p id="winStats"></p>
     <button id="statsBackBtn">Back</button>
   </div>
 

@@ -68,6 +68,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
         choices: [
             { title: "Daily Level Game", value: "daily-level" },
             { title: "React Daily Level Game", value: "react-daily-level" },
+            { title: "Daily Word Game", value: "word-daily-level" },
         ],
     });
 
