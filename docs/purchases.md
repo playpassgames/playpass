@@ -1,4 +1,4 @@
-# Purchases
+# (**Coming Soon**) Purchases
 
 Enable premium game content for your users and make some money while you're at it.
 

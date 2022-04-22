@@ -11,7 +11,7 @@ document.getElementById("yourButton").onclick = function () {
 };
 ```
 
-Links created with `playpass.createLink()` will contain tracking parameters, allowing you to see how
+(**Coming Soon**) Links created with `playpass.createLink()` will contain tracking parameters, allowing you to see how
 viral your game is in your account dashboard.
 
 ## Embedding custom link data
