@@ -150,7 +150,9 @@ function onLogoutClick () {
 
 (async function () {
     // Initialize the Playpass SDK
-    await playpass.init({ projectId: "daily-word" });
+    await playpass.init({
+        gameId: "YOUR_GAME_ID", // Do not edit!
+    });
 
     // Get the stored state
     state = await daily.loadObject();

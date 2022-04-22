@@ -2,7 +2,7 @@
 
 This is an example of how to use the Playpass SDK to build a simple daily word game.
 
-Preview: https://daily-word--template.playpass.games
+Preview: https://word-daily-level--template.playpass.games
 
 ## Features
 
