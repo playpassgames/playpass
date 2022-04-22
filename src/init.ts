@@ -18,7 +18,7 @@ let phoneCodeScript: HTMLScriptElement | undefined;
 
 /** Options to pass to {@link init}. */
 export type InitOptions = {
-    projectId: string;
+    gameId: string;
     stripeAccount?: string;
 }
 
@@ -58,15 +58,15 @@ export async function init (opts?: InitOptions): Promise<void> {
         document.head.appendChild(phoneInputStyle);
     }
 
-    const projectId = opts?.projectId || "unknown";
+    const gameId = opts?.gameId || "unknown";
 
     // Initialize our subsystems
     await Promise.all([
         initFeatureFlags(),
-        initLogin(projectId),
+        initLogin(gameId),
     ]);
 
-    playpassAnalytics.init(projectId);
+    playpassAnalytics.init(gameId);
 
     const payload = decode();
     const gcInstantEntryData = getGCInstantEntryData();

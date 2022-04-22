@@ -6,7 +6,7 @@ import * as playpass from "../../src";
 
 (async () => {
     await playpass.init({
-        projectId: "kitchen-sink",
+        gameId: "kitchen-sink",
         stripeAccount: "acct_1KmOYpRSkLu3gu7q",
     });
 
