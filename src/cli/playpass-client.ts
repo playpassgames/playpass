@@ -6,24 +6,37 @@ import axios, {AxiosResponse} from "axios";
 
 const PLAYPASS_API_HOST = process.env.PLAYPASS_API_HOST || "https://creators-api.playpass.games";
 
+export type PlaypassResponse = {
+    result?: boolean | undefined,
+    error?: string | undefined
+}
+
 export type Game = {
     id: string,
     name: string,
     config: {
         [key: string]: string
-    }
-}
+    },
+} & PlaypassResponse
+
+export type Games = {
+    items: Game[],
+} & PlaypassResponse
 
 export type CustomDomains = {
+    items: CustomDomain[],
+} & PlaypassResponse
+
+export type CustomDomain = {
     id: string,
-    customDomains: string[]
-}
+    customDomains: string[],
+} & PlaypassResponse
 
 export type Deployment = {
-    gameUrl: string;
-    uploadUrl: string;
-    distributionDomainName?: string | undefined;
-}
+    gameUrl: string,
+    uploadUrl: string,
+    distributionDomainName?: string | undefined,
+} & PlaypassResponse
 
 export default class PlaypassClient {
     private authToken: string;
@@ -55,7 +68,10 @@ export default class PlaypassClient {
                 "X-API-TOKEN": this.authToken
             }
         })
-            .then((a: AxiosResponse<{items: Game[]}>) => a.data.items);
+            .then((a: AxiosResponse<Games>) => {
+                PlaypassClient.validateResponse(a, "Failed to retrieve games.");
+                return a.data.items;
+            });
     }
 
     public async create(game: string): Promise<Game> {
@@ -69,7 +85,10 @@ export default class PlaypassClient {
                 name: game
             },
         })
-            .then((a: AxiosResponse<Game>) => a.data);
+            .then((a: AxiosResponse<Game>) => {
+                PlaypassClient.validateResponse(a, "Failed to create game.");
+                return a.data;
+            });
     }
 
     public async upload(gameId: string, prefix?: string, customDomain?: string): Promise<Deployment> {
@@ -84,10 +103,13 @@ export default class PlaypassClient {
                 customDomain
             },
         })
-            .then((a: AxiosResponse<Deployment>) => a.data);
+            .then((a: AxiosResponse<Deployment>) => {
+                PlaypassClient.validateResponse(a, "Failed to deploy game.");
+                return a.data;
+            });
     }
 
-    public async getCustomDomains(): Promise<CustomDomains[]> {
+    public async getCustomDomains(): Promise<CustomDomain[]> {
         return axios.request({
             method: "GET",
             url: `${this.host}/api/v1/custom-domains/`,
@@ -95,7 +117,10 @@ export default class PlaypassClient {
                 "X-API-TOKEN": this.authToken
             }
         })
-            .then((a: AxiosResponse<{ items: CustomDomains[] }>) => a.data.items);
+            .then((a: AxiosResponse<CustomDomains>) => {
+                PlaypassClient.validateResponse(a, "Failed to get custom domains.");
+                return a.data.items;
+            });
     }
 
     public async customDomain(customDomains: string[], certificate: string, privateKey: string, certificateChain?: string) {
@@ -112,7 +137,10 @@ export default class PlaypassClient {
                 certificateChain
             }
         })
-            .then((a: AxiosResponse<{ id: string }>) => a.data);
+            .then((a: AxiosResponse<{ id: string, result?: boolean | undefined, error?: string | undefined }>) => {
+                PlaypassClient.validateResponse(a, "Failed to create custom domain.");
+                return a.data;
+            });
     }
 
     public async deleteDomain(domainId: string) {
@@ -123,5 +151,18 @@ export default class PlaypassClient {
                 "X-API-TOKEN": this.authToken
             }
         });
+    }
+
+    private static validateResponse(a: AxiosResponse<{
+        result?: boolean | undefined,
+        error?: string | undefined
+    }>, fallbackMessage: string) {
+        if (a.data.result !== undefined && !a.data.result) {
+            if (a.data.error) {
+                throw new Error(a.data.error);
+            } else {
+                throw new Error(fallbackMessage);
+            }
+        }
     }
 }

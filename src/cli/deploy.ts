@@ -10,11 +10,29 @@ import fetch from "cross-fetch";
 
 import { requireToken } from "./auth";
 import { loadConfig } from "./config";
-import { slugify } from "./utils";
 import PlaypassClient from "./playpass-client";
+import { walkDir } from "./utils";
 
 // TODO(2022-02-22): Put this in a project config or infer
 const PUBLISH_DIR = path.join(process.cwd(), "dist");
+
+async function walkPublishDir(publishDir: string): Promise<string[]> {
+    let files;
+    try {
+        files = await walkDir(publishDir);
+    } catch (e) {
+        throw new Error(`Could not read directory ${publishDir}. Try running 'npm run build' again.`);
+    }
+
+    if (files.length <= 0) {
+        throw new Error(`No files found in ${publishDir}. Try running 'npm run build' again.`);
+    }
+
+    if (!files.find(it => it === `${publishDir}/index.html`)) {
+        throw new Error(`Index file not found at ${publishDir}. Try running 'npm run build' again.`);
+    }
+    return files;
+}
 
 function packageDir(publishDir: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
@@ -45,6 +63,8 @@ export async function deploy(opts: { prefix?: string, customDomain?: string }): 
 
     console.log("Uploading game...");
 
+    const files = await walkPublishDir(PUBLISH_DIR);
+    console.log(`Archiving ${kleur.bold(files.length)} files...`);
     const archivedFile = await packageDir(PUBLISH_DIR);
 
     if (archivedFile.length > bytes("150mb")) {

@@ -6,6 +6,7 @@ import os from "os";
 import path from "path";
 import { spawn as nodeSpawn } from "child_process";
 import type { SpawnOptions } from "child_process";
+import fs from "fs/promises";
 
 export function slugify (text: string): string {
     return text
@@ -76,4 +77,21 @@ export function envPaths (name: string) {
         log: path.join(env.XDG_STATE_HOME || path.join(homedir, ".local", "state"), name),
         temp: path.join(tmpdir, username, name),
     };
+}
+
+export async function walkDir (dir: string) {
+    const files: string[] = [];
+    const paths = await fs.readdir(dir);
+
+    for (const file of paths) {
+        const fullPath: string = path.join(dir, file);
+        const stats = await fs.lstat(fullPath);
+        if (stats.isDirectory()) {
+            files.push(...(await walkDir(fullPath)));
+        } else {
+            files.push(fullPath);
+        }
+    }
+
+    return files;
 }
