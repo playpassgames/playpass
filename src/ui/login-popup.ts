@@ -11,20 +11,29 @@ import { customElement, state, queryAssignedElements } from "lit/decorators.js";
 export class LoginPopup extends LitElement {
     static override styles = css`
         :host {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute;
+            width: 307px;
+            height: 232px;
+            left: 50%;
+            top: 50%;
+            margin-left:-153px;
+            margin-top:-116px;
 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Helvetica, sans-serif;
+            background: #FFFFFF;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            z-index: 0;
+
             user-select: none;
 
-            color: #415462;
-
+            font-family: 'Proxima Nova';
+            font-style: normal;
+            font-size: 1rem;
+            line-height: 29px;
+            text-align: center;
+            
+            color: #000000;
             --primary: #1095c1;
-            font-size: 18px;
         }
 
         .overlay {
@@ -128,16 +137,23 @@ export class LoginPopup extends LitElement {
 
         button {
             color: white;
-            background: var(--primary);
-            padding: 0.75rem 1rem;
+            background: #2F79D0;
             font-size: 1rem;
 
             border: none;
             outline: none;
             cursor: pointer;
             text-align: center;
-            border-radius: 0.25rem;
-            font-size: 1.25rem;
+            border-radius: 4px;
+            font-size: 14px;
+
+            width: 130px;
+            height: 43px;
+            left: 50%;
+            top: 50%;
+
+            margin-left:65px;
+            margin-top:0px;
         }
 
         a {
