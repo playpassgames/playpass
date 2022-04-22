@@ -107,7 +107,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
 
     console.log("Installing NPM dependencies, this may take a minute...");
 
-    await spawn("npm", ["install", "playpass@latest", "--save"], {
+    await spawn(/^win/.test(process.platform) ? "npm.cmd" : "npm", ["install", "playpass@latest", "--save"], {
         stdio: "ignore",
         cwd: destDir,
     });
