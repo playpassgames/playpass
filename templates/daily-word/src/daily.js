@@ -46,9 +46,4 @@ export class Daily {
     random () {
         return ((1103515245*this.day + 12345) >>> 0) / 0xffffffff;
     }
-
-    /** Gets the number of seconds remaining until the next day. */
-    timeUntilNextLevel () {
-        return Math.floor(getTimeUntilTomorrowMS() / 1000);
-    }
 }

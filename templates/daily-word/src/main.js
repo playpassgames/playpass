@@ -7,9 +7,9 @@ import { Grid } from "./grid";
 import { Keyboard } from "./keyboard";
 import { getHoursUntil, getMinutesUntil, getNextGameTime, getSecondsUntil } from "./timer";
 
-const daily = new Daily(Date.parse('2022-04-21T12:00:00'));
+const daily = new Daily(Date.parse("2022-04-21T12:00:00"));
 
-const words = [ 'PIZZA', 'GAMER', 'PLAYS', 'LOSER', 'HAPPY', 'POWER' ];
+const words = [ "PIZZA", "GAMER", "PLAYS", "LOSER", "HAPPY", "POWER" ];
 
 const correctAnswer = words[daily.day % words.length];
 
