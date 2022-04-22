@@ -23,6 +23,7 @@ To learn more about deploying, check out the full [deployment guide](/deploy).
 ## Next steps
 
 Test out the features included in the starter templates:
+
 - [Share button](/share) to allow your game to grow virally.
 - [Create accounts and login](/account) to identify the same player across multiple devices.
 - [Store player data](/storage) to enable persistent player in-game state and more!
