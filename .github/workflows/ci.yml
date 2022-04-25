@@ -107,6 +107,7 @@ jobs:
                   cd templates/daily-level/
                   npm i
                   npm run build
+                  playpass="./../../dist/cjs/cli/index.js"
                   $playpass deploy
               env:
                   PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}
