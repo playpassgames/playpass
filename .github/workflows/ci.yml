@@ -3,8 +3,8 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-    build:
-        name: Build
+    ubuntuBuild:
+        name: Ubuntu
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
@@ -80,3 +80,52 @@ jobs:
               env:
                   AWS_ACCESS_KEY_ID: ${{ secrets.DOCS_AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.DOCS_AWS_SECRET_ACCESS_KEY }}
+
+    macOSBuild:
+        name: MacOS
+        runs-on: macos-latest
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '16'
+                  registry-url: 'https://npm.pkg.github.com/'
+                  scope: '@play-co'
+                  cache: 'npm'
+
+            - run: npm ci
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.PLAYCO_PACKAGES_TOKEN }}
+            - run: npm run build
+            - run: npm test
+
+            - name: CLI sanity check
+              run: |
+                  playpass="./dist/cjs/cli/index.js"
+                  $playpass help
+                  # $playpass create /tmp/test-playpass-create --template daily-level            
+
+    windowsBuild:
+        name: Windows
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v2
+
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '16'
+                  registry-url: 'https://npm.pkg.github.com/'
+                  scope: '@play-co'
+                  cache: 'npm'
+
+            - run: npm ci
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.PLAYCO_PACKAGES_TOKEN }}
+            - run: npm run build
+            - run: npm test
+
+            - name: CLI sanity check
+              run: |
+                  node ./dist/cjs/cli/index.js help
+                  # node ./dist/cjs/cli/index.js create /tmp/test-playpass-create --template daily-level
