@@ -104,7 +104,10 @@ jobs:
               run: |
                   playpass="./dist/cjs/cli/index.js"
                   $playpass help
-                  # $playpass create /tmp/test-playpass-create --template daily-level            
+                  cd templates/daily-level/
+                  npm i
+                  npm run build
+                  $playpass deploy
 
     windowsBuild:
         name: Windows
@@ -128,4 +131,7 @@ jobs:
             - name: CLI sanity check
               run: |
                   node ./dist/cjs/cli/index.js help
-                  # node ./dist/cjs/cli/index.js create /tmp/test-playpass-create --template daily-level
+                  cd templates/daily-level/
+                  npm i
+                  npm run build
+                  node ./../../dist/cjs/cli/index.js deploy
