@@ -108,6 +108,8 @@ jobs:
                   npm i
                   npm run build
                   $playpass deploy
+              env:
+                  PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}
 
     windowsBuild:
         name: Windows
@@ -135,3 +137,5 @@ jobs:
                   npm i
                   npm run build
                   node ./../../dist/cjs/cli/index.js deploy
+              env:
+                  PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}
