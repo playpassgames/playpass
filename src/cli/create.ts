@@ -91,8 +91,8 @@ export async function create (destDir: string | undefined, opts: { template?: st
     };
 
     const templatesDir = `${__dirname}/../../../templates`;
-    await copy(`${templatesDir}/${template}`, destDir, { dot: true, transform });
-    await copy(`${templatesDir}/common`, destDir, { dot: true });
+    await copy(`${templatesDir}/${template}`, destDir, { dot: true, junk: true, transform });
+    await copy(`${templatesDir}/common`, destDir, { dot: true, junk: true });
 
     // Generate an initial playpass.toml
     await fs.writeFile(destDir+"/playpass.toml", [
