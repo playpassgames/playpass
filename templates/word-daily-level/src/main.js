@@ -91,6 +91,7 @@ function showResultScreen () {
 
     document.querySelector("#shareBtn").style.display = "inherit";
     document.querySelector("#timer").style.display = "inherit";
+    document.querySelector(".keyboard").style.display = "none";
 }
 
 function showScreen (name) {
