@@ -3,8 +3,8 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-    ubuntuBuild:
-        name: Ubuntu
+    build:
+        name: build
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
@@ -81,40 +81,12 @@ jobs:
                   AWS_ACCESS_KEY_ID: ${{ secrets.DOCS_AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.DOCS_AWS_SECRET_ACCESS_KEY }}
 
-    macOSBuild:
-        name: MacOS
-        runs-on: macos-latest
-        steps:
-            - uses: actions/checkout@v2
-
-            - uses: actions/setup-node@v2
-              with:
-                  node-version: '16'
-                  registry-url: 'https://npm.pkg.github.com/'
-                  scope: '@play-co'
-                  cache: 'npm'
-
-            - run: npm ci
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.PLAYCO_PACKAGES_TOKEN }}
-            - run: npm run build
-            - run: npm test
-
-            - name: CLI sanity check
-              run: |
-                  playpass="./dist/cjs/cli/index.js"
-                  $playpass help
-                  cd templates/daily-level/
-                  npm i
-                  npm run build
-                  playpass="./../../dist/cjs/cli/index.js"
-                  $playpass deploy
-              env:
-                  PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}
-
-    windowsBuild:
-        name: Windows
-        runs-on: windows-latest
+    verifyCLI:
+        strategy:
+            matrix:
+                os: [macos-latest, windows-latest]
+        name: CLI check
+        runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@v2
 
