@@ -22,12 +22,6 @@ jobs:
             - run: npm run build
             - run: npm test
 
-            - name: CLI sanity check
-              run: |
-                  playpass="./dist/cjs/cli/index.js"
-                  $playpass help
-                  # $playpass create /tmp/test-playpass-create --template daily-level
-
             - name: Build kitchen-sink
               run: |
                   npm ci
@@ -84,7 +78,7 @@ jobs:
     verifyCLI:
         strategy:
             matrix:
-                os: [macos-latest, windows-latest]
+                os: [ubuntu-latest, macos-latest, windows-latest]
         name: CLI check
         runs-on: ${{ matrix.os }}
         steps:
