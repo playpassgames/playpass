@@ -61,6 +61,7 @@ program
 */
 program
     .name("playpass")
+    .version(require("../../../package.json").version) // eslint-disable-line @typescript-eslint/no-var-requires
     .description(
         "Playpass SDK.\n\nLearn more at https://playpass.games",
     )
