@@ -3,46 +3,49 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import kleur from "kleur";
-import archiver from "archiver";
+import archiver, {EntryData, ProgressData} from "archiver";
 import * as path from "path";
 import bytes from "bytes";
 import fetch from "cross-fetch";
 
-import { requireToken } from "./auth";
-import { loadConfig } from "./config";
+import {requireToken} from "./auth";
+import {loadConfig} from "./config";
 import PlaypassClient from "./playpass-client";
-import { walkDir } from "./utils";
 
 // TODO(2022-02-22): Put this in a project config or infer
 const PUBLISH_DIR = path.join(process.cwd(), "dist");
 
-async function walkPublishDir(publishDir: string): Promise<string[]> {
-    let files;
-    try {
-        files = await walkDir(publishDir);
-    } catch (e) {
-        throw new Error(`Could not read directory ${publishDir}. Try running 'npm run build' again.`);
-    }
-
-    if (files.length <= 0) {
-        throw new Error(`No files found in ${publishDir}. Try running 'npm run build' again.`);
-    }
-
-    if (!files.find(it => it === `${publishDir}/index.html`)) {
-        throw new Error(`Index file not found at ${publishDir}. Try running 'npm run build' again.`);
-    }
-    return files;
-}
-
 function packageDir(publishDir: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
+        let files = 0;
+        let indexFound = false;
         const archive = archiver("zip");
         const chunks: Buffer[] = [];
 
         archive.on("data", data => {
             chunks.push(data);
         });
+        archive.on("entry", (entryData: EntryData) => {
+            if (entryData.name === "index.html") {
+                indexFound = true;
+            }
+        });
+        archive.on("progress", (progress: ProgressData) => {
+            files++;
+            process.stdout.clearLine(0);
+            process.stdout.cursorTo(0);
+            process.stdout.write(`Processed ${progress.entries.processed} files with ${bytes(progress.fs.processedBytes)}...`);
+        });
         archive.on("end", () => {
+            console.log();
+            if (files <= 0) {
+                reject(`No files found in ${publishDir}. Try running 'npm run build' again.`);
+                return;
+            }
+            if (!indexFound) {
+                reject(`Index file not found at ${publishDir}. Try running 'npm run build' again.`);
+                return;
+            }
             resolve(Buffer.concat(chunks));
         });
         archive.on("error", reject);
@@ -51,6 +54,7 @@ function packageDir(publishDir: string): Promise<Buffer> {
             cwd: publishDir,
             ignore: [".*", "playpass.toml"],
         });
+
         archive.finalize();
     });
 }
@@ -63,9 +67,12 @@ export async function deploy(opts: { prefix?: string, customDomain?: string }): 
 
     console.log("Uploading game...");
 
-    const files = await walkPublishDir(PUBLISH_DIR);
-    console.log(`Archiving ${kleur.bold(files.length)} files...`);
-    const archivedFile = await packageDir(PUBLISH_DIR);
+    let archivedFile;
+    try {
+        archivedFile = await packageDir(PUBLISH_DIR);
+    } catch (e: unknown) {
+        throw new Error(`Failed to archive game: ${e}`);
+    }
 
     if (archivedFile.length > bytes("150mb")) {
         throw new Error(`Package exceeds the 150mb limit: ${bytes(archivedFile.length)}`);

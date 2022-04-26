@@ -78,20 +78,3 @@ export function envPaths (name: string) {
         temp: path.join(tmpdir, username, name),
     };
 }
-
-export async function walkDir (dir: string) {
-    const files: string[] = [];
-    const paths = await fs.readdir(dir);
-
-    for (const file of paths) {
-        const fullPath: string = path.join(dir, file);
-        const stats = await fs.lstat(fullPath);
-        if (stats.isDirectory()) {
-            files.push(...(await walkDir(fullPath)));
-        } else {
-            files.push(fullPath);
-        }
-    }
-
-    return files;
-}

@@ -4,6 +4,7 @@
 
 import fs from "fs/promises";
 import toml from "@iarna/toml";
+import {isError} from "./utils";
 
 export type Config = {
     game_id: string;
@@ -12,7 +13,10 @@ export type Config = {
 async function readFile (file: string) {
     try {
         return await fs.readFile(file, "utf8");
-    } catch (e) {
+    } catch (error: unknown) {
+        if (!isError(error) || error.code != "ENOENT") {
+            throw error;
+        }
         throw new Error(`Configuration file playpass.toml could not be found. Expected at: ${file}`);
     }
 }
