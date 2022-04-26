@@ -101,7 +101,7 @@ jobs:
               run: |
                   node ./dist/cjs/cli/index.js help
                   cd templates/daily-level/
-                  npm i
+                  npm ci
                   npm run build
                   node ./../../dist/cjs/cli/index.js deploy
               env:
