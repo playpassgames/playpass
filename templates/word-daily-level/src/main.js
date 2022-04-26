@@ -66,10 +66,9 @@ async function showMainScreen () {
     keyboard.setState(state);
     if (Grid.isSolved(state) || Grid.isLost(state)) {
         showResultScreen();
-    } else {
-        // The player hasn't yet won today, show the playing screen
-        showScreen("#playingScreen");
     }
+
+    showScreen("#playingScreen");
 }
 
 function updateClock() {
@@ -86,24 +85,19 @@ updateClock();
 setInterval(updateClock, 1000);
 
 function showResultScreen () {
-    // Go to the results screen
-    showScreen("#resultScreen");
-
     // Set the first results line
-    document.querySelector("#resultLine1").textContent = Grid.isSolved(state) ?
+    document.querySelector("#gameHeaderLine").textContent = Grid.isSolved(state) ?
         "You guessed today's word!" : ("You couldn't guess today's word: " + correctAnswer);
+
+    document.querySelector("#shareBtn").style.display = "inherit";
+    document.querySelector("#timer").style.display = "inherit";
 }
 
 function showScreen (name) {
     for (let screen of document.querySelectorAll(".screen")) {
         screen.style.display = "none";
     }
-    document.querySelector(name).style.display = "inherit";
-    if (Grid.isSolved(state) || Grid.isLost(state)) {
-        if (name === "#resultScreen") {
-            document.querySelector("#playingScreen").style.display = "inherit";
-        }
-    }
+    document.querySelector(name).style.display = (name === "#playingScreen" ? "flex" : "inherit");
 }
 
 function onShareClick () {
