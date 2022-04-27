@@ -80,15 +80,7 @@ export function featureFlagIsEnabled (name: string): boolean {
 }
 
 function setFeatureFlagUserProp() {
-    // Put list of feature flags in an Amplitude user property
-    const featureFlagArray = [];
-    for (const featureFlag in cachedFeatureFlags) {
-        if (cachedFeatureFlags[featureFlag]) {
-            featureFlagArray.push(featureFlag);
-        }
-    }
-
     analytics.setUserProperties({
-        featureFlags: featureFlagArray,
+        featureFlags: cachedFeatureFlags,
     });
 }

@@ -12,7 +12,7 @@ const SEND_DELAY = 250;
 type RequestData = {
     project_id: string;
     events: EventData[];
-}
+};
 
 type EventData = {
     user_id: string;
@@ -21,18 +21,22 @@ type EventData = {
     event_type: string;
     page: string;
     referrer: string;
-    event_properties: Record<string,unknown>;
-    user_properties: Record<string,unknown>;
-}
+    locale: string;
+    event_properties: Record<string, unknown>;
+    user_properties: Record<string, unknown>;
+};
 
 // Sends a request to the backend API
-function send (body: RequestData) {
+function send(body: RequestData) {
     const url = "https://t.playpass.games/record";
     const json = JSON.stringify(body);
 
     // Use the beacon API if available, otherwise fallback to fetch
     if (navigator.sendBeacon) {
-        navigator.sendBeacon(url, new Blob([ json ], { type: "application/json" }));
+        navigator.sendBeacon(
+            url,
+            new Blob([json], { type: "application/json" })
+        );
     } else {
         void fetch(url, {
             method: "POST",
@@ -49,10 +53,10 @@ export class PlaypassAnalytics implements Analytics {
     private gameId: string | undefined = undefined;
 
     private eventQueue: Array<EventData> = [];
-    private userProps: Record<string,unknown> = {};
+    private userProps: Record<string, unknown> = {};
     private sessionId: string;
 
-    constructor () {
+    constructor() {
         // TODO(2022-03-17): Should this be stored in window.sessionStorage to survive page reloads?
         this.sessionId = randomId("session");
 
@@ -70,12 +74,13 @@ export class PlaypassAnalytics implements Analytics {
         window.addEventListener("pointerdown", onPointerDown);
     }
 
-    track (name: string, props?: Record<string,unknown>) {
+    track(name: string, props?: Record<string, unknown>) {
         if (this.initialized && this.eventQueue.length == 0) {
             // Schedule a batch flush
-            setTimeout(() => { this.flush() }, SEND_DELAY);
+            setTimeout(() => {
+                this.flush();
+            }, SEND_DELAY);
         }
-
         this.eventQueue.push({
             user_id: getPlayerId(),
             session_id: this.sessionId,
@@ -83,12 +88,13 @@ export class PlaypassAnalytics implements Analytics {
             event_type: name,
             page: document.location.href,
             referrer: document.referrer,
-            event_properties: (props || {}),
+            locale: navigator?.language,
+            event_properties: props || {},
             user_properties: this.userProps,
         });
     }
 
-    setUserProperties (props: Record<string,unknown>) {
+    setUserProperties(props: Record<string, unknown>) {
         // Copy-on-write to avoid changing any queued events
         this.userProps = {
             ...this.userProps,
@@ -96,13 +102,13 @@ export class PlaypassAnalytics implements Analytics {
         };
     }
 
-    init (gameId: string | undefined) {
+    init(gameId: string | undefined) {
         this.initialized = true;
         this.gameId = gameId;
         this.flush();
     }
 
-    flush () {
+    flush() {
         if (this.eventQueue.length) {
             // console.log("Will send events", this.eventQueue.slice());
             if (this.gameId) {
