@@ -31,6 +31,16 @@ function onLogout () {
     loggedIn = false;
 }
 
+/**
+ * Gets the ID of the player, which may be undefined if they haven't interacted with any Playpass
+ * backend services yet.
+ *
+ * The player's ID may change after a call to {@link login}.
+ */
+export function getPlayerId (): string | undefined {
+    return replicantClient?.getUserId();
+}
+
 export function isLoggedIn (): boolean {
     return loggedIn;
 }

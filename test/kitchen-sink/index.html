@@ -18,7 +18,7 @@
 
   <h2>Authentication</h2>
 
-  <!-- <p><code>playpass.getPlayerId() == <span id="getPlayerId">...</span></code></p> -->
+  <p><code>playpass.account.getPlayerId() == <span id="getPlayerId">...</span></code></p>
   <p><code>playpass.account.isLoggedIn() == <span id="isLoggedIn">...</span></code></p>
   <p><button id="login"><code>playpass.account.login()</code></button></p>
   <p><button id="logout"><code>playpass.account.logout()</code></button></p>
@@ -38,6 +38,14 @@
   <p><button id="cancelSub"><code>playpass.payments.cancelSubscription()</code></button></p>
 
   <p><code>playpass.payments.getSubscription() == <span id="currentSub">...</span></code></p>
+
+  <h2>Groups</h2>
+
+  <p><button id="createGroup"><code>playpass.groups.createGroup()</code></button></p>
+  <pre id="groupsInfo"></pre>
+  <p><button id="setGroupData"><code>Add random data to my groups storages</code></button></p>
+  <p><button id="shareGroups"><code>Share invite to my groups</code></button></p>
+  <p><button id="forgetGroups"><code>Clear my groups</code></button></p>
 
   <h2>Extra Content</h2>
 
