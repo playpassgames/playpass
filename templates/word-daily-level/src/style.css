@@ -83,7 +83,7 @@ button:active {
 #gameHeader {
     flex: 0;
     height: var(--game-header-height);
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
 }

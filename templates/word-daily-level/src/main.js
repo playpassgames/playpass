@@ -86,6 +86,8 @@ setInterval(updateClock, 1000);
 
 function showResultScreen () {
     // Set the first results line
+    document.querySelector("#gameHeader").style.display = "flex";
+
     document.querySelector("#gameHeaderLine").textContent = Grid.isSolved(state) ?
         "You guessed today's word!" : ("You couldn't guess today's word: " + correctAnswer);
 
