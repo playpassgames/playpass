@@ -6,6 +6,7 @@ import os from "os";
 import path from "path";
 import { spawn as nodeSpawn } from "child_process";
 import type { SpawnOptions } from "child_process";
+import fs from "fs/promises";
 
 export function slugify (text: string): string {
     return text
