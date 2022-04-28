@@ -43,7 +43,7 @@ describe("feature flag tests", () => {
         await playpass.createFeatureFlag("testFlag");
         playpass.setFeatureFlagEnabled("testFlag", true);
         expect(playpass.featureFlagIsEnabled("testFlag")).toBe(true);
-        expect(analyticsMock).toBeCalledWith({featureFlags: ["testFlag"]});
+        expect(analyticsMock).toBeCalledWith({featureFlags: {testFlag: true}});
         expect(mockDbSet).toBeCalled();
     });
 
@@ -51,7 +51,7 @@ describe("feature flag tests", () => {
         await playpass.createFeatureFlag("testFlag");
         playpass.setFeatureFlagEnabled("testFlag", false);
         expect(playpass.featureFlagIsEnabled("testFlag")).toBe(false);
-        expect(analyticsMock).toHaveBeenLastCalledWith({featureFlags: []});
+        expect(analyticsMock).toHaveBeenLastCalledWith({featureFlags: {testFlag: false}});
         expect(mockDbSet).toBeCalled();
     });
 
@@ -67,7 +67,7 @@ describe("feature flag tests", () => {
         });
 
         expect(playpass.featureFlagIsEnabled("testFlag")).toBe(false);
-        expect(analyticsMock).not.toBeCalledWith({featureFlags: ["testFlag"]});
+        expect(analyticsMock).not.toBeCalledWith({featureFlags: {testFlag: true}});
         expect(mockDbSet).toBeCalled();
     });
 
@@ -88,7 +88,7 @@ describe("feature flag tests", () => {
         });
 
         expect(playpass.featureFlagIsEnabled("testFlag")).toBe(true);
-        expect(analyticsMock).toBeCalledWith({featureFlags: ["testFlag"]});
+        expect(analyticsMock).toBeCalledWith({featureFlags: {testFlag: true}});
         expect(mockDbSet).toBeCalled();
     });
 
@@ -98,7 +98,7 @@ describe("feature flag tests", () => {
         });
 
         expect(playpass.featureFlagIsEnabled("testFlag")).toBe(false);
-        expect(analyticsMock).not.toBeCalledWith({featureFlags: ["testFlag"]});
+        expect(analyticsMock).toBeCalledWith({featureFlags: {testFlag: false}});
         expect(mockDbSet).toBeCalled();
     });
 
@@ -111,7 +111,7 @@ describe("feature flag tests", () => {
         });
 
         expect(playpass.featureFlagIsEnabled("testFlag")).toBe(true);
-        expect(analyticsMock).toBeCalledWith({featureFlags: ["testFlag"]});
+        expect(analyticsMock).toBeCalledWith({featureFlags: {testFlag: true}});
         expect(mockDbSet).toBeCalled();
     });
 
@@ -124,7 +124,7 @@ describe("feature flag tests", () => {
         });
 
         expect(playpass.featureFlagIsEnabled("testFlag")).toBe(false);
-        expect(analyticsMock).not.toBeCalledWith({featureFlags: ["testFlag"]});
+        expect(analyticsMock).not.toBeCalledWith({featureFlags: {testFlag: true}});
         expect(mockDbSet).toBeCalled();
     });
 
@@ -137,7 +137,7 @@ describe("feature flag tests", () => {
         });
 
         expect(playpass.featureFlagIsEnabled("testFlag")).toBe(false);
-        expect(analyticsMock).not.toBeCalledWith({featureFlags: ["testFlag"]});
+        expect(analyticsMock).not.toBeCalledWith({featureFlags: {testFlag: true}});
         expect(mockDbSet).toBeCalled();
     });
 
@@ -150,7 +150,7 @@ describe("feature flag tests", () => {
         });
 
         expect(playpass.featureFlagIsEnabled("testFlag")).toBe(false);
-        expect(analyticsMock).not.toBeCalledWith({featureFlags: ["testFlag"]});
+        expect(analyticsMock).not.toBeCalledWith({featureFlags: {testFlag: true}});
         expect(mockDbSet).toBeCalled();
     });
 });

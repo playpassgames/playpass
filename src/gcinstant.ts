@@ -15,6 +15,7 @@ import { decode } from "./links";
 import { getPWADisplayMode } from "./pwa";
 import { getPlayerId } from "./init";
 import { internalStorage } from "./storage";
+import { isArray, isObject } from "util";
 
 let gcPlatform: PlatformImpl;
 
@@ -57,13 +58,24 @@ class PlatformImpl extends PlatformWeb {
     }
 }
 
+
 class AmplitudeAnalytics implements Analytics {
     track (name: string, props?: Record<string,unknown>) {
         gcAnalytics.pushEvent(name, props);
     }
 
     setUserProperties (props: Record<string,unknown>) {
-        gcAnalytics.setUserProperties(props);
+        const flattenedFeatureFlags = Object.entries(props.featureFlags as Record<string, unknown>).reduce((acc, [key, val]) => {
+            if(val) {
+                acc.push(key);
+            }
+            return acc;
+        }, [] as string[]);
+
+        gcAnalytics.setUserProperties({
+            ...props,
+            featureFlags: flattenedFeatureFlags,
+        } as Record<string, unknown>);
     }
 }
 

@@ -47,7 +47,11 @@ describe("feature flag tests", () => {
     it("includes decoded payload in feature flag initialization", async () => {
         await playpass.init();
         expect(mockDbGet).toHaveBeenCalledWith("featureFlags");
-        expect(analyticsMock).toBeCalledWith({featureFlags: ["testFlag", "testFlag3"]});
+        expect(analyticsMock).toBeCalledWith({featureFlags: {
+            "testFlag": true,
+            "testFlag2": false,
+            "testFlag3": true,
+        }});
         expect(mockDbSet).toBeCalled();
     });
 });
