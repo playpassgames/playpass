@@ -8,7 +8,7 @@
 
 import userAgent from "@play-co/user-agent";
 import { PlatformWeb, analytics as gcAnalytics } from "@play-co/gcinstant";
-import type { AnalyticsProperties, GameConfig } from "@play-co/gcinstant";
+import type { ABConfig, AnalyticsProperties, GameConfig, HashFunction } from "@play-co/gcinstant";
 
 import { Analytics, injectSecondaryAnalytics } from "./analytics";
 import { decode } from "./links";
@@ -55,6 +55,10 @@ class PlatformImpl extends PlatformWeb {
     public override _getEntryPointDataForce(): AnalyticsProperties.EntryData {
         return decode().gcinstant as AnalyticsProperties.EntryData || super._getEntryPointDataForce();
     }
+
+    public initializeABTests(opts: { abTestConfig: ABConfig, hashFunction: HashFunction }) {
+        this.abTests?.initialize(opts.abTestConfig, opts.hashFunction);
+    }
 }
 
 class AmplitudeAnalytics implements Analytics {
@@ -95,4 +99,12 @@ export async function initGCInstant (opts?: {amplitude: string}): Promise<void> 
     // Send an EntryFinal to Amplitude
     await gcPlatform.startGameAsync();
     void gcPlatform.sendEntryFinalAnalytics({}, {}, {});
+}
+
+export async function initGCInstantABTests (opts: { abTestConfig: ABConfig, hashFunction: HashFunction }): Promise<void> {
+    if (!gcPlatform._initialized) {
+        throw new Error("Call playpass.init() first");
+    }
+    
+    gcPlatform.initializeABTests(opts);
 }
