@@ -102,3 +102,11 @@ export async function initGCInstant (opts?: { amplitude: string, abTestConfig?: 
     await gcPlatform.startGameAsync();
     void gcPlatform.sendEntryFinalAnalytics({}, {}, {});
 }
+
+export function getBucketId(testId: string): string | undefined {
+    return gcPlatform.abTests?.getBucketID(testId);
+}
+
+export function assignTestManually(testId: string, bucketId?: string): void {
+    gcPlatform.abTests?.assignTestManually(testId, bucketId);
+}
