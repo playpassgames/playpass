@@ -55,10 +55,6 @@ class PlatformImpl extends PlatformWeb {
     public override _getEntryPointDataForce(): AnalyticsProperties.EntryData {
         return decode().gcinstant as AnalyticsProperties.EntryData || super._getEntryPointDataForce();
     }
-
-    public initializeABTests(opts: { abTestConfig: ABConfig, hashFunction: HashFunction }) {
-        this.abTests?.initialize(opts.abTestConfig, opts.hashFunction);
-    }
 }
 
 class AmplitudeAnalytics implements Analytics {
@@ -71,7 +67,7 @@ class AmplitudeAnalytics implements Analytics {
     }
 }
 
-export async function initGCInstant (opts?: {amplitude: string}): Promise<void> {
+export async function initGCInstant (opts?: { amplitude: string, abTestConfig?: ABConfig, hashFunction?: HashFunction }): Promise<void> {
     injectSecondaryAnalytics(new AmplitudeAnalytics());
 
     gcPlatform = new PlatformImpl();
@@ -96,15 +92,13 @@ export async function initGCInstant (opts?: {amplitude: string}): Promise<void> 
         version: "0.0.0",
     });
 
+    if (!!opts?.abTestConfig && !!opts?.hashFunction) {
+        await gcPlatform.loadStorage();
+        
+        gcPlatform.abTests?.initialize(opts.abTestConfig, opts.hashFunction);
+    }
+
     // Send an EntryFinal to Amplitude
     await gcPlatform.startGameAsync();
     void gcPlatform.sendEntryFinalAnalytics({}, {}, {});
-}
-
-export async function initGCInstantABTests (opts: { abTestConfig: ABConfig, hashFunction: HashFunction }): Promise<void> {
-    if (!gcPlatform._initialized) {
-        throw new Error("Call playpass.init() first");
-    }
-    
-    gcPlatform.initializeABTests(opts);
 }
