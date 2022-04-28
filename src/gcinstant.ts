@@ -8,7 +8,7 @@
 
 import userAgent from "@play-co/user-agent";
 import { PlatformWeb, analytics as gcAnalytics } from "@play-co/gcinstant";
-import type { AnalyticsProperties, GameConfig } from "@play-co/gcinstant";
+import type { ABConfig, AnalyticsProperties, GameConfig, HashFunction } from "@play-co/gcinstant";
 
 import { Analytics, injectSecondaryAnalytics } from "./analytics";
 import { decode } from "./links";
@@ -67,7 +67,7 @@ class AmplitudeAnalytics implements Analytics {
     }
 }
 
-export async function initGCInstant (opts?: {amplitude: string}): Promise<void> {
+export async function initGCInstant (opts?: { amplitude: string, abTestConfig?: ABConfig, hashFunction?: HashFunction }): Promise<void> {
     injectSecondaryAnalytics(new AmplitudeAnalytics());
 
     gcPlatform = new PlatformImpl();
@@ -92,7 +92,21 @@ export async function initGCInstant (opts?: {amplitude: string}): Promise<void> 
         version: "0.0.0",
     });
 
+    if (!!opts?.abTestConfig && !!opts?.hashFunction) {
+        await gcPlatform.loadStorage();
+        
+        gcPlatform.abTests?.initialize(opts.abTestConfig, opts.hashFunction);
+    }
+
     // Send an EntryFinal to Amplitude
     await gcPlatform.startGameAsync();
     void gcPlatform.sendEntryFinalAnalytics({}, {}, {});
+}
+
+export function getBucketId(testId: string): string | undefined {
+    return gcPlatform.abTests?.getBucketID(testId);
+}
+
+export function assignTestManually(testId: string, bucketId?: string): void {
+    gcPlatform.abTests?.assignTestManually(testId, bucketId);
 }
