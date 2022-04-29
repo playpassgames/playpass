@@ -8,9 +8,9 @@ import kleur from "kleur";
 import { login, logout } from "./auth";
 import { create } from "./create";
 import { deploy } from "./deploy";
-import { domain } from "./domain";
-import { getDomains } from "./get-domains";
-import { deleteDomain } from "./delete-domain";
+// import { domain } from "./domain";
+// import { getDomains } from "./get-domains";
+// import { deleteDomain } from "./delete-domain";
 
 if (!process.env.PLAYPASS_DEV) {
     process.on("uncaughtException", (error) => {
