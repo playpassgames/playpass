@@ -36,7 +36,7 @@ function startServer() {
 
         const server = k.listen(9765);
 
-        open("https://playpass.games/login");
+        open("https://playpass.games/login?cli=true");
     });
 }
 
