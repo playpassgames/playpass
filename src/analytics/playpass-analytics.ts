@@ -76,11 +76,6 @@ export class PlaypassAnalytics implements Analytics {
             setTimeout(() => { this.flush() }, SEND_DELAY);
         }
 
-        const defaultEventProperties = {
-            page: document.location.href,
-            referrer: document.referrer,
-        };
-
         this.eventQueue.push({
             user_id: getPlayerId(),
             session_id: this.sessionId,

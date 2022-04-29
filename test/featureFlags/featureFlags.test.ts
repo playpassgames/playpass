@@ -5,9 +5,7 @@
 import "fake-indexeddb/auto";
 
 import { analytics } from "../../src";
-import * as links from "../../src/links";
 import { IDBStorage } from "../../src/storage/idb-storage";
-import * as pwa from "../../src/pwa";
 
 import * as playpass from "../../src";
 
@@ -28,8 +26,7 @@ describe("feature flag tests", () => {
 
     // handles window method on playpass.init()
     // jest.spyOn(pwa, 'getPWADisplayMode').mockReturnValue('browser');
-  
-    const mockPayload: any = {};
+
     const analyticsMock = jest.spyOn(analytics, "setUserProperties");
     // jest.spyOn(links, 'decode').mockReturnValue(mockPayload);
 
@@ -81,7 +78,7 @@ describe("feature flag tests", () => {
             }
         });
 
-        expect(playpass.featureFlagIsEnabled("testFlag")).toBeDefined();    
+        expect(playpass.featureFlagIsEnabled("testFlag")).toBeDefined();
         expect(mockDbSet).toBeCalled();
     });
 

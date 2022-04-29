@@ -58,7 +58,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
     try {
         game = await playpassClient.create(subdomain);
     } catch (e) {
-        throw new Error("Failed to create game ${subdomain}, please try again");
+        throw new Error(`Failed to create game ${subdomain}, please try again`);
     }
 
     const template = opts.template || await prompt({
