@@ -11,6 +11,7 @@ import fetch from "cross-fetch";
 import {requireToken} from "./auth";
 import {loadConfig} from "./config";
 import PlaypassClient from "./playpass-client";
+import readline from "readline";
 
 // TODO(2022-02-22): Put this in a project config or infer
 const PUBLISH_DIR = path.join(process.cwd(), "dist");
@@ -32,8 +33,8 @@ function packageDir(publishDir: string): Promise<Buffer> {
         });
         archive.on("progress", (progress: ProgressData) => {
             files++;
-            process.stdout.clearLine(0);
-            process.stdout.cursorTo(0);
+            readline.clearLine(process.stdout, 0);
+            readline.cursorTo(process.stdout, 0);
             process.stdout.write(`Processed ${progress.entries.processed} files with ${bytes(progress.fs.processedBytes)}...`);
         });
         archive.on("end", () => {
