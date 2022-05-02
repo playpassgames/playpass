@@ -69,15 +69,12 @@ button:active {
 }
 
 /* Grid */
-.grid > div > div {
+.grid .cell {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 56px;
-    height: 56px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 28px;
     color: black;
     background-color: white;
     border: 2px solid black;
@@ -91,25 +88,25 @@ button:active {
     margin: 2px;
 }
 
-.grid > div > div.letterBull {
+.grid .cell.letterBull {
     border: 2px solid #6aaa64;
     background-color: #6aaa64;
     color: white;
 }
 
-.grid > div > div.letterCow {
+.grid .cell.letterCow {
     border: 2px solid #c9b458;
     background-color:#c9b458;
     color: white;
 }
 
-.grid > div > div.letterNone {
+.grid .cell.letterNone {
     border: 2px solid #939598;
     background-color: #939598;
     color: white;
 }
 
-.grid > div > div.letterEmpty {
+.grid .cell.letterEmpty {
     color: black;
     background-color: white;
     border: 2px solid black;

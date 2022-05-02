@@ -1,5 +1,5 @@
 
-// The 5x6 grid of letters
+// The NxM grid of letters
 export class Grid {
     static EMPTY = "_";
     static NONE = "n";
@@ -7,6 +7,13 @@ export class Grid {
     static BULL = "b";
     static GuessSymbols = Grid.EMPTY + Grid.NONE + Grid.COW + Grid.BULL;
     static GuessClasses = ["letterEmpty", "letterNone", "letterCow", "letterBull"];
+
+    constructor(correctAnswer, attempts) {
+        this.len = correctAnswer.length;
+        this.attempts = attempts;
+
+        this.build();
+    }
 
     static isSolved({marks}) {
         let solved = true;
@@ -58,17 +65,40 @@ export class Grid {
         return marks.join("");
     }
 
+    build() {
+        const grid = document.getElementsByClassName("grid")[0];
+
+        const cellDimensions = 288 / this.len;
+
+        for (let row = 0; row < this.attempts; row++) {
+            const div = document.createElement("div");
+            for (let cell = 0; cell < this.len; cell++) {
+                const letter = document.createElement("div");
+
+                letter.classList.add("cell");
+
+                // scale cells based on word length
+                letter.style.width = `${cellDimensions}px`;
+                letter.style.height = `${cellDimensions}px`;
+                letter.style.fontSize = `${cellDimensions / 2}px`;
+
+                div.appendChild(letter);
+            }
+            grid.appendChild(div);
+        }
+    }
+
     setState({words, marks}) {
         const grid = document.getElementsByClassName("grid")[0];
         for (let row = 0; row < words.length; row++) {
-            for (let letter = 0; letter < 5; letter++) {
+            for (let letter = 0; letter < this.len; letter++) {
                 const cell = grid.children.item(row).children.item(letter);
                 cell.textContent = words[row][letter];
                 let mark = Grid.EMPTY;
                 if (marks[row]) {
                     mark = marks[row][letter] || mark;
                 }
-                cell.classList = Grid.GuessClasses[Grid.GuessSymbols.indexOf(mark)];
+                cell.classList = "cell " + Grid.GuessClasses[Grid.GuessSymbols.indexOf(mark)];
             }
         }
     }

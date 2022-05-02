@@ -2,8 +2,9 @@ import * as playpass from "playpass";
 import { getCurrentDay, getDay } from "./timer";
 
 export class Daily {
-    constructor (firstDate) {
+    constructor (firstDate, allowedAttempts) {
         this.day = getCurrentDay() - getDay(firstDate);
+        this.allowedAttempts = allowedAttempts;
     }
 
     /** Loads an object from storage, returning null if there was no object previously saved today. */
@@ -14,7 +15,7 @@ export class Daily {
             marks: [],
             currentStreak: 0,
             maxStreak: 0,
-            wins: [0, 0, 0, 0, 0, 0], // wins count for each successful attempt
+            wins: new Array(this.allowedAttempts).fill(0), // wins count for each successful attempt
         };
         if (!state) {
             return {

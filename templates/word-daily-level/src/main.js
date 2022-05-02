@@ -12,13 +12,12 @@ let daily = null;
 let words = null;
 let correctAnswer = null;
 let state = null;
-
-const grid = new Grid();
+let grid = null;
 
 const keyboard = new Keyboard(document.querySelector(".keyboard"));
 keyboard.addEventListener("key", event => {
 
-    if (Grid.isSolved(state) || state.marks.length === ALLOWED_ATTEMPTS) {
+    if (Grid.isSolved(state) || state.marks.length === grid.attempts) {
         return;
     }
 
@@ -34,7 +33,7 @@ keyboard.addEventListener("key", event => {
             if (Grid.isSolved(state)) {
                 state.wins[state.words.length-1]++;
                 showResultScreen();
-            } else if (state.words.length < ALLOWED_ATTEMPTS) {
+            } else if (state.words.length < grid.attempts) {
                 state.words.push([""]);
             } else {
                 showResultScreen();
@@ -152,6 +151,9 @@ function onLogoutClick () {
         gameId: "YOUR_GAME_ID", // Do not edit!
     });
 
+    // Get gameplay configuration
+    const game = await playpass.config.get('game.json');
+
     // Get the dictionary of words
     const dictionary = await playpass.config.get('dictionary.json');
 
@@ -161,6 +163,8 @@ function onLogoutClick () {
     words = dictionary.words;
 
     correctAnswer = words[daily.day % words.length];
+
+    grid = new Grid(correctAnswer, game.allowedAttempts);
 
     // Get the stored state
     state = await daily.loadObject();
