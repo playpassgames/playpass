@@ -1,11 +1,13 @@
-
-const configCache: { [key: string]: any } = {};
+//
+// Playpass (c) Playco
+// https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 /**
  * Simple interface for fetching configuration files that a game may have.
  * 
  * Configuration files are static content served from the /config path
  */
+
 export interface Configuration {
     /** 
      * Fetches a configuration file from the game files.
@@ -15,17 +17,19 @@ export interface Configuration {
     get (key: string): Promise<unknown>;
 }
 
+const configCache: { [key: string]: unknown } = {};
+
 export const config: Configuration = {
-    async get(key: string): Promise<Object | string | null> {
+    async get(key: string): Promise<unknown> {
         if (key in configCache) {
             return configCache[key];
         }
 
-        let result: any = null;
+        let result: unknown = null;
         const response = await fetch(`/config/${key}`);
         if (!response.ok) {
             result = null;
-        } else if (key.endsWith('.json')) {
+        } else if (key.endsWith(".json")) {
             result = response.json();
         } else {
             result = response.text();

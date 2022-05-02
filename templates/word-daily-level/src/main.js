@@ -6,8 +6,6 @@ import { Grid } from "./grid";
 import { Keyboard } from "./keyboard";
 import { getHoursUntil, getMinutesUntil, getNextGameTime, getSecondsUntil } from "./timer";
 
-const ALLOWED_ATTEMPTS = 6;
-
 let daily = null;
 let words = null;
 let correctAnswer = null;
@@ -152,10 +150,10 @@ function onLogoutClick () {
     });
 
     // Get gameplay configuration
-    const game = await playpass.config.get('game.json');
+    const game = await playpass.config.get("game.json");
 
     // Get the dictionary of words
-    const dictionary = await playpass.config.get('dictionary.json');
+    const dictionary = await playpass.config.get("dictionary.json");
 
     // Initialize today's game
     daily = new Daily(Date.parse("2022-04-21T12:00:00"), words);
