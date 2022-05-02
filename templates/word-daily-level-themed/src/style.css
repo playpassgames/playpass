@@ -30,15 +30,15 @@ header h1 {
 }
 
 #helpBtn {
-    background: url(help.svg);
+    background: url(./assets/help.svg);
 }
 
 #settingsBtn {
-    background: url(settings.svg);
+    background: url(./assets/settings.svg);
 }
 
 #statsBtn {
-    background: url(stats.svg);
+    background: url(./assets/stats.svg);
 }
 
 #helpBtn, #settingsBtn, #statsBtn {

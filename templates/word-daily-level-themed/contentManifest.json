@@ -1,0 +1,14 @@
+{
+    "css": "src/style.css",
+    "assets": "src/assets/",
+    "themes": {
+        "red": {
+            "source": "src/themes/red/",
+            "css": "style.css"
+        },
+        "blue": {
+            "source": "src/themes/blue/",
+            "css": "style.css"
+        }
+    }
+}
