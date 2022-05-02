@@ -7,7 +7,6 @@
  * 
  * Configuration files are static content served from the /config path
  */
-
 export interface Configuration {
     /** 
      * Fetches a configuration file from the game files.
