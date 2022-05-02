@@ -7,6 +7,7 @@ export { getLinkData } from "./links";
 export { init } from "./init";
 export { copyToClipboard, createLink, share } from "./share";
 export { storage } from "./storage";
+export { config } from "./config";
 // export { createGroup, getGroup } from "./groups";
 export { createFeatureFlag, featureFlagIsEnabled, setFeatureFlagEnabled } from "./featureFlags";
 
