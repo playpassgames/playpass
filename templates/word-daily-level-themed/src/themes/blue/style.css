@@ -11,7 +11,7 @@ body {
     margin: auto;
 
     background: #f0f0f0;
-    color: #2c3e50;
+    color: #438ff9;
     font-family: Avenir, Helvetica, Arial, sans-serif;
 }
 
@@ -50,8 +50,8 @@ header h1 {
 button {
     background: transparent;
     border-radius: 8px;
-    border: 2px solid #2c3e50;
-    color: #2c3e50;
+    border: 2px solid #438ff9;
+    color: #438ff9;
     cursor: pointer;
     font-size: 24px;
     padding: 10px;
@@ -92,14 +92,14 @@ button:active {
 }
 
 .grid > div > div.letterBull {
-    border: 2px solid #6aaa64;
-    background-color: #6aaa64;
+    border: 2px solid #438ff9;
+    background-color: #438ff9;
     color: white;
 }
 
 .grid > div > div.letterCow {
-    border: 2px solid #c9b458;
-    background-color:#c9b458;
+    border: 2px solid #438ff95a;
+    background-color:#438ff95a;
     color: white;
 }
 
@@ -135,27 +135,22 @@ button:active {
     width: 40px;
     height: 56px;
     border-radius: 4px;
-    background: #ccc;
+    background: white;
     cursor: pointer;
     font-weight: bold;
 }
 
 .keyboard > div > div.letterBull {
-    background-color: #6aaa64;
+    background-color: #438ff9;
     color: white;
 }
 
 .keyboard > div > div.letterCow {
-    background-color:#c9b458;
+    background-color:#438ff95a;
     color: white;
 }
 
 .keyboard > div > div.letterNone {
     background-color: gray;
-    color: white;
-}
-
-.keyboard > div > div.letterBull {
-    background-color: #6aaa64;
     color: white;
 }
