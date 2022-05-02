@@ -1,5 +1,5 @@
 import * as playpass from "playpass";
-import "./themes/red/style.css";
+import "../themes/red/style.css";
 
 import { Daily } from "./daily";
 import { isValidWord } from "./dictionary";
