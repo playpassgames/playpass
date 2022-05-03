@@ -160,7 +160,9 @@ function onLogoutClick () {
 
     // Get the dictionary of words
     const dictionary = await import("../content/dictionary.json");
-    words = dictionary.words;
+
+    // correct case sensitivity
+    words = dictionary.words.map(w => w.toUpperCase());
 
     correctAnswer = words[daily.day % words.length];
 
