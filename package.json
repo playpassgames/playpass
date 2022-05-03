@@ -36,7 +36,7 @@
   "homepage": "https://playpass.games",
   "dependencies": {
     "@iarna/toml": "^2.2.5",
-    "@playpass/replicant-lite": "github:play-co/replicant-lite#1c5c82eaf8ac706e6c1da9ca9e3831b119d69d1a",
+    "@playpass/replicant-lite": "^1.2.0",
     "archiver": "^5.3.0",
     "axios": "^0.26.1",
     "bytes": "^3.1.2",
