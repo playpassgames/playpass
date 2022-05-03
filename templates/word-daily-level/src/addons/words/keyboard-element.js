@@ -1,7 +1,5 @@
-// TODO(2022-04-19): Use a custom Web Component for this?
-
 import { EMPTY, GuessSymbols } from "./keyState";
-import "./keyboard-style.css";
+import "./keyboard-element.css";
 
 /**
  * Default Keyboard layout
@@ -107,6 +105,6 @@ export class Keyboard extends HTMLElement {
     }
 }
 
-export const KeyboardTag = "word-game-keyboard";
+export const keyboardTag = "word-game-keyboard";
 
-window.customElements.define(KeyboardTag, Keyboard);
+window.customElements.define(keyboardTag, Keyboard);

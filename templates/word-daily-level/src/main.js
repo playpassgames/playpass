@@ -1,13 +1,14 @@
 import * as playpass from "playpass";
 import "./style.css";
 
-// register keyboard component
-import "./addons/words/keyboard";
-import { KeyboardTag } from "./addons/words/keyboard";
+// Get the dictionary of words
+import * as dictionary from "../content/dictionary.json";
 
-import { Grid, GridTag } from "./addons/words/grid";
+// register keyboard component
+import { keyboardTag } from "./addons/words/keyboard-element";
+
+import { Grid, gridTag } from "./addons/words/grid-element";
 import { getHoursUntil, getMinutesUntil, getNextGameTime, getSecondsUntil } from "./addons/daily/timer";
-import { ALLOWED_ATTEMPTS } from "./consts";
 import { DailyWordGame } from "./game/dailyWordGame";
 
 let daily = null;
@@ -15,13 +16,12 @@ let words = [];
 let correctAnswer = null;
 let state = null;
 
-const grid = document.getElementsByTagName(GridTag)[0];
-grid.attempts = ALLOWED_ATTEMPTS;
+const grid = document.getElementsByTagName(gridTag)[0];
 
-const keyboard = document.getElementsByTagName(KeyboardTag)[0];
+const keyboard = document.getElementsByTagName(keyboardTag)[0];
 keyboard.addEventListener("key", event => {
 
-    if (Grid.isSolved(state) || state.marks.length === ALLOWED_ATTEMPTS) {
+    if (Grid.isSolved(state) || state.marks.length === grid.attempts) {
         return;
     }
 
@@ -37,7 +37,7 @@ keyboard.addEventListener("key", event => {
             if (Grid.isSolved(state)) {
                 state.wins[state.words.length-1]++;
                 showResultScreen();
-            } else if (state.words.length < ALLOWED_ATTEMPTS) {
+            } else if (state.words.length < grid.attempts) {
                 state.words.push([""]);
             } else {
                 showResultScreen();
@@ -156,10 +156,10 @@ function onLogoutClick () {
     });
 
     // Initialize today's game
-    daily = new DailyWordGame(Date.parse("2022-04-21T12:00:00"));
-
-    // Get the dictionary of words
-    const dictionary = await import("../content/dictionary.json");
+    daily = new DailyWordGame(
+        Date.parse("2022-04-21T12:00:00"),
+        grid.attempts,
+    );
 
     // correct case sensitivity
     words = dictionary.words.map(w => w.toUpperCase());

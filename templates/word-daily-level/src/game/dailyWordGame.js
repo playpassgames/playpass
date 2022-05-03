@@ -1,10 +1,15 @@
 import { Daily } from "../addons/daily/daily";
-import { ALLOWED_ATTEMPTS } from "../consts";
 
 export class DailyWordGame extends Daily {
+    constructor(firstDate, maxAttempts) {
+        super(firstDate);
+
+        this.attempts = maxAttempts;
+    }
+
     data() {
         return {
-            wins: new Array(ALLOWED_ATTEMPTS).fill(0), // wins count for each successful attempt
+            wins: new Array(this.attempts).fill(0), // wins count for each successful attempt
         };
     }
 

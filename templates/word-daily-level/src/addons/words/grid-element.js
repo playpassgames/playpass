@@ -1,12 +1,18 @@
 import { BULL, COW, EMPTY, NONE } from "./keyState";
-import "./grid-style.css";
+import "./grid-element.css";
 
 // The NxM grid of letters
 export class Grid extends HTMLElement {
-    constructor(attempts) {
+    constructor() {
         super();
+    }
 
-        this.attempts = attempts;
+    get attempts() {
+        return this.getAttribute("max-attempts");
+    }
+    
+    set attempts(newValue) {
+        this.setAttribute("max-attempts", newValue);
     }
 
     set word(word) {
@@ -102,6 +108,6 @@ export class Grid extends HTMLElement {
     }
 }
 
-export const GridTag = "word-game-grid";
+export const gridTag = "word-game-grid";
 
-window.customElements.define(GridTag, Grid);
+window.customElements.define(gridTag, Grid);
