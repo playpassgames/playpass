@@ -164,7 +164,7 @@ function onLogoutClick () {
     // correct case sensitivity
     words = dictionary.words.map(w => w.toUpperCase());
 
-    correctAnswer = words[daily.day % words.length];
+    correctAnswer = dictionary.lookup[daily.day.toString()] || words[daily.day % words.length];
 
     grid.word = correctAnswer;
 
