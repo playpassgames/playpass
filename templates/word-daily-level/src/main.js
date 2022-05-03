@@ -164,7 +164,27 @@ function onLogoutClick () {
     // correct case sensitivity
     words = dictionary.words.map(w => w.toUpperCase());
 
-    correctAnswer = dictionary.lookup[daily.day.toString()] || words[daily.day % words.length];
+    // allow only a subset of all words in the dictionary to be possible answers
+    const choices = (dictionary.choices && dictionary.choices.length > 0)
+        ? dictionary.choices.map(w => w.toUpperCase())
+        : words;
+
+    // merge both sets just in case there are answers that aren't in the allowed list
+    words = Array.from(new Set([
+        ...words,
+        ...choices,
+    ]));
+
+    const todaysAnswer = dictionary.lookup[daily.day.toString()] || choices[daily.day % words.length];
+
+    if (typeof todaysAnswer === "string") {
+        correctAnswer = todaysAnswer;
+    } else {
+        correctAnswer = todaysAnswer.word;
+        document.querySelector("#hint").textContent = `hint: ${todaysAnswer.hint}`;
+    }
+
+    correctAnswer = correctAnswer.toUpperCase();
 
     grid.word = correctAnswer;
 
