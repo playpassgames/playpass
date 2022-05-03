@@ -1,21 +1,52 @@
 import * as playpass from "playpass";
 import { getCurrentDay, getDay } from "./timer";
 
+/**
+ * A daily state manager
+ */
 export class Daily {
     constructor (firstDate) {
         this.day = getCurrentDay() - getDay(firstDate);
     }
 
+    /** 
+     * Defines the base object for user state
+     * 
+     * Override with your own implementation to customize what is persisted
+     * @abstract
+     */
+    data() {
+        return {};
+    }
+
+    /** 
+     * User state fields will be overwritten daily with what is returned by function.
+     * 
+     * Override with your own implementation to customize what is stored
+     * @abstract
+     */
+    daily() {
+        return {};
+    }
+
+    /**
+     * A fresh representation of a user's state
+     * 
+     * @returns 
+     */
+    newState() {
+        return {
+            currentStreak: 0,
+            maxStreak: 0,
+            ...this.data(),
+            ...this.daily(),
+        };
+    }
+
     /** Loads an object from storage, returning null if there was no object previously saved today. */
     async loadObject () {
         const state = await playpass.storage.get("daily");
-        const newState = {
-            words: [""],
-            marks: [],
-            currentStreak: 0,
-            maxStreak: 0,
-            wins: [0, 0, 0, 0, 0, 0], // wins count for each successful attempt
-        };
+        const newState = this.newState();
         if (!state) {
             return {
                 ...newState,
@@ -25,8 +56,7 @@ export class Daily {
             return {
                 ...newState,
                 ...state,
-                words: [""],
-                marks: [],
+                ...this.daily(),
                 day: this.day
             };
         } else {

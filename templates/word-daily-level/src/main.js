@@ -1,26 +1,27 @@
 import * as playpass from "playpass";
 import "./style.css";
 
-import { Daily } from "./daily";
-import { isValidWord } from "./dictionary";
-import { Grid } from "./grid";
-import { Keyboard } from "./keyboard";
-import { getHoursUntil, getMinutesUntil, getNextGameTime, getSecondsUntil } from "./timer";
+// register keyboard component
+import "./addons/words/keyboard";
+import { KeyboardTag } from "./addons/words/keyboard";
 
-const daily = new Daily(Date.parse("2022-04-21T12:00:00"));
+import { Grid, GridTag } from "./addons/words/grid";
+import { getHoursUntil, getMinutesUntil, getNextGameTime, getSecondsUntil } from "./addons/daily/timer";
+import { ALLOWED_ATTEMPTS } from "./consts";
+import { DailyWordGame } from "./game/dailyWordGame";
 
-const words = [ "PIZZA", "GAMER", "PLAYS", "LOSER", "HAPPY", "POWER" ];
-
-const correctAnswer = words[daily.day % words.length];
-
+let daily = null;
+let words = [];
+let correctAnswer = null;
 let state = null;
 
-const grid = new Grid();
+const grid = document.getElementsByTagName(GridTag)[0];
+grid.attempts = ALLOWED_ATTEMPTS;
 
-const keyboard = new Keyboard(document.querySelector(".keyboard"));
+const keyboard = document.getElementsByTagName(KeyboardTag)[0];
 keyboard.addEventListener("key", event => {
 
-    if (Grid.isSolved(state) || state.marks.length === 6) {
+    if (Grid.isSolved(state) || state.marks.length === ALLOWED_ATTEMPTS) {
         return;
     }
 
@@ -28,15 +29,15 @@ keyboard.addEventListener("key", event => {
     const word = state.words[state.words.length - 1];
 
     if (key == "Enter") {
-        if (word.length < 5) {
+        if (word.length !== correctAnswer.length) {
             alert("Not enough letters");
-        } else if (isValidWord(word)) {
+        } else if (words.includes(word)) {
             const result = Grid.getMarks(word, correctAnswer);
             state.marks.push(result);
             if (Grid.isSolved(state)) {
                 state.wins[state.words.length-1]++;
                 showResultScreen();
-            } else if (state.words.length < 6) {
+            } else if (state.words.length < ALLOWED_ATTEMPTS) {
                 state.words.push([""]);
             } else {
                 showResultScreen();
@@ -52,7 +53,7 @@ keyboard.addEventListener("key", event => {
             state.words[state.words.length - 1] = word.substring(0, word.length -1);
         }
     } else {
-        if (word.length < 5) {
+        if (word.length < correctAnswer.length) {
             state.words[state.words.length - 1] = word + key;
         }
     }
@@ -124,8 +125,8 @@ function onHelpClick () {
 }
 
 function onStatsClick () {
-    const numWins = state.wins.reduce((cur, prev) => cur + prev, 0);
-    document.querySelector("#winStats").textContent = "You won " + numWins + " times.";
+    const numWins = state.wins.reduce((cur, prev) => (cur + prev) || 0, 0);
+    document.querySelector("#winStats").textContent = `You won ${numWins} times.`;
     showScreen("#statsScreen");
 }
 
@@ -154,8 +155,20 @@ function onLogoutClick () {
         gameId: "YOUR_GAME_ID", // Do not edit!
     });
 
+    // Initialize today's game
+    daily = new DailyWordGame(Date.parse("2022-04-21T12:00:00"));
+
+    // Get the dictionary of words
+    const dictionary = await import("../content/dictionary.json");
+    words = dictionary.words;
+
+    correctAnswer = words[daily.day % words.length];
+
+    grid.word = correctAnswer;
+
     // Get the stored state
     state = await daily.loadObject();
+
     // Take new users to help screen first
     const sawTutorial = await playpass.storage.get("sawTutorial");
     if (sawTutorial) {
@@ -169,6 +182,9 @@ function onLogoutClick () {
     if (playpass.account.isLoggedIn()) {
         document.body.classList.add("isLoggedIn");
     }
+
+    // format title prompt based on real content
+    document.querySelector("#prompt").textContent = `Try to guess today's ${correctAnswer.length} letter word`;
 
     // Add UI event listeners
     document.querySelector("#shareBtn").onclick = onShareClick;

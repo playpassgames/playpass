@@ -22,66 +22,11 @@
   </div>
 
   <div class="screen" id="playingScreen">
-    <h2>Try to guess today's 5 letter word</h2>
+    <h2 id="prompt"></h2>
     <h2 id="answer"></h2>
 
-    <div class="grid">
-      <div>
-        <div> </div><div> </div><div> </div><div> </div><div> </div>
-      </div>
-      <div>
-        <div> </div><div> </div><div> </div><div> </div><div> </div>
-      </div>
-      <div>
-        <div> </div><div> </div><div> </div><div> </div><div> </div>
-      </div>
-      <div>
-        <div> </div><div> </div><div> </div><div> </div><div> </div>
-      </div>
-      <div>
-        <div> </div><div> </div><div> </div><div> </div><div> </div>
-      </div>
-      <div>
-        <div> </div><div> </div><div> </div><div> </div><div> </div>
-      </div>
-    </div>
-
-    <div class="keyboard">
-      <div>
-        <div>Q</div>
-        <div>W</div>
-        <div>E</div>
-        <div>R</div>
-        <div>T</div>
-        <div>Y</div>
-        <div>U</div>
-        <div>I</div>
-        <div>O</div>
-        <div>P</div>
-      </div>
-      <div>
-        <div>A</div>
-        <div>S</div>
-        <div>D</div>
-        <div>F</div>
-        <div>G</div>
-        <div>H</div>
-        <div>J</div>
-        <div>K</div>
-        <div>L</div>
-      </div>
-      <div>
-        <div style="width: 65px">Enter</div>
-        <div>Z</div>
-        <div>X</div>
-        <div>C</div>
-        <div>V</div>
-        <div>B</div>
-        <div>N</div>
-        <div>M</div>
-        <div style="width: 65px">Delete</div>
-      </div>
-    </div>
+    <word-game-grid></word-game-grid>
+    <word-game-keyboard></word-game-keyboard>
   </div>
 
   <div class="screen" id="helpScreen">
