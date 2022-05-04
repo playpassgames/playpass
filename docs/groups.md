@@ -6,7 +6,7 @@ access a group's storage at the same time.
 ## Creating a new group
 
 ```javascript
-const group = playpass.createGroup();
+const group = await playpass.groups.createGroup();
 ```
 
 ## Sending a group to a friend
@@ -16,7 +16,7 @@ One way to do this is by embedding it into a link with `playpass.createLink()` a
 `playpass.share()`.
 
 ```javascript
-// Create a link
+// Create a link containing the group ID
 const link = playpass.createLink({ data: { myGroupId: group.groupId } });
 
 // Share the link
@@ -30,7 +30,7 @@ From the above example, we can check if the player launched the game by clicking
 ```javascript
 const data = playpass.getLinkData();
 if (data && data.myGroupId) {
-    const group = playpass.getGroup(data.myGroupId);
+    const group = await playpass.groups.getGroup(data.myGroupId);
     // We can now access the group!
 }
 ```
@@ -53,13 +53,13 @@ To store data relevant to an individual player, the best practice is to prefix t
 the player's ID:
 
 ```javascript
-group.storage.set(`${playpass.getPlayerId()}_score`, 123);
+group.storage.set(`${playpass.account.getPlayerId()}_score`, 123);
 ```
 
-A list of players that have ever written to the group can be queried using `getPlayers()`:
+A list of players that have ever written to the group can be queried using the `players` variable:
 
 ```javascript
-for (const playerId of await group.getPlayers()) {
+for (const playerId of group.players) {
     const score = await group.storage.get(`${playerId}_score`);
     console.log(`Player ${playerId}'s score is ${score}!`);
 }
