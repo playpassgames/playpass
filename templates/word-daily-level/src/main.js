@@ -9,9 +9,11 @@ import { keyboardTag } from "./addons/words/keyboard-element";
 
 import { Grid, gridTag } from "./addons/words/grid-element";
 import { getHoursUntil, getMinutesUntil, getNextGameTime, getSecondsUntil } from "./addons/daily/timer";
-import { DailyWordGame } from "./game/dailyWordGame";
+import DailyState from "./game/dailyState";
+import UserState from "./game/userState";
+import { State } from "./addons/boilerplate/state";
 
-let daily = null;
+let store = null;
 let words = [];
 let correctAnswer = null;
 let state = null;
@@ -43,7 +45,7 @@ keyboard.addEventListener("key", event => {
                 showResultScreen();
             }
 
-            daily.saveObject(state);
+            store.saveObject(state);
         } else {
             alert("Invalid word: "+word+". Try another one!");
         }
@@ -112,7 +114,7 @@ function onShareClick () {
     const link = playpass.createLink();
 
     // Share some text along with our link
-    const text = "Daily Word #" + (daily.day + 1) + " " + (Grid.isLost(state) ? "X" : state.marks.length.toString()) +
+    const text = "store Word #" + (state.day + 1) + " " + (Grid.isLost(state) ? "X" : state.marks.length.toString()) +
         "/6\n\n" + state.marks.map(
         str => str.replace(/n/g, "⬜").replace(/b/g, "🟩").replace(/c/g, "🟨"))
         .join("\n") + "\n\n" + link;
@@ -156,10 +158,14 @@ function onLogoutClick () {
     });
 
     // Initialize today's game
-    daily = new DailyWordGame(
-        Date.parse("2022-04-21T12:00:00"),
-        grid.attempts,
+    store = new State(
+        "daily",
+        new UserState(),
+        new DailyState(Date.parse("2022-04-21T12:00:00"), grid.attempts,)
     );
+
+    // Get the stored state
+    state = await store.loadObject();
 
     // correct case sensitivity
     words = dictionary.words.map(w => w.toUpperCase());
@@ -175,7 +181,7 @@ function onLogoutClick () {
         ...choices,
     ]));
 
-    const todaysAnswer = dictionary.lookup[daily.day.toString()] || choices[daily.day % words.length];
+    const todaysAnswer = dictionary.lookup[state.day.toString()] || choices[state.day % words.length];
 
     if (typeof todaysAnswer === "string") {
         correctAnswer = todaysAnswer;
@@ -187,9 +193,6 @@ function onLogoutClick () {
     correctAnswer = correctAnswer.toUpperCase();
 
     grid.word = correctAnswer;
-
-    // Get the stored state
-    state = await daily.loadObject();
 
     // Take new users to help screen first
     const sawTutorial = await playpass.storage.get("sawTutorial");
