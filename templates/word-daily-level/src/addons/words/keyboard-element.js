@@ -105,6 +105,6 @@ export class Keyboard extends HTMLElement {
     }
 }
 
-export const keyboardTag = "word-game-keyboard";
+export const keyboardTagName = "word-game-keyboard";
 
-window.customElements.define(keyboardTag, Keyboard);
+window.customElements.define(keyboardTagName, Keyboard);

@@ -108,6 +108,6 @@ export class Grid extends HTMLElement {
     }
 }
 
-export const gridTag = "word-game-grid";
+export const gridTagName = "word-game-grid";
 
-window.customElements.define(gridTag, Grid);
+window.customElements.define(gridTagName, Grid);

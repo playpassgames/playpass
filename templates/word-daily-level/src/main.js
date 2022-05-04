@@ -5,9 +5,9 @@ import "./style.css";
 import * as dictionary from "../content/dictionary.json";
 
 // register keyboard component
-import { keyboardTag } from "./addons/words/keyboard-element";
+import { keyboardTagName } from "./addons/words/keyboard-element";
 
-import { Grid, gridTag } from "./addons/words/grid-element";
+import { Grid, gridTagName } from "./addons/words/grid-element";
 import { getHoursUntil, getMinutesUntil, getNextGameTime, getSecondsUntil } from "./addons/daily/timer";
 import DailyState from "./game/dailyState";
 import UserState from "./game/userState";
@@ -18,9 +18,9 @@ let words = [];
 let correctAnswer = null;
 let state = null;
 
-const grid = document.getElementsByTagName(gridTag)[0];
+const grid = document.getElementsByTagName(gridTagName)[0];
 
-const keyboard = document.getElementsByTagName(keyboardTag)[0];
+const keyboard = document.getElementsByTagName(keyboardTagName)[0];
 keyboard.addEventListener("key", event => {
 
     if (Grid.isSolved(state) || state.marks.length === grid.attempts) {
