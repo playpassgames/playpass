@@ -7,8 +7,17 @@ import {requireToken} from "./auth";
 import PlaypassClient from "./playpass-client";
 import fs from "fs/promises";
 import * as path from "path";
+import {loadConfig} from "./config";
 
-export async function domain(domains: string[], opts: {certificate: string, privateKey: string, certificateChain?: string}): Promise<void> {
+export async function domain(domain: string, opts: {certificate: string, privateKey: string, certificateChain?: string, gameId?: string}): Promise<void> {
+    let gameId;
+    if (opts.gameId) {
+        gameId = opts.gameId;
+    } else {
+        const config = await loadConfig(path.join(process.cwd(), "playpass.toml"));
+        gameId = config.game_id;
+    }
+
     const token = await requireToken();
     const playpassClient = new PlaypassClient(token);
 
@@ -21,11 +30,14 @@ export async function domain(domains: string[], opts: {certificate: string, priv
 
     let result;
     try {
-        result = await playpassClient.customDomain(domains, certificate, privateKey, chain);
+        result = await playpassClient.customDomain(gameId, domain, certificate, privateKey, chain);
     } catch (e: any) {
         console.log(`Failed to create custom domain: ${e.message}`);
         return;
     }
 
-    console.log(`${kleur.green("✔")} Custom domain successfully created: ${JSON.stringify(result?.id)}`);
+    const status = result.distributionDeployed ? kleur.green("✔") : kleur.yellow("Deploying...");
+    console.log(`${kleur.green("✔")} Custom domain successfully created`);
+    console.log(`Distribution URL: ${result.distributionDomainName} ${status}`);
+    console.log("Please create an alias record that points to it in your DNS provider.");
 }

@@ -8,9 +8,9 @@ import kleur from "kleur";
 import { login, logout } from "./auth";
 import { create } from "./create";
 import { deploy } from "./deploy";
-// import { domain } from "./domain";
-// import { getDomains } from "./get-domains";
-// import { deleteDomain } from "./delete-domain";
+import { domain } from "./domain";
+import { getDomain } from "./get-domain";
+import { deleteDomain } from "./delete-domain";
 
 if (!process.env.PLAYPASS_DEV) {
     process.on("uncaughtException", (error) => {
@@ -38,27 +38,29 @@ program
 program
     .command("deploy")
     .option("--prefix <prefix>", "Prefix to prepend to the subdomain URL")
-    // .option("--customDomain <customDomain>", "Custom domain ID to be configured")
+    .option("--customDomain <customDomain>", "Custom domain ID to be configured")
     .description("Deploy a built game")
     .action(deploy);
-/*
+
 program
-    .command("get-domains")
-    .action(getDomains);
+    .command("get-domain")
+    .option("--game <gameId>", "Id of the custom domain's game")
+    .action(getDomain);
 
 program
     .command("delete-domain")
-    .argument("<domainId", "Domain ID")
+    .option("--game <gameId>", "Id of the custom domain's game")
     .action(deleteDomain);
 
 program
     .command("create-domain")
-    .argument("<domains...>", "Custom domains")
+    .argument("<domain", "Custom domain")
     .requiredOption("--certificate <certificatePath>", "Path to the PEM-encoded certificate")
     .requiredOption("--privateKey <privateKeyPath>", "Path to the PEM-encoded certificate private key")
     .option("--certificateChain <certificateChainPath>", "Path to the PEM-encoded full certificate chain")
+    .option("--game <gameId>", "Id of the custom domain's game")
     .action(domain);
-*/
+
 program
     .name("playpass")
     .version(require("../../../package.json").version) // eslint-disable-line @typescript-eslint/no-var-requires

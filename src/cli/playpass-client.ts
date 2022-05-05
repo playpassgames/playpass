@@ -2,7 +2,7 @@
 // Playpass (c) Playco
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
-import axios, {AxiosResponse} from "axios";
+import axios, {AxiosResponse, AxiosError} from "axios";
 
 const PLAYPASS_API_HOST = process.env.PLAYPASS_API_HOST || "https://creators-api.playpass.games";
 
@@ -23,19 +23,23 @@ export type Games = {
     items: Game[],
 } & PlaypassResponse
 
-export type CustomDomains = {
-    items: CustomDomain[],
-} & PlaypassResponse
-
 export type CustomDomain = {
-    id: string,
-    customDomains: string[],
+    customDomain: {
+        id: string,
+        domain: string,
+        config: {
+            certificateId: string;
+            distributionId: string;
+        }
+    };
+    distributionDeployed: boolean | undefined;
+    distributionDomainName: string | undefined;
 } & PlaypassResponse
 
 export type Deployment = {
     gameUrl: string,
     uploadUrl: string,
-    distributionDomainName?: string | undefined,
+    customDomain?: CustomDomain,
 } & PlaypassResponse
 
 export default class PlaypassClient {
@@ -91,7 +95,7 @@ export default class PlaypassClient {
             });
     }
 
-    public async upload(gameId: string, prefix?: string, customDomain?: string): Promise<Deployment> {
+    public async upload(gameId: string, prefix?: string): Promise<Deployment> {
         return axios.request({
             method: "POST",
             url: `${this.host}/api/v1/games/${gameId}/upload`,
@@ -99,8 +103,7 @@ export default class PlaypassClient {
                 "X-API-TOKEN": this.authToken
             },
             data: {
-                prefix,
-                customDomain
+                prefix
             },
         })
             .then((a: AxiosResponse<Deployment>) => {
@@ -109,44 +112,54 @@ export default class PlaypassClient {
             });
     }
 
-    public async getCustomDomains(): Promise<CustomDomain[]> {
+    public async getCustomDomain(gameId: string): Promise<CustomDomain> {
         return axios.request({
             method: "GET",
-            url: `${this.host}/api/v1/custom-domains/`,
+            url: `${this.host}/api/v1/games/${gameId}/custom-domain`,
             headers: {
                 "X-API-TOKEN": this.authToken
             }
         })
-            .then((a: AxiosResponse<CustomDomains>) => {
-                PlaypassClient.validateResponse(a, "Failed to get custom domains.");
-                return a.data.items;
+            .then((a: AxiosResponse<CustomDomain>) => {
+                PlaypassClient.validateResponse(a, "Failed to get custom domain.");
+                return a.data;
+            })
+            .catch(reason => {
+                if (axios.isAxiosError(reason)) {
+                    const error = reason as AxiosError;
+                    if (error.response?.status === 404) {
+                        throw new Error("This game does not have a custom domain configured.");
+                    }
+                } else {
+                    return reason;
+                }
             });
     }
 
-    public async customDomain(customDomains: string[], certificate: string, privateKey: string, certificateChain?: string) {
+    public async customDomain(gameId: string, customDomain: string, certificate: string, privateKey: string, certificateChain?: string) {
         return axios.request({
             method: "POST",
-            url: `${this.host}/api/v1/custom-domains/`,
+            url: `${this.host}/api/v1/games/${gameId}/custom-domain`,
             headers: {
                 "X-API-TOKEN": this.authToken
             },
             data: {
-                customDomains,
+                customDomain,
                 certificate,
                 privateKey,
                 certificateChain
             }
         })
-            .then((a: AxiosResponse<{ id: string, result?: boolean | undefined, error?: string | undefined }>) => {
+            .then((a: AxiosResponse<CustomDomain>) => {
                 PlaypassClient.validateResponse(a, "Failed to create custom domain.");
                 return a.data;
             });
     }
 
-    public async deleteDomain(domainId: string) {
+    public async deleteDomain(gameId: string) {
         return axios.request({
             method: "DELETE",
-            url: `${this.host}/api/v1/custom-domains/${domainId}`,
+            url: `${this.host}/api/v1/games/${gameId}/custom-domain`,
             headers: {
                 "X-API-TOKEN": this.authToken
             }

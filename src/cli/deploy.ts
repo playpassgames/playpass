@@ -60,7 +60,7 @@ function packageDir(publishDir: string): Promise<Buffer> {
     });
 }
 
-export async function deploy(opts: { prefix?: string, customDomain?: string }): Promise<void> {
+export async function deploy(opts: { prefix?: string }): Promise<void> {
     const config = await loadConfig(path.join(process.cwd(), "playpass.toml"));
 
     const token = await requireToken();
@@ -81,7 +81,7 @@ export async function deploy(opts: { prefix?: string, customDomain?: string }): 
 
     // console.log(`Package created ${bytes(archivedFile.length)}`);
 
-    const deployment = await playpassClient.upload(config.game_id, opts.prefix, opts.customDomain);
+    const deployment = await playpassClient.upload(config.game_id, opts.prefix);
     const response = await fetch(deployment.uploadUrl, {
         method: "PUT",
         body: archivedFile
@@ -93,8 +93,9 @@ export async function deploy(opts: { prefix?: string, customDomain?: string }): 
     }
 
     // TODO: progress bar
-    if (deployment.distributionDomainName) {
-        console.log(`${kleur.green("✔")} Distribution URL: ${deployment.distributionDomainName}`);
+    if (deployment.customDomain) {
+        const status = deployment.customDomain.distributionDeployed ? kleur.green("✔") : kleur.yellow("Deploying...");
+        console.log(`${status} Distribution URL: ${deployment.customDomain.distributionDomainName}`);
         console.log("Please create an alias record that points to it in your DNS provider.");
     }
 
