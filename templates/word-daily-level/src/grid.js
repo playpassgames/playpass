@@ -24,8 +24,9 @@ export class Grid {
         return solved;
     }
 
-    static isLost({marks}) {
-        return marks && marks.length === 6;
+    static isLost(state) {
+        const {marks} = state;
+        return marks && marks.length === 6 && !Grid.isSolved(state);
     }
 
     static getMarks(_guess, _word) {
