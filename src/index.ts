@@ -11,6 +11,8 @@ export { createFeatureFlag, featureFlagIsEnabled, setFeatureFlagEnabled } from "
 
 export * as account from "./exports/account";
 export * as groups from "./exports/groups";
+
+/** @hidden */
 export * as payments from "./exports/payments";
 
 export type { Analytics } from "./analytics";
