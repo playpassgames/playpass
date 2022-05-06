@@ -4,11 +4,11 @@
 
 import { requireToken } from "./auth";
 import PlaypassClient from "./playpass-client";
-import kleur from "kleur";
 import {loadConfig} from "./config";
 import path from "path";
+import kleur from "kleur";
 
-export async function deleteDomain(opts: { gameId?: string }): Promise<void> {
+export async function getDomain(opts: { gameId?: string }): Promise<void> {
     let gameId;
     if (opts.gameId) {
         gameId = opts.gameId;
@@ -20,7 +20,8 @@ export async function deleteDomain(opts: { gameId?: string }): Promise<void> {
     const token = await requireToken();
     const playpassClient = new PlaypassClient(token);
 
-    await playpassClient.deleteDomain(gameId);
+    const customDomain = await playpassClient.getCustomDomain(gameId);
 
-    console.log(`${kleur.green("✔")} Successfully deleted custom domain for game ${gameId}`);
+    const status = customDomain.distributionDeployed ? kleur.green("✔") : kleur.yellow("Deploying...");
+    console.log(`${customDomain.customDomain.domain} | ${customDomain.distributionDomainName} ${status}`);
 }

@@ -1,8 +1,6 @@
 # Deploy Your Game
 
-Games are hosted on our high-performance CDN. All games have a `*.playpass.games` subdomain.
-
-[//]: # (and you can also use your own domain.)
+Games are hosted on our high-performance CDN. All games have a `*.playpass.games` subdomain, and you can also use your own domain.
 
 ## Deploying
 
@@ -23,44 +21,40 @@ playpass deploy --prefix mytest
 This will deploy the game to `https://mytest--yourgame.playpass.games`. This can be used to deploy
 branches to QA for testing.
 
-[//]: # (## Custom domains)
+## Custom domains
 
-[//]: # (A custom domain name &#40;`yourgame.com`&#41; can be setup with the CLI. You can then set the domain when)
+A custom domain name (`yourgame.com`) can be setup with the CLI. You can then set the domain when
+deploying your game. The final step is to create a DNS alias entry in your provider pointing to the
+url returned to you.
 
-[//]: # (deploying your game. The final step is to create a DNS alias entry in your provider pointing to the)
+### CLI
 
-[//]: # (url returned to you.)
+Use the `playpass create-domain` command first:
 
-[//]: # (### CLI)
+```shell
+playpass create-domain <domain> --certificate <certificatePath> --privateKey <privateKeyPath> [--certificateChain <certificateChainPath>]
+```
 
-[//]: # (Use the `create-domain` command first:)
+You can also create it outside of your game's directory with the `gameId` flag:
 
-[//]: # (```shell)
+```shell
+playpass create-domain <domain> --certificate <certificatePath> --privateKey <privateKeyPath> [--certificateChain <certificateChainPath> --gameId <gameId>]
+```
 
-[//]: # (playpass create-domain <domains...> --certificate <certificatePath> --privateKey <privateKeyPath> [--certificateChain <certificateChainPath>])
+To set up a custom domain with the CLI you need to provide the domain (e.g. `foo.example.com`) and its respective PEM encoded SSL certificate and private key.
+After the domain is created the CLI will print your custom domain's distribution URL on your terminal, use it to configure an alias record in your DNS provider.
+You can always run `playpass get-domain` to see your game's custom domain.
 
-[//]: # (```)
+You can delete the custom domain with `playpass delete-domain`.
 
-[//]: # (To set up a custom domain with the CLI you need to provide the domains &#40;e.g. `foo.example.com bar.example.com`&#41; and their respective PEM encoded SSL certificate and private key.)
+### Certificates
 
-[//]: # (After the domain is created the CLI will print your custom domain's ID on your terminal. You can always run `playpass get-domains` to see all the custom domains you have created.)
+If you do not have a certificate for your domain yet, you can easily create one with [certbot](https://certbot.eff.org/).
+Follow the installation instructions on their website to install and create a certificate for your domain.
+You can alternatively configure it manually with the following command:
 
-[//]: # (To make use of the custom domain simply specify it when deploying your game `playpass deploy --customDomain <id>`.)
+```shell
+sudo certbot certonly --manual --preferred-challenges dns -d "dailypoker.gg"
+```
 
-[//]: # (At the end of this step you will get your custom distribution's url, use it to configure an alias record in your DNS provider.)
-
-[//]: # (### Certificates)
-
-[//]: # (If you do not have a certificate for your domain yet, you can easily create one with [certbot]&#40;https://certbot.eff.org/&#41;.)
-
-[//]: # (Follow the installation instructions on their website to install and create a certificate for your domain.)
-
-[//]: # (You can alternatively configure it manually with the following command:)
-
-[//]: # (```shell)
-
-[//]: # (sudo certbot certonly --manual --preferred-challenges dns -d "dailypoker.gg")
-
-[//]: # (```)
-
-[//]: # (The certificate, private key and chain should now be at `/etc/letsencript/live/example.com/`.)
+The certificate, private key and chain should now be at `/etc/letsencript/live/example.com/`.
