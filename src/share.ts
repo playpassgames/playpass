@@ -50,11 +50,9 @@ export type CreateLinkOptions = {
  */
 export async function share(opts?: ShareOptions): Promise<boolean> {
     const files = opts?.files || [];
-    let text = opts?.text;
-    if (!text && !files.length) {
-        // If we didn't receive a text or files, just share a simple link
-        text = createLink();
-    }
+
+    // If we didn't receive a text or files, just share a simple link
+    const text = (opts?.text || files.length) ? opts?.text : createLink();
 
     const trackParams = { fileCount: files.length, textLength: text?.length ?? 0 };
     analytics.track("SharePrompted", trackParams);
@@ -78,9 +76,10 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
             return false;
         }
 
-    } else {
+    } else if (text) {
         const shareSent = await new Promise(resolve => {
             const popup = document.createElement("playpass-share");
+
             popup.shareText = text;
 
             popup.onShare = type => {
@@ -125,13 +124,16 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
         if (!shareSent) {
             return false;
         }
+
+    } else {
+        return false;
     }
 
     analytics.track("ShareSent", trackParams);
     return true;
 }
 
-function openNewTab (url: string, params: Record<string>) {
+function openNewTab (url: string, params: Record<string,string>) {
     const u = new URL(url);
     for (const key in params) {
         u.searchParams.set(key, params[key]);

@@ -7,8 +7,9 @@ import { ReplicantLite } from "@playpass/replicant-lite";
 import { html, css, svg } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { map } from "lit/directives/map.js";
+import type { SVGTemplateResult } from "lit";
 
-import { Popup } from "./popup";
+import { popupCss, Popup } from "./popup";
 
 type ShareType = "facebook" | "twitter" | "whatsapp" | "telegram" | "clipboard";
 
@@ -49,7 +50,7 @@ const icons: ShareIcon[] = [
 @customElement("playpass-share")
 export class SharePopup extends Popup {
     static override styles = [
-        Popup.styles,
+        popupCss,
         css`
             button {
                 font-size: 0;
@@ -68,7 +69,7 @@ export class SharePopup extends Popup {
         `
     ];
 
-    @property() shareText: string;
+    @property() shareText: string = "";
 
     onShare?: (type: ShareType | null) => void;
 
@@ -80,9 +81,9 @@ export class SharePopup extends Popup {
     }
 
     protected onShareClick (event: Event) {
-        if (this.onShare) {
-            const type = event.currentTarget.name;
-            this.onShare(type);
+        if (this.onShare && event.currentTarget instanceof HTMLButtonElement) {
+            const type = event.currentTarget.name as ShareType;
+            this.onShare(type as ShareType);
         }
         this.remove();
     }
