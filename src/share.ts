@@ -88,27 +88,27 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
                     const urlMatch = text.match(urlPattern);
                     const textNoUrls = text.replace(urlPattern, "").trim();
                     switch (type) {
-                        case "facebook":
-                            openNewTab("https://www.facebook.com/sharer/sharer.php", {
-                                quote: textNoUrls,
-                                u: urlMatch ? urlMatch[0] : createLink(),
-                            });
-                            break;
-                        case "twitter":
-                            openNewTab("https://twitter.com/intent/tweet", { text });
-                            break;
-                        case "whatsapp":
-                            openNewTab("https://api.whatsapp.com/send", { text });
-                            break;
-                        case "telegram":
-                            openNewTab("https://telegram.me/share/msg", {
-                                text: textNoUrls,
-                                url: urlMatch ? urlMatch[0] : createLink(),
-                            });
-                            break;
-                        case "clipboard":
-                            copyToClipboard(text);
-                            break;
+                    case "facebook":
+                        openNewTab("https://www.facebook.com/sharer/sharer.php", {
+                            quote: textNoUrls,
+                            u: urlMatch ? urlMatch[0] : createLink(),
+                        });
+                        break;
+                    case "twitter":
+                        openNewTab("https://twitter.com/intent/tweet", { text });
+                        break;
+                    case "whatsapp":
+                        openNewTab("https://api.whatsapp.com/send", { text });
+                        break;
+                    case "telegram":
+                        openNewTab("https://telegram.me/share/msg", {
+                            text: textNoUrls,
+                            url: urlMatch ? urlMatch[0] : createLink(),
+                        });
+                        break;
+                    case "clipboard":
+                        copyToClipboard(text);
+                        break;
                     }
                     resolve(true);
 

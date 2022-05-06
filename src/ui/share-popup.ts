@@ -69,7 +69,7 @@ export class SharePopup extends Popup {
         `
     ];
 
-    @property() shareText: string = "";
+    @property() shareText = "";
 
     onShare?: (type: ShareType | null) => void;
 
