@@ -29,7 +29,7 @@ url returned to you.
 
 ### CLI
 
-Use the `create-domain` command first:
+Use the `playpass create-domain` command first:
 
 ```shell
 playpass create-domain <domain> --certificate <certificatePath> --privateKey <privateKeyPath> [--certificateChain <certificateChainPath>]
