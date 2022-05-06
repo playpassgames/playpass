@@ -7,6 +7,8 @@ import { encode } from "./links";
 import { getPlayerId } from "./init";
 import { shortHash } from "./utils";
 
+import "./ui/share-popup";
+
 /** Options to pass to {@link share}. */
 export type ShareOptions = {
     /** Files to be included in share.  For file compatibility, see https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share#shareable_file_types */
@@ -59,7 +61,9 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
 
     const shareData = { files, text };
 
-    if (navigator.canShare?.(shareData) && navigator.share) {
+    // Check for ontouchstart to blacklist desktop browsers in order to prevent using Chrome's goofy
+    // share UX on Windows
+    if (navigator.canShare?.(shareData) && navigator.share && "ontouchstart" in document.documentElement) {
         try {
             await navigator.share(shareData);
         } catch (error: unknown) {
@@ -73,23 +77,66 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
             }
             return false;
         }
-    } else {
-        // TODO(2022-03-01): Polyfill web share, for now just write to the clipboard
 
-        try {
-            await copyToClipboard(text ?? "");
-        } catch (error: unknown) {
-            if (!(error instanceof Error)) {
-                throw error;
-            }
-            // Should never happen(?)
-            analytics.track("ShareError", {...trackParams, error: error.name});
+    } else {
+        const shareSent = await new Promise(resolve => {
+            const popup = document.createElement("playpass-share");
+            popup.shareText = text;
+
+            popup.onShare = type => {
+                if (type) {
+                    const urlPattern = /\bhttps?:\/\/[^\s]+/;
+                    const urlMatch = text.match(urlPattern);
+                    const textNoUrls = text.replace(urlPattern, "").trim();
+                    switch (type) {
+                        case "facebook":
+                            openNewTab("https://www.facebook.com/sharer/sharer.php", {
+                                quote: textNoUrls,
+                                u: urlMatch ? urlMatch[0] : createLink(),
+                            });
+                            break;
+                        case "twitter":
+                            openNewTab("https://twitter.com/intent/tweet", { text });
+                            break;
+                        case "whatsapp":
+                            openNewTab("https://api.whatsapp.com/send", { text });
+                            break;
+                        case "telegram":
+                            openNewTab("https://telegram.me/share/msg", {
+                                text: textNoUrls,
+                                url: urlMatch ? urlMatch[0] : createLink(),
+                            });
+                            break;
+                        case "clipboard":
+                            copyToClipboard(text);
+                            break;
+                    }
+                    resolve(true);
+
+                } else {
+                    // Player declined to share by closing the popup
+                    resolve(false);
+                }
+            };
+
+            document.body.appendChild(popup);
+        });
+
+        if (!shareSent) {
             return false;
         }
     }
 
     analytics.track("ShareSent", trackParams);
     return true;
+}
+
+function openNewTab (url: string, params: Record<string>) {
+    const u = new URL(url);
+    for (const key in params) {
+        u.searchParams.set(key, params[key]);
+    }
+    window.open(u.toString(), "_blank", "noopener");
 }
 
 /**
