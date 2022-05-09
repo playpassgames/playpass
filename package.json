@@ -42,18 +42,20 @@
     "bytes": "^3.1.2",
     "commander": "^9.0.0",
     "cross-fetch": "^3.1.5",
+    "degit": "^2.8.4",
     "koa": "^2.13.4",
     "lit": "^2.2.1",
     "open": "^8.4.0",
     "prompts": "^2.4.2",
     "recursive-copy": "^2.0.14",
-    "stream-replace": "^1.0.0"
+    "replace": "^1.2.1"
   },
   "devDependencies": {
     "@play-co/gcinstant": "^16.1.1",
     "@types/archiver": "^5.3.1",
     "@types/axios": "^0.14.0",
     "@types/bytes": "^3.1.1",
+    "@types/degit": "^2.8.3",
     "@types/jest": "^26.0.15",
     "@types/koa": "^2.13.4",
     "@types/node": "^16.11.7",

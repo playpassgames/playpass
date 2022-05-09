@@ -3,16 +3,17 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import copy from "recursive-copy";
-import replace from "stream-replace";
 import fs from "fs/promises";
 import path from "path";
 import prompts from "prompts";
 import type { PromptObject } from "prompts";
 import kleur from "kleur";
+import degit from "degit";
+import replace from "replace";
 
 import { slugify, spawn } from "./utils";
 import {requireToken} from "./auth";
-import PlaypassClient, {Game} from "./playpass-client";
+import PlaypassClient from "./playpass-client";
 
 async function prompt (obj: Partial<PromptObject>): Promise<string> {
     const { value } = await prompts({
@@ -35,12 +36,13 @@ async function exists (file: string): Promise<boolean> {
     }
 }
 
-export async function create (destDir: string | undefined, opts: { template?: string }): Promise<void> {
+export async function create (destDir: string | undefined, opts: { template?: string, local?: boolean }): Promise<void> {
     let subdomain: string;
 
     // Whether we're creating using a template, or in-place adding Playpass to an existing project
     let useTemplate = true;
-
+    let gameId = "YOUR_GAME_ID";
+    
     if (!destDir) {
         // No directory param provided, prompt them for a project ID and use it to form the dest dir
         subdomain = slugify(await prompt({
@@ -65,17 +67,25 @@ export async function create (destDir: string | undefined, opts: { template?: st
         destDir = path.resolve(destDir);
     }
 
-    const token = await requireToken();
-    const playpassClient = new PlaypassClient(token);
-    try {
-        await playpassClient.checkGame(subdomain);
-        console.error(`Subdomain ${subdomain}.playpass.games already exists. Please use a different name.`);
-        return;
-    } catch (e) {
-        // Continue
-    }
+    // allow creating the game locally without needing to reserve any remove resources
+    if (!opts.local) {
+        const token = await requireToken();
+        const playpassClient = new PlaypassClient(token);
+        try {
+            await playpassClient.checkGame(subdomain);
+            console.error(`Subdomain ${subdomain}.playpass.games already exists. Please use a different name.`);
+            return;
+        } catch (e) {
+            // Continue
+        }
 
-    let template;
+        try {
+            const game = await playpassClient.create(subdomain);
+            gameId = game.id;
+        } catch (e) {
+            throw new Error(`Failed to create game ${subdomain}, please try again`);
+        }
+    }
 
     if (useTemplate) {
         try {
@@ -86,39 +96,28 @@ export async function create (destDir: string | undefined, opts: { template?: st
             // Continue
         }
 
-        template = opts.template || await prompt({
+        const template = opts.template || await prompt({
             type: "select",
             name: "template",
             message: "Choose a project template below",
             choices: [
-                { title: "Daily Level Game", value: "daily-level" },
+                { title: "Daily Level Game", value: "github:playpassgames/playpass-game-template" },
                 { title: "React Daily Level Game", value: "react-daily-level" },
-                { title: "Daily Word Game", value: "word-daily-level" },
+                { title: "Daily Word Game", value: "github:playpassgames/daily-word-game-template" },
+                { title: "Daily Phrase Game", value: "github:playpassgames/daily-phrase-game-template" },
             ],
         });
-    }
 
-    console.log();
-
-    let game: Game;
-    try {
-        game = await playpassClient.create(subdomain);
-    } catch (e) {
-        throw new Error(`Failed to create game ${subdomain}, please try again`);
-    }
-
-    if (useTemplate) {
-        const transform = (src: string, dest: string) => {
-            const ext = path.extname(src);
-            if (ext != ".js" && ext != ".jsx" && ext != ".ts" && ext != ".tsx") {
-                return null;
-            }
-            return replace("YOUR_GAME_ID", game.id);
-        };
-
-        const templatesDir = `${__dirname}/../../../templates`;
-        await copy(`${templatesDir}/${template}`, destDir, { dot: true, junk: true, transform });
-        await copy(`${templatesDir}/common`, destDir, { dot: true, junk: true });
+        // values with slashes in them are preceived as git urls
+        if (template.indexOf("/") > 0) {
+            console.log(`Downloading template from ${template}`);
+            const git = degit(template, {});
+            await git.clone(destDir);
+        } else {
+            const templatesDir = `${__dirname}/../../../templates`;
+            await copy(`${templatesDir}/${template}`, destDir, { dot: true, junk: true });
+            await copy(`${templatesDir}/common`, destDir, { dot: true, junk: true });
+        }
 
         // Update package.json. This is only to have a sensible default and not used by Playpass
         const json = JSON.parse(await fs.readFile(destDir+"/package.json", "utf8"));
@@ -126,18 +125,25 @@ export async function create (destDir: string | undefined, opts: { template?: st
         await fs.writeFile(destDir+"/package.json", JSON.stringify(json, null, "  "));
     }
 
-    // Generate an initial playpass.toml
-    await fs.writeFile(destDir+"/playpass.toml", [
-        "# Your game's unique identifier. This should never change.",
-        `game_id = "${game.id}"`,
-    ].join("\n") + "\n");
-
     console.log("Installing NPM dependencies, this may take a minute...");
 
     await spawn(/^win/.test(process.platform) ? "npm.cmd" : "npm", ["install", "playpass@latest", "--save"], {
         stdio: "ignore",
         cwd: destDir,
     });
+
+    await replace({
+        regex: "YOUR_GAME_ID",
+        replacement: gameId,
+        paths: [destDir],
+        recursive: true,
+    });
+
+    // Generate an initial playpass.toml
+    await fs.writeFile(destDir+"/playpass.toml", [
+        "# Your game's unique identifier. This should never change.",
+        `game_id = "${gameId}"`,
+    ].join("\n") + "\n");
 
     console.log();
 
@@ -156,7 +162,6 @@ export async function create (destDir: string | undefined, opts: { template?: st
         console.log();
         console.log("    playpass deploy");
         console.log();
-
     } else {
         console.log(`${kleur.green("✔")} Added Playpass to an existing project at ${destDir}`);
         console.log();
@@ -166,7 +171,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
         console.log();
         console.log("And paste this line into your game's initialization:");
         console.log();
-        console.log(`    await playpass.init({ gameId: "${game.id}" });`);
+        console.log(`    await playpass.init({ gameId: "${gameId}" });`);
         console.log();
     }
 }
