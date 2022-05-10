@@ -67,7 +67,9 @@ export async function create (destDir: string | undefined, opts: { template?: st
         destDir = path.resolve(destDir);
     }
 
-    // allow creating the game locally without needing to reserve any remove resources
+    // when the local flag is set, we do not need to reserve resources in playpass cloud
+    // In order to claim an id and deploy the game, the developer will have to rerun 
+    //   `playpass create` on their existing game
     if (!opts.local) {
         const token = await requireToken();
         const playpassClient = new PlaypassClient(token);
