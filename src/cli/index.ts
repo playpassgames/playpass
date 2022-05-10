@@ -31,7 +31,8 @@ program
 
 program
     .command("create [directory]")
-    .option("--template <template>", "New project template")
+    .option("--template <template>", "New project template.  Accepts git urls via degit")
+    .option("-l, --local", "initializes the project locally without reserving a game id")
     .description("Create a new game project")
     .action(create);
 
