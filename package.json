@@ -1,6 +1,6 @@
 {
   "name": "playpass",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Playpass provides simple tooling and services to help build your next game quickly.",
   "bin": {
     "playpass": "dist/cjs/cli/index.js"
