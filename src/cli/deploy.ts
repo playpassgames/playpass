@@ -96,7 +96,7 @@ export async function deploy(opts: { prefix?: string }): Promise<void> {
     if (deployment.customDomain) {
         const status = deployment.customDomain.distributionDeployed ? kleur.green("✔") : kleur.yellow("Deploying...");
         console.log(`${status} Distribution URL: ${deployment.customDomain.distributionDomainName}`);
-        console.log("Please create an alias record that points to it in your DNS provider.");
+        console.log(`Please create an alias record that points to ${deployment.customDomain.distributionDomainName} in your DNS provider.`);
     }
 
     console.log(`${kleur.green("✔")} Deployed to https://${deployment.gameUrl}`);
