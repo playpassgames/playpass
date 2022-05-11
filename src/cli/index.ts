@@ -11,6 +11,7 @@ import { deploy } from "./deploy";
 import { domain } from "./domain";
 import { getDomain } from "./get-domain";
 import { deleteDomain } from "./delete-domain";
+import { playpassUrl } from "./config";
 
 if (!process.env.PLAYPASS_DEV) {
     process.on("uncaughtException", (error) => {
@@ -66,6 +67,6 @@ program
     .name("playpass")
     .version(require("../../../package.json").version) // eslint-disable-line @typescript-eslint/no-var-requires
     .description(
-        "Playpass SDK.\n\nLearn more at https://playpass.games",
+        `Playpass SDK.\n\nLearn more at ${playpassUrl}`,
     )
     .parse();

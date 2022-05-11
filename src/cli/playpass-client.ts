@@ -3,8 +3,7 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import axios, {AxiosResponse, AxiosError} from "axios";
-
-const PLAYPASS_API_HOST = process.env.PLAYPASS_API_HOST || "https://creators-api.playpass.games";
+import {playpassApiUrl} from "./config";
 
 export type PlaypassResponse = {
     result?: boolean | undefined,
@@ -46,7 +45,7 @@ export default class PlaypassClient {
     private authToken: string;
     private host: string;
 
-    constructor(authToken: string, host: string = PLAYPASS_API_HOST) {
+    constructor(authToken: string, host: string = playpassApiUrl) {
         this.authToken = authToken;
         this.host = host;
     }

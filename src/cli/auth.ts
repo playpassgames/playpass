@@ -8,6 +8,7 @@ import { envPaths, isError } from "./utils";
 import open from "open";
 import Koa from "koa";
 import kleur from "kleur";
+import {playpassUrl} from "./config";
 
 function authFile () {
     const dataDir = envPaths("playpass").data;
@@ -36,7 +37,7 @@ function startServer() {
 
         const server = k.listen(9765);
 
-        open("https://playpass.games/login?cli=true");
+        open(`${playpassUrl}/login?cli=true`);
     });
 }
 

@@ -31,3 +31,7 @@ export async function loadConfig (file: string): Promise<Config> {
 
     return config;
 }
+
+export const playpassApiUrl = process.env.PLAYPASS_API_HOST || "https://creators-api.playpass.games";
+export const playpassUrl = process.env.PLAYPASS_URL || "https://playpass.games";
+export const playpassHost = playpassUrl.replace(/(^\w+:|^)\/\//, "");

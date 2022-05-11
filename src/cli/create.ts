@@ -12,8 +12,9 @@ import degit from "degit";
 import replace from "replace";
 
 import { slugify, spawn } from "./utils";
-import {requireToken} from "./auth";
+import { requireToken } from "./auth";
 import PlaypassClient from "./playpass-client";
+import { playpassHost } from "./config";
 
 async function prompt (obj: Partial<PromptObject>): Promise<string> {
     const { value } = await prompts({
@@ -42,7 +43,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
     // Whether we're creating using a template, or in-place adding Playpass to an existing project
     let useTemplate = true;
     let gameId = "YOUR_GAME_ID";
-    
+
     if (!destDir) {
         // No directory param provided, prompt them for a project ID and use it to form the dest dir
         subdomain = slugify(await prompt({
@@ -68,14 +69,14 @@ export async function create (destDir: string | undefined, opts: { template?: st
     }
 
     // when the local flag is set, we do not need to reserve resources in playpass cloud
-    // In order to claim an id and deploy the game, the developer will have to rerun 
+    // In order to claim an id and deploy the game, the developer will have to rerun
     //   `playpass create` on their existing game
     if (!opts.local) {
         const token = await requireToken();
         const playpassClient = new PlaypassClient(token);
         try {
             await playpassClient.checkGame(subdomain);
-            console.error(`Subdomain ${subdomain}.playpass.games already exists. Please use a different name.`);
+            console.error(`Subdomain ${subdomain}.${playpassHost} already exists. Please use a different name.`);
             return;
         } catch (e) {
             // Continue
