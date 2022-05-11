@@ -39,5 +39,5 @@ export async function domain(domain: string, opts: {certificate: string, private
     const status = result.distributionDeployed ? kleur.green("✔") : kleur.yellow("Deploying...");
     console.log(`${kleur.green("✔")} Custom domain successfully created`);
     console.log(`Distribution URL: ${result.distributionDomainName} ${status}`);
-    console.log("Please create an alias record that points to it in your DNS provider.");
+    console.log(`Please create an alias record that points to ${result.distributionDomainName} in your DNS provider.`);
 }
