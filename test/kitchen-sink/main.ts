@@ -60,10 +60,16 @@ import * as playpass from "../../src";
         updateUI();
     };
 
-    document.querySelector("#share").onclick = () => {
+    function shareWithType (type) {
         const link = playpass.createLink({ data: 1234 });
-        playpass.share({ text: `This is a test share: ${link}` });
-    };
+        playpass.share({ text: `This is a test share: ${link}`, type });
+    }
+    document.querySelector("#share").onclick = () => shareWithType(null);
+    document.querySelector("#share-facebook").onclick = () => shareWithType("facebook");
+    document.querySelector("#share-twitter").onclick = () => shareWithType("twitter");
+    document.querySelector("#share-whatsapp").onclick = () => shareWithType("whatsapp");
+    document.querySelector("#share-telegram").onclick = () => shareWithType("telegram");
+    document.querySelector("#share-clipboard").onclick = () => shareWithType("clipboard");
 
     document.querySelector("#subscribe").onclick = async () => {
         try {

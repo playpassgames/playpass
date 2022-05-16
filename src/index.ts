@@ -18,5 +18,5 @@ export * as payments from "./exports/payments";
 export type { Analytics } from "./analytics";
 export type { FeatureFlagOptions } from "./featureFlags";
 export type { InitOptions } from "./init";
-export type { ShareOptions, CreateLinkOptions } from "./share";
+export type { ShareType, ShareOptions, CreateLinkOptions } from "./share";
 export type { Storage } from "./storage";

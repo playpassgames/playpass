@@ -2,29 +2,37 @@
 // Playpass (c) Playco
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
-import { analytics } from "./analytics";
-import { encode } from "./links";
-import { getPlayerId } from "./init";
-import { shortHash } from "./utils";
+import { analytics } from "../analytics";
+import { encode } from "../links";
+import { getPlayerId } from "../init";
+import { shortHash } from "../utils";
 
-import "./ui/share-popup";
+import { ShareType } from "./share-type";
+
+import "../ui/share-popup";
+
+export type { ShareType };
 
 /** Options to pass to {@link share}. */
 export type ShareOptions = {
     /** Files to be included in share.  For file compatibility, see https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share#shareable_file_types */
     files?: File[],
 
-    /** Text to be shared */
+    /** Text to be shared. */
     text?: string,
+
+    /** The type of share, defaults to "any". */
+    type?: ShareType,
 };
 
+/** Options to pass to {@link createLink}. */
 export type CreateLinkOptions = {
     /** The entry channel to use for tracking. */
     channel?: string,
 
     /** Payload to include with shared link. */
     data?: unknown,
-}
+};
 
 /**
  * Open the device share dialog.
@@ -54,83 +62,89 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
     // If we didn't receive a text or files, just share a simple link
     const text = (opts?.text || files.length) ? opts?.text : createLink();
 
+    const type = opts?.type || ShareType.Any;
+
     const trackParams = { fileCount: files.length, textLength: text?.length ?? 0 };
     analytics.track("SharePrompted", trackParams);
 
     const shareData = { files, text };
 
-    // Check for ontouchstart to blacklist desktop browsers in order to prevent using Chrome's goofy
-    // share UX on Windows
-    if (navigator.canShare?.(shareData) && navigator.share && "ontouchstart" in document.documentElement) {
-        try {
-            await navigator.share(shareData);
-        } catch (error: unknown) {
-            if (!(error instanceof Error)) {
-                throw error;
-            }
-            if (error.name == "AbortError") {
-                analytics.track("ShareRejected", trackParams);
-            } else {
-                analytics.track("ShareError", {...trackParams, error: error.name});
-            }
-            return false;
-        }
+    let shareSent = false;
 
-    } else if (text) {
-        const shareSent = await new Promise(resolve => {
-            const popup = document.createElement("playpass-share");
-
-            popup.shareText = text;
-
-            popup.onShare = type => {
-                if (type) {
-                    const urlPattern = /\bhttps?:\/\/[^\s]+/;
-                    const urlMatch = text.match(urlPattern);
-                    const textNoUrls = text.replace(urlPattern, "").trim();
-                    switch (type) {
-                    case "facebook":
-                        openNewTab("https://www.facebook.com/sharer/sharer.php", {
-                            quote: textNoUrls,
-                            u: urlMatch ? urlMatch[0] : createLink(),
-                        });
-                        break;
-                    case "twitter":
-                        openNewTab("https://twitter.com/intent/tweet", { text });
-                        break;
-                    case "whatsapp":
-                        openNewTab("https://api.whatsapp.com/send", { text });
-                        break;
-                    case "telegram":
-                        openNewTab("https://telegram.me/share/msg", {
-                            text: textNoUrls,
-                            url: urlMatch ? urlMatch[0] : createLink(),
-                        });
-                        break;
-                    case "clipboard":
-                        copyToClipboard(text);
-                        break;
-                    }
-                    resolve(true);
-
-                } else {
-                    // Player declined to share by closing the popup
-                    resolve(false);
+    if (type == ShareType.Any) {
+        // Check for ontouchstart to blacklist desktop browsers in order to prevent using Chrome's
+        // goofy share UX on Windows
+        if (navigator.canShare?.(shareData) && navigator.share && "ontouchstart" in document.documentElement) {
+            try {
+                await navigator.share(shareData);
+                shareSent = true;
+            } catch (error: unknown) {
+                if (!(error instanceof Error)) {
+                    throw error;
                 }
-            };
+                if (error.name == "AbortError") {
+                    analytics.track("ShareRejected", trackParams);
+                } else {
+                    analytics.track("ShareError", {...trackParams, error: error.name});
+                }
+            }
 
-            document.body.appendChild(popup);
-        });
-
-        if (!shareSent) {
-            return false;
+        } else if (text) {
+            shareSent = await new Promise(resolve => {
+                const popup = document.createElement("playpass-share");
+                popup.shareText = text;
+                popup.onShare = type => {
+                    resolve(type ? doShare(type, text) : false);
+                };
+                document.body.appendChild(popup);
+            });
         }
 
-    } else {
-        return false;
+    } else if (text && await doShare(type, text)) {
+        shareSent = true;
     }
 
-    analytics.track("ShareSent", trackParams);
-    return true;
+    if (shareSent) {
+        analytics.track("ShareSent", trackParams);
+    }
+    return shareSent;
+}
+
+async function doShare (type: ShareType, text: string): Promise<boolean> {
+    const urlPattern = /\bhttps?:\/\/[^\s]+/;
+    const urlMatch = text.match(urlPattern);
+    const textNoUrls = text.replace(urlPattern, "").trim();
+
+    switch (type) {
+    case ShareType.Facebook:
+        openNewTab("https://www.facebook.com/sharer/sharer.php", {
+            quote: textNoUrls,
+            u: urlMatch ? urlMatch[0] : createLink(),
+        });
+        return true;
+
+    case ShareType.Twitter:
+        openNewTab("https://twitter.com/intent/tweet", { text });
+        return true;
+
+    case ShareType.WhatsApp:
+        openNewTab("https://api.whatsapp.com/send", { text });
+        return true;
+
+    case ShareType.Telegram:
+        openNewTab("https://telegram.me/share/msg", {
+            text: textNoUrls,
+            url: urlMatch ? urlMatch[0] : createLink(),
+        });
+        return true;
+
+    case ShareType.Clipboard:
+        void copyToClipboard(text);
+        return true;
+
+    default:
+        throw new Error(`Unsupported share type: ${type}`);
+    }
 }
 
 function openNewTab (url: string, params: Record<string,string>) {
@@ -139,6 +153,7 @@ function openNewTab (url: string, params: Record<string,string>) {
         u.searchParams.set(key, params[key]);
     }
     window.open(u.toString(), "_blank", "noopener");
+    // TODO(2022-05-16): Detect popup blocked
 }
 
 /**
