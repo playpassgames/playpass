@@ -41,6 +41,7 @@ program
     .command("deploy")
     .option("--prefix <prefix>", "Prefix to prepend to the subdomain URL")
     .option("--customDomain <customDomain>", "Custom domain ID to be configured")
+    .option("--noBuild", "Skip building the project before deploying")
     .description("Deploy a built game")
     .action(deploy);
 

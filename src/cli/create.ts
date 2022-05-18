@@ -11,7 +11,7 @@ import kleur from "kleur";
 import degit from "degit";
 import replace from "replace";
 
-import { slugify, spawn } from "./utils";
+import { slugify, npm, exists } from "./utils";
 import { requireToken } from "./auth";
 import PlaypassClient from "./playpass-client";
 import { playpassHost } from "./config";
@@ -26,15 +26,6 @@ async function prompt (obj: Partial<PromptObject>): Promise<string> {
         }
     });
     return value;
-}
-
-async function exists (file: string): Promise<boolean> {
-    try {
-        await fs.stat(file);
-        return true;
-    } catch (error) {
-        return false;
-    }
 }
 
 export async function create (destDir: string | undefined, opts: { template?: string, local?: boolean }): Promise<void> {
@@ -130,7 +121,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
 
     console.log("Installing NPM dependencies, this may take a minute...");
 
-    await spawn(/^win/.test(process.platform) ? "npm.cmd" : "npm", ["install", "playpass@latest", "--save"], {
+    await npm(["install", "playpass@latest", "--save"], {
         stdio: "ignore",
         cwd: destDir,
     });

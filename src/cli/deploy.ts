@@ -7,11 +7,13 @@ import archiver, {EntryData, ProgressData} from "archiver";
 import * as path from "path";
 import bytes from "bytes";
 import fetch from "cross-fetch";
-
-import {requireToken} from "./auth";
-import {loadConfig} from "./config";
-import PlaypassClient from "./playpass-client";
 import readline from "readline";
+
+import { requireToken } from "./auth";
+import { loadConfig } from "./config";
+import { exists, npm } from "./utils";
+import PlaypassClient from "./playpass-client";
+import type { Config } from "./config";
 
 // TODO(2022-02-22): Put this in a project config or infer
 const PUBLISH_DIR = path.join(process.cwd(), "dist");
@@ -60,11 +62,27 @@ function packageDir(publishDir: string): Promise<Buffer> {
     });
 }
 
-export async function deploy(opts: { prefix?: string }): Promise<void> {
+async function build(config: Config) {
+    if (await exists("package.json")) {
+        console.log("Building game...");
+        try {
+            await npm(["run", "build", "--if-present"], { stdio: "inherit" });
+        } catch (error) {
+            throw new Error("Errors during build, the project was not deployed.");
+        }
+        console.log();
+    }
+}
+
+export async function deploy(opts: { prefix?: string, noBuild?: boolean }): Promise<void> {
     const config = await loadConfig(path.join(process.cwd(), "playpass.toml"));
 
     const token = await requireToken();
     const playpassClient = new PlaypassClient(token);
+
+    if (!opts.noBuild) {
+        await build(config);
+    }
 
     console.log("Uploading game...");
 
