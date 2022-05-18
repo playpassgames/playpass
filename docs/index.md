@@ -5,7 +5,7 @@ started takes under a minute!
 
 ## 1. Install Playpass
 
-- Make sure you have a recent version of [Node.jS and NPM](https://nodejs.org/en/download/) installed (node >= 16 and npm >= 8)
+- Make sure you have a recent version of [Node.js and npm](https://nodejs.org/en/download/) installed (Node.js >= 16 and npm >= 8).
 - Install the `playpass` CLI by running `npm install -g playpass`.
 - Join our Discord server by using <a href="https://discord.gg/M8DMeVyyAj" target="_blank">this invite link</a>.
 - Login with your Discord account by running `playpass login`.
