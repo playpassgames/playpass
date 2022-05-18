@@ -80,7 +80,6 @@
     "dist/cjs",
     "dist/esm",
     "dist/playpass.min.js",
-    "src",
-    "templates"
+    "src"
   ]
 }
