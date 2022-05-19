@@ -64,7 +64,7 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
 
     const type = opts?.type || ShareType.Any;
 
-    const trackParams = { fileCount: files.length, textLength: text?.length ?? 0 };
+    const trackParams = { fileCount: files.length, textLength: text?.length ?? 0, type };
     analytics.track("SharePrompted", trackParams);
 
     const shareData = { files, text };
