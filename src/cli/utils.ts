@@ -2,6 +2,7 @@
 // Playpass (c) Playco
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
+import fs from "fs/promises";
 import os from "os";
 import path from "path";
 import { spawn as nodeSpawn } from "child_process";
@@ -31,6 +32,19 @@ export function spawn (command: string, args: string[], opts: SpawnOptions): Pro
             }
         });
     });
+}
+
+export function npm (args: string[], opts: SpawnOptions): Promise<void> {
+    return spawn(/^win/.test(process.platform) ? "npm.cmd" : "npm", args, opts);
+}
+
+export async function exists (file: string): Promise<boolean> {
+    try {
+        await fs.stat(file);
+        return true;
+    } catch (error) {
+        return false;
+    }
 }
 
 // https://github.com/sindresorhus/env-paths
