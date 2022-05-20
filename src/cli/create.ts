@@ -141,6 +141,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
         replacement: gameId,
         paths: [destDir],
         recursive: true,
+        silent: true,
     });
 
     // Generate an initial playpass.toml
