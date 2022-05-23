@@ -15,6 +15,7 @@ import { slugify, npm, exists } from "./utils";
 import { requireToken } from "./auth";
 import PlaypassClient from "./playpass-client";
 import { playpassHost } from "./config";
+import { templates } from "./templates.json";
 
 async function prompt (obj: Partial<PromptObject>): Promise<string> {
     const { value } = await prompts({
@@ -94,13 +95,7 @@ export async function create (destDir: string | undefined, opts: { template?: st
             type: "select",
             name: "template",
             message: "Choose a project template below",
-            choices: [
-                { title: "Daily Image Reveal Game", value: "github:playpassgames/daily-pixel-game-template" },
-                { title: "Daily Images Game", value: "github:playpassgames/daily-image-game-template" },
-                { title: "Daily Level Game", value: "github:playpassgames/playpass-game-template" },
-                { title: "Daily Phrase Game", value: "github:playpassgames/daily-phrase-game-template" },
-                { title: "Daily Word Game", value: "github:playpassgames/daily-word-game-template" },
-            ],
+            choices: templates,
         });
 
         // values with slashes in them are preceived as git urls
