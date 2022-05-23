@@ -87,7 +87,7 @@ export async function create (destDir: string | undefined, opts: { name?: string
             }
             
             if (!proceed) {
-                console.error(`Subdomain ${subdomain}.${playpassHost} already exists. Please use a different name.`);
+                throw new Error(`Subdomain ${subdomain}.${playpassHost} already exists. Please use a different name.`);
                 return;    
             }
         } else {
@@ -103,8 +103,7 @@ export async function create (destDir: string | undefined, opts: { name?: string
     if (useTemplate) {
         try {
             await fs.stat(destDir);
-            console.error(`Directory ${destDir} already exists. Please use a different name.`);
-            return;
+            throw new Error(`Directory ${destDir} already exists. Please use a different name.`);
         } catch (error) {
             // Continue
         }
