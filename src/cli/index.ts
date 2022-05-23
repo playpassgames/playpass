@@ -32,7 +32,7 @@ program
 
 program
     .command("create [directory]")
-    .option('--name <subdomain>', "Canonical name of your project.  This will be used as your subdomain.  Defaults to the directory name.")
+    .option("--name <subdomain>", "Canonical name of your project.  This will be used as your subdomain.  Defaults to the directory name.")
     .option("--template <template>", "New project template.  Accepts git urls via degit")
     .option("-l, --local", "initializes the project locally without reserving a game id")
     .description("Create a new game project")
