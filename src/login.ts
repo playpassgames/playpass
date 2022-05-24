@@ -13,6 +13,11 @@ import "./ui/login-popup";
 let replicantClient: ReplicantLite | undefined;
 export { replicantClient };
 
+export function requireReplicantClient (funcName: string): ReplicantLite {
+    requireInit(funcName);
+    return replicantClient!;
+}
+
 // Keep track of the promise in order to support multiple simultaneous requests to login()
 let pendingLogin: Promise<boolean> | undefined;
 
