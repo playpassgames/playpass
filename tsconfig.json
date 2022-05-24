@@ -20,7 +20,8 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "resolveJsonModule": true
   },
 
   "include": ["./src/**/*.ts"],

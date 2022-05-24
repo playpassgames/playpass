@@ -1,0 +1,28 @@
+{
+    "templates": [
+        {
+            "title": "Daily Image Reveal Game",
+            "value": "github:playpassgames/daily-pixel-game-template"
+        },
+        {
+            "title": "Daily Images Game",
+            "value": "github:playpassgames/daily-image-game-template"
+        },
+        {
+            "title": "Daily Level Game",
+            "value": "github:playpassgames/playpass-game-template"
+        },
+        {
+            "title": "Daily Phrase Game",
+            "value": "github:playpassgames/daily-phrase-game-template"
+        },
+        {
+            "title": "Daily Word Game",
+            "value": "github:playpassgames/daily-word-game-template"
+        },
+        {
+            "title": "Daily Audio Game",
+            "value": "github:playpassgames/daily-audio-game-template"
+        }
+    ]
+}
