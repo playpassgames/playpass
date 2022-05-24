@@ -113,7 +113,7 @@ class LeaderboardImpl implements Leaderboard {
             leaderboardId: this.name,
             score: score,
             lowerIsBetter: !!opts?.lowerIsBetter,
-            recordData: opts?.recordData,
+            recordData: opts?.recordData ?? null,
         });
     }
 }
