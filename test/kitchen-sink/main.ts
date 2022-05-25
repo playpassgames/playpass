@@ -11,6 +11,7 @@ import * as playpass from "../../src";
     });
 
     const linkData = playpass.getLinkData();
+    const leaderboard = playpass.leaderboards.getLeaderboard("test");
 
     let demoGroupIds = await playpass.storage.get("demoGroupIds") || [];
     if (linkData?.groupInvites) {
@@ -33,6 +34,26 @@ import * as playpass from "../../src";
             groupsInfo.push(`Group ${groupId} [players=${group.players.size}, storage=${testData.join("")}]`);
         }
         document.querySelector("#groupsInfo").textContent = groupsInfo.join("\n");
+
+        const leaderboardBody = document.querySelector("#leaderboardBody");
+        leaderboardBody.textContent = "";
+        for (const record of await leaderboard.listRecords()) {
+            const tr = document.createElement("tr");
+
+            const rank = document.createElement("td");
+            rank.textContent = ""+record.rank;
+            tr.appendChild(rank);
+
+            const name = document.createElement("td");
+            name.textContent = record.profileData?.name || "Anonymous";
+            tr.appendChild(name);
+
+            const score = document.createElement("td");
+            score.textContent = ""+record.score;
+            tr.appendChild(score);
+
+            leaderboardBody.appendChild(tr);
+        }
     }
     updateUI();
 
@@ -121,6 +142,19 @@ import * as playpass from "../../src";
             group.storage.set("testData", testData);
         }
         updateUI();
+    };
+
+    document.querySelector("#setLeaderboardProfile").onclick = async () => {
+        const name = prompt("What is your name, bold kitchen sink tester?");
+        if (name) {
+            playpass.leaderboards.setProfileData({ name });
+        }
+    };
+    document.querySelector("#submitLeaderboardScore").onclick = async () => {
+        const score = parseFloat(prompt("Score to submit?"));
+        if (score) {
+            leaderboard.submitScore(score);
+        }
     };
 })();
 
