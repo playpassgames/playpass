@@ -12,7 +12,7 @@ export interface Leaderboard {
     countRecords (): Promise<number>;
 
     /**
-     * List the top 100 records in this leaderboard, ordered by score.
+     * List the top 50 records in this leaderboard, ordered by score.
      *
      * ```javascript
      * const records = await leaderboard.listRecords();
@@ -38,6 +38,10 @@ export interface Leaderboard {
      *
      * A previously submitted record will only be replaced if the new record is "better" (score
      * either higher or lower) than the previous submission.
+     *
+     * @param score The score number, which will be truncated to an integer. If you need decimals,
+     * consider multiplying the score by a fixed amount while submitting and dividing back when
+     * displaying the leaderboard.
      */
     submitScore (score: number, opts?: SubmitScoreOptions): void;
 }
@@ -65,12 +69,7 @@ export interface LeaderboardRecord {
     /** The score of this record. */
     score: number;
 
-    /**
-     * Additional custom data attached to this record.
-     *
-     * See {@link SubmitScoreOptions.recordData} for attaching custom data to a record during
-     * submission.
-     */
+    /** Additional custom data attached to this record. */
     recordData?: unknown;
 
     /** The player ID that submitted this score. */
