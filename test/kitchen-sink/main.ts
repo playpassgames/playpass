@@ -5,6 +5,8 @@
 import * as playpass from "../../src";
 
 (async () => {
+    document.querySelector("#userAgent").textContent = navigator.userAgent;
+
     await playpass.init({
         gameId: "kitchen-sink",
         stripeAccount: "acct_1KmOYpRSkLu3gu7q",
