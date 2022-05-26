@@ -20,21 +20,7 @@ import * as playpass from "../../src";
         playpass.storage.set("demoGroupIds", demoGroupIds);
     }
 
-    async function updateUI () {
-        document.querySelector("#getPlayerId").textContent = playpass.account.getPlayerId();
-        document.querySelector("#isLoggedIn").textContent = playpass.account.isLoggedIn();
-        document.querySelector("#getLinkData").textContent = JSON.stringify(playpass.getLinkData());
-        document.querySelector("#getCounter").textContent = await playpass.storage.get("counter") || "unset";
-        document.querySelector("#currentSub").textContent = playpass.account.isLoggedIn() ? await playpass.payments.getSubscription() || "null" : "null";
-
-        const groupsInfo = [];
-        for (const groupId of demoGroupIds) {
-            const group = await playpass.groups.getGroup(groupId);
-            const testData = await group.storage.get("testData") || [];
-            groupsInfo.push(`Group ${groupId} [players=${group.players.size}, storage=${testData.join("")}]`);
-        }
-        document.querySelector("#groupsInfo").textContent = groupsInfo.join("\n");
-
+    async function updateLeaderboardUI () {
         const leaderboardBody = document.querySelector("#leaderboardBody");
         leaderboardBody.textContent = "";
         for (const record of await leaderboard.listRecords()) {
@@ -54,6 +40,24 @@ import * as playpass from "../../src";
 
             leaderboardBody.appendChild(tr);
         }
+    }
+
+    async function updateUI () {
+        updateLeaderboardUI();
+
+        document.querySelector("#getPlayerId").textContent = playpass.account.getPlayerId();
+        document.querySelector("#isLoggedIn").textContent = playpass.account.isLoggedIn();
+        document.querySelector("#getLinkData").textContent = JSON.stringify(playpass.getLinkData());
+        document.querySelector("#getCounter").textContent = await playpass.storage.get("counter") || "unset";
+        document.querySelector("#currentSub").textContent = playpass.account.isLoggedIn() ? await playpass.payments.getSubscription() || "null" : "null";
+
+        const groupsInfo = [];
+        for (const groupId of demoGroupIds) {
+            const group = await playpass.groups.getGroup(groupId);
+            const testData = await group.storage.get("testData") || [];
+            groupsInfo.push(`Group ${groupId} [players=${group.players.size}, storage=${testData.join("")}]`);
+        }
+        document.querySelector("#groupsInfo").textContent = groupsInfo.join("\n");
     }
     updateUI();
 
@@ -147,13 +151,15 @@ import * as playpass from "../../src";
     document.querySelector("#setLeaderboardProfile").onclick = async () => {
         const name = prompt("What is your name, bold kitchen sink tester?");
         if (name) {
-            playpass.leaderboards.setProfileData({ name });
+            await playpass.leaderboards.setProfileData({ name });
+            updateLeaderboardUI();
         }
     };
     document.querySelector("#submitLeaderboardScore").onclick = async () => {
         const score = parseFloat(prompt("Score to submit?"));
         if (score) {
-            leaderboard.submitScore(score);
+            await leaderboard.submitScore(score);
+            updateLeaderboardUI();
         }
     };
 })();

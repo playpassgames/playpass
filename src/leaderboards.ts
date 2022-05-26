@@ -43,7 +43,7 @@ export interface Leaderboard {
      * consider multiplying the score by a fixed amount while submitting and dividing back when
      * displaying the leaderboard.
      */
-    submitScore (score: number, opts?: SubmitScoreOptions): void;
+    submitScore (score: number, opts?: SubmitScoreOptions): Promise<void>;
 }
 
 /** Options to {@link Leaderboard.listRecords}. */
@@ -108,7 +108,7 @@ class LeaderboardImpl implements Leaderboard {
     }
 
     submitScore (score: number, opts?: SubmitScoreOptions) {
-        requireReplicantClient("Leaderboard.submitScore").leaderboards.submitRecord({
+        return requireReplicantClient("Leaderboard.submitScore").leaderboards.submitRecord({
             leaderboardId: this.name,
             score: score,
             lowerIsBetter: !!opts?.lowerIsBetter,
@@ -128,8 +128,8 @@ class LeaderboardImpl implements Leaderboard {
  *
  * The profile data of other players is viewable in {@link LeaderboardRecord.profileData}.
  */
-export function setProfileData (profileData: unknown): void {
-    void requireReplicantClient("playpass.leaderboards.setProfileData").leaderboards.setProfileData({ profileData });
+export function setProfileData (profileData: unknown): Promise<void> {
+    return requireReplicantClient("playpass.leaderboards.setProfileData").leaderboards.setProfileData({ profileData });
 }
 
 /** Gets a leaderboard with the given unique name. */
