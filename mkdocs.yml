@@ -19,6 +19,7 @@ nav:
         - playpass.account: api/modules/account.md
         - playpass.groups: api/modules/groups.md
         - playpass.leaderboards: api/modules/leaderboards.md
+    - Changelog: changelog.md
         # - playpass.payments: api/modules/payments.md
         # - Analytics: analytics.md
         # - Feature Flags: feature-flags.md
