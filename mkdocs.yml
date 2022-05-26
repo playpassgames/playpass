@@ -10,6 +10,7 @@ nav:
         - Add a Share Button: share.md
         - Store Player Data: storage.md
         - Add a Login Button: account.md
+        - Show Highscore Leaderboards: leaderboards.md
         - Add Multiplayer with Groups: groups.md
         # - Receive Payments: payments.md
         - Deploy Your Game: deploy.md
