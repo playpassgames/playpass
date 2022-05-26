@@ -2,8 +2,8 @@
 // Playpass (c) Playco
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
-import axios, {AxiosResponse, AxiosError} from "axios";
-import {playpassApiUrl} from "./config";
+import axios, { AxiosResponse, AxiosError } from "axios";
+import { playpassApiUrl } from "./config";
 
 export type PlaypassResponse = {
     result?: boolean | undefined,
@@ -50,17 +50,15 @@ export default class PlaypassClient {
         this.host = host;
     }
 
-    public async checkGame(game: string): Promise<void> {
-        return axios.request({
+    public async checkGame(game: string): Promise<boolean> {
+        return new Promise((resolve, reject) => axios.request({
             method: "HEAD",
             url: `${this.host}/api/v1/games/${game}`,
             headers: {
                 "X-API-TOKEN": this.authToken
             },
-        })
-            .then(() => {
-                return;
-            });
+        }).then(() => { resolve(true) })
+            .catch(() => { resolve(false) }));
     }
 
     public async getGames(): Promise<Game[]> {

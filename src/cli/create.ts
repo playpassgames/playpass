@@ -29,7 +29,7 @@ async function prompt (obj: Partial<PromptObject>): Promise<string> {
     return value;
 }
 
-export async function create (destDir: string | undefined, opts: { template?: string, local?: boolean }): Promise<void> {
+export async function create (destDir: string | undefined, opts: { name?: string, template?: string, local?: boolean }): Promise<void> {
     let subdomain: string;
 
     // Whether we're creating using a template, or in-place adding Playpass to an existing project
@@ -38,26 +38,27 @@ export async function create (destDir: string | undefined, opts: { template?: st
 
     if (!destDir) {
         // No directory param provided, prompt them for a project ID and use it to form the dest dir
-        subdomain = slugify(await prompt({
+        subdomain = slugify(opts.name ?? await prompt({
             type: "text",
             message: "What will we call your project?",
             initial: "my-game",
         }));
 
-        if (await exists(process.cwd()+"/package.json")) {
-            useTemplate = !await prompt({
-                type: "confirm",
-                message: "This directory already contains a package.json, should we use it as an existing project?",
-                initial: true,
-            });
-        }
-
-        destDir = useTemplate ? path.resolve(subdomain) : process.cwd();
-
+        destDir = opts.name ? process.cwd() : path.resolve(subdomain);
     } else {
         // They provided a dest dir, infer the project ID from it and make sure it's absolute
-        subdomain = slugify(path.basename(destDir));
+        subdomain = slugify(opts.name ?? path.basename(destDir));
         destDir = path.resolve(destDir);
+    }
+
+    console.log(`New playpass project ${subdomain} will be created in ${destDir}`);
+
+    if (await exists(path.resolve(destDir, "package.json"))) {
+        useTemplate = !await prompt({
+            type: "confirm",
+            message: "This directory already contains a package.json, should we use it as an existing project?",
+            initial: true,
+        });
     }
 
     // when the local flag is set, we do not need to reserve resources in playpass cloud
@@ -66,29 +67,42 @@ export async function create (destDir: string | undefined, opts: { template?: st
     if (!opts.local) {
         const token = await requireToken();
         const playpassClient = new PlaypassClient(token);
-        try {
-            await playpassClient.checkGame(subdomain);
-            console.error(`Subdomain ${subdomain}.${playpassHost} already exists. Please use a different name.`);
-            return;
-        } catch (e) {
-            // Continue
-        }
 
-        try {
-            const game = await playpassClient.create(subdomain);
-            gameId = game.id;
-        } catch (e) {
-            throw new Error(`Failed to create game ${subdomain}, please try again`);
+        if (await playpassClient.checkGame(subdomain)) {
+            const games = await playpassClient.getGames();
+            const game = games.find((game) => game.name === subdomain);
+            
+            let proceed = false;
+            
+            if (game) {
+                const answer = await prompt({
+                    type: "confirm",
+                    message: `You already have an existing project named ${subdomain}.  Are you sure you wish to assign it to this project?`,
+                    initial: true,
+                });
+
+                if (answer) {
+                    gameId = game.id;
+                    proceed = true;
+                }
+            }
+            
+            if (!proceed) {
+                throw new Error(`Subdomain ${subdomain}.${playpassHost} already exists. Please use a different name.`);
+            }
+        } else {
+            try {
+                const game = await playpassClient.create(subdomain);
+                gameId = game.id;
+            } catch (e) {
+                throw new Error(`Failed to create game ${subdomain}, please try again`);
+            }
         }
     }
 
     if (useTemplate) {
-        try {
-            await fs.stat(destDir);
-            console.error(`Directory ${destDir} already exists. Please use a different name.`);
-            return;
-        } catch (error) {
-            // Continue
+        if (await exists(destDir)) {
+            throw new Error(`Directory ${destDir} already exists. Please use a different name.`);
         }
 
         const template = opts.template || await prompt({
