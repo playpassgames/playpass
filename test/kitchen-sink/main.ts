@@ -6,6 +6,8 @@ import * as playpass from "../../src";
 
 (async () => {
     document.querySelector("#userAgent").textContent = navigator.userAgent;
+    document.querySelector("#referrer").textContent = document.referrer;
+    document.querySelector("#iframed").textContent = (window.top == window) ? "No" : "Yes";
 
     await playpass.init({
         gameId: "kitchen-sink",
