@@ -111,5 +111,5 @@ export function invalidSubdomain(subDomain: string) {
         "about",
         "playpass",
     ];
-    return lcSubDomain.length <= 3 || !reserved.includes(lcSubDomain);
+    return lcSubDomain.length <= 3 || reserved.includes(lcSubDomain);
 }
