@@ -91,3 +91,25 @@ export function envPaths (name: string) {
         temp: path.join(tmpdir, username, name),
     };
 }
+
+export function invalidSubdomain(subDomain: string) {
+    const lcSubDomain = subDomain.toLowerCase();
+    const reserved = [
+        "developer",
+        "developers",
+        "creator",
+        "nocode",
+        "web3",
+        "internal",
+        "intern",
+        "play",
+        "link",
+        "analytics",
+        "payments",
+        "subscriptions",
+        "data",
+        "about",
+        "playpass",
+    ];
+    return lcSubDomain.length <= 3 || !reserved.includes(lcSubDomain);
+}

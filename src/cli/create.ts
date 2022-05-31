@@ -11,7 +11,7 @@ import kleur from "kleur";
 import degit from "degit";
 import replace from "replace";
 
-import { slugify, npm, exists } from "./utils";
+import { slugify, npm, exists, invalidSubdomain } from "./utils";
 import { requireToken } from "./auth";
 import PlaypassClient from "./playpass-client";
 import { playpassHost } from "./config";
@@ -49,6 +49,12 @@ export async function create (destDir: string | undefined, opts: { name?: string
         // They provided a dest dir, infer the project ID from it and make sure it's absolute
         subdomain = slugify(opts.name ?? path.basename(destDir));
         destDir = path.resolve(destDir);
+    }
+
+    // Only allow 'safe' domain names
+    if (invalidSubdomain(subdomain)) {
+        console.log(`\n${kleur.bold().red(`Derived subdomain '${subdomain}' is not allowed, please try again.`)}`);
+        return Promise.resolve();
     }
 
     console.log(`New playpass project ${subdomain} will be created in ${destDir}`);
