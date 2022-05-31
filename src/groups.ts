@@ -3,7 +3,6 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import { Storage } from "./storage";
-import { randomId } from "./utils";
 import { replicantClient } from "./login";
 
 const getGroupCache = new Map<string,Promise<Group>>();
