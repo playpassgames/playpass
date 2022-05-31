@@ -13,7 +13,7 @@ let cachedSubscription: string | null;
 let pendingPayment: Promise<boolean> | undefined;
 
 const stripeAPIKeyTest = "pk_test_51Kgx88IODOcOCMETY5iw5NRriwKv0BihFqKZ8Atq8BQnAjLDoNakwSUHUjywoifuqbNYdycwVGnqEY3lmSg9ZLz700mAmQlXWS";
-const stripeAPIKeyProd = "pk_live_51Kgx88IODOcOCMETe3MPWhuJWetIdA4dHAYFqCB0vic4EfrxqlTYiwtQNK20lxOQBeaXZ2Z7muRHaBD8NR4KbsT500xZNpdob3";
+// const stripeAPIKeyProd = "pk_live_51Kgx88IODOcOCMETe3MPWhuJWetIdA4dHAYFqCB0vic4EfrxqlTYiwtQNK20lxOQBeaXZ2Z7muRHaBD8NR4KbsT500xZNpdob3";
 
 /**
  * Called after login, fetches and caches the subscription data
