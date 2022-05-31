@@ -15,7 +15,6 @@ import { decode } from "./links";
 import { getPWADisplayMode } from "./pwa";
 import { getPlayerId } from "./init";
 import { internalStorage } from "./storage";
-import { isArray, isObject } from "util";
 
 let gcPlatform: PlatformImpl;
 
