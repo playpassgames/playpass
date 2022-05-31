@@ -8,6 +8,7 @@ import PlaypassClient from "./playpass-client";
 import fs from "fs/promises";
 import * as path from "path";
 import {loadConfig} from "./config";
+import type { AxiosError } from "axios";
 
 export async function domain(domain: string, opts: {certificate: string, privateKey: string, certificateChain?: string, gameId?: string}): Promise<void> {
     let gameId;
@@ -31,8 +32,8 @@ export async function domain(domain: string, opts: {certificate: string, private
     let result;
     try {
         result = await playpassClient.customDomain(gameId, domain, certificate, privateKey, chain);
-    } catch (e: any) {
-        console.log(`Failed to create custom domain: ${e.message}`);
+    } catch (e) {
+        console.log(`Failed to create custom domain: ${(e as Error | AxiosError).message}`);
         return;
     }
 
