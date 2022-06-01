@@ -12,6 +12,7 @@ import { domain } from "./domain";
 import { getDomain } from "./get-domain";
 import { deleteDomain } from "./delete-domain";
 import { playpassUrl } from "./config";
+import {deleteGame} from "./delete";
 
 if (!process.env.PLAYPASS_DEV) {
     process.on("uncaughtException", (error) => {
@@ -47,22 +48,30 @@ program
     .action(deploy);
 
 program
-    .command("get-domain")
-    .option("--game <gameId>", "Id of the custom domain's game")
+    .command("delete")
+    .option("-y, --yes", "Skip confirmation")
+    .description("Delete a game and all of its deployed assets")
+    .action(deleteGame);
+
+const customDomain = program.command("custom-domain");
+
+customDomain
+    .command("get")
+    .option("--game <game>", "Id of the custom domain's game")
     .action(getDomain);
 
-program
-    .command("delete-domain")
-    .option("--game <gameId>", "Id of the custom domain's game")
+customDomain
+    .command("delete")
+    .option("--game <game>", "Id of the custom domain's game")
     .action(deleteDomain);
 
-program
-    .command("create-domain")
+customDomain
+    .command("create")
     .argument("<domain", "Custom domain")
     .requiredOption("--certificate <certificatePath>", "Path to the PEM-encoded certificate")
     .requiredOption("--privateKey <privateKeyPath>", "Path to the PEM-encoded certificate private key")
     .option("--certificateChain <certificateChainPath>", "Path to the PEM-encoded full certificate chain")
-    .option("--game <gameId>", "Id of the custom domain's game")
+    .option("--game <game>", "Id of the custom domain's game")
     .action(domain);
 
 program

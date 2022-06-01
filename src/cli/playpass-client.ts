@@ -51,7 +51,7 @@ export default class PlaypassClient {
     }
 
     public async checkGame(game: string): Promise<boolean> {
-        return new Promise((resolve, reject) => axios.request({
+        return new Promise((resolve) => axios.request({
             method: "HEAD",
             url: `${this.host}/api/v1/games/${game}`,
             headers: {
@@ -106,6 +106,20 @@ export default class PlaypassClient {
             .then((a: AxiosResponse<Deployment>) => {
                 PlaypassClient.validateResponse(a, "Failed to deploy game.");
                 return a.data;
+            });
+    }
+
+    public async deleteGame(gameId: string): Promise<Game> {
+        return axios.request({
+            method: "DELETE",
+            url: `${this.host}/api/v1/games/${gameId}`,
+            headers: {
+                "X-API-TOKEN": this.authToken
+            }
+        })
+            .then((res: AxiosResponse<Game>) => {
+                // PlaypassClient.validateResponse(res, "Failed to delete game.");
+                return res.data;
             });
     }
 

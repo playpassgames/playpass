@@ -8,10 +8,10 @@ import {loadConfig} from "./config";
 import path from "path";
 import kleur from "kleur";
 
-export async function getDomain(opts: { gameId?: string }): Promise<void> {
+export async function getDomain(opts: { game?: string }): Promise<void> {
     let gameId;
-    if (opts.gameId) {
-        gameId = opts.gameId;
+    if (opts.game) {
+        gameId = opts.game;
     } else {
         const config = await loadConfig(path.join(process.cwd(), "playpass.toml"));
         gameId = config.game_id;

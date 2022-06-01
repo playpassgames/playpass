@@ -9,10 +9,10 @@ import fs from "fs/promises";
 import * as path from "path";
 import {loadConfig} from "./config";
 
-export async function domain(domain: string, opts: {certificate: string, privateKey: string, certificateChain?: string, gameId?: string}): Promise<void> {
+export async function domain(domain: string, opts: {certificate: string, privateKey: string, certificateChain?: string, game?: string}): Promise<void> {
     let gameId;
-    if (opts.gameId) {
-        gameId = opts.gameId;
+    if (opts.game) {
+        gameId = opts.game;
     } else {
         const config = await loadConfig(path.join(process.cwd(), "playpass.toml"));
         gameId = config.game_id;
