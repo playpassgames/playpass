@@ -68,3 +68,25 @@ export function encode (payload: Payload): string {
 export function getLinkData (): unknown {
     return decode().data;
 }
+
+/** Remove payload params from the given URL. */
+export function stripPayloadsFromUrl (href: string): string {
+    const url = new URL(href);
+
+    // Strip the "link" param from the hash
+    const hash = new URL(url.hash.substring(1), url.origin);
+    if (hash.searchParams.has("link")) {
+        hash.searchParams.delete("link");
+        url.hash = hash.pathname + hash.search;
+
+        // If this would result in a bare #/ hash, clean out the entire thing
+        if (url.hash == "#/") {
+            url.hash = "";
+        }
+    }
+
+    // Also remove our old gcinstant legacy payload param
+    url.searchParams.delete("payload");
+
+    return url.toString();
+}

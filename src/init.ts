@@ -3,7 +3,7 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import * as utils from "./utils";
-import { decode } from "./links";
+import { decode, stripPayloadsFromUrl } from "./links";
 import { initFeatureFlags } from "./featureFlags";
 import { internalStorage } from "./storage";
 import { analytics, playpassAnalytics } from "./analytics";
@@ -70,6 +70,12 @@ export async function init (opts?: InitOptions): Promise<void> {
 
     const payload = decode();
     const gcInstantEntryData = getGCInstantEntryData();
+
+    // Strip any payloads from the URL if needed
+    const strippedUrl = stripPayloadsFromUrl(location.href);
+    if (strippedUrl != location.href) {
+        history.replaceState(null, "", strippedUrl);
+    }
 
     playpassAnalytics.track("Entry", {
         // We need to track the ?payload URL param for marketing's ad params. Once we settle on a

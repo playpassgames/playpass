@@ -4,7 +4,7 @@
 
 import "fake-indexeddb/auto";
 
-import { encode, decodeRaw } from "../src/links";
+import { encode, decodeRaw, stripPayloadsFromUrl } from "../src/links";
 
 describe("links", () => {
     it("should encode/decode payloads", () => {
@@ -38,5 +38,14 @@ describe("links", () => {
     it("should prioritize new links over legacy", () => {
         const decoded = decodeRaw("https://blingo.gg/#%7B%22channel%22:%22OLD%22%7D?link=%7B%22channel%22:%22NEW%22%7D");
         expect(decoded.channel).toBe("NEW");
+    });
+
+    it("should strip payloads", () => {
+        expect(stripPayloadsFromUrl("https://foobar.pixi.games:1234/path/subdir?keep1=123&payload=REMOVE&keep2=456#/hashpath/subdir?keep1=abc&link=ALSO_REMOVE&keep2=xyz"))
+            .toBe("https://foobar.pixi.games:1234/path/subdir?keep1=123&keep2=456#/hashpath/subdir?keep1=abc&keep2=xyz");
+
+        expect(stripPayloadsFromUrl("https://blingo.gg/nothing/?same=123")).toBe("https://blingo.gg/nothing/?same=123");
+
+        expect(stripPayloadsFromUrl("https://blingo.gg/#?link=xxx")).toBe("https://blingo.gg/");
     });
 });
