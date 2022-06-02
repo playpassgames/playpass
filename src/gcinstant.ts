@@ -126,5 +126,22 @@ export function assignTestManually(testId: string, bucketId?: string): void {
 }
 
 export function getGCSharePayload() {
-  return gcPlatform ? gcPlatform.getPlatformPayloadData() : {};
+  const gcinstantSharePropertyWhitelist = [
+    'playerID',
+    '$firstEntryGeneration',
+    /\$?zeroEntry/,
+  ]
+  // we filter this because of size constraints.
+  const payload = gcPlatform ? gcPlatform.getPlatformPayloadData() : {};
+  const filteredPayload = Object.entries(payload).reduce((acc, [key, val]) => {
+    const matchFound = !!gcinstantSharePropertyWhitelist.find(matcher => {
+      if(matcher instanceof RegExp) return matcher.test(key)
+      else return matcher === key
+    })
+    if(matchFound) {
+      acc[key] = val;
+    }
+    return acc;
+  }, {} as Record<string, string>);
+  return filteredPayload;
 }
