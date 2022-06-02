@@ -118,7 +118,7 @@ export default class PlaypassClient {
             }
         })
             .then((res: AxiosResponse<Game>) => {
-                // PlaypassClient.validateResponse(res, "Failed to delete game.");
+                PlaypassClient.validateResponse(res, "Failed to delete game.");
                 return res.data;
             });
     }

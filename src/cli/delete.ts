@@ -36,7 +36,6 @@ export async function deleteGame(opts: {yes: boolean}): Promise<void> {
         const deleted = await playpassClient.deleteGame(config.game_id);
         console.log(`${kleur.green("✔")} Deleted game ${deleted.name}`);
     } catch (e: unknown) {
-        throw new Error(`${kleur.red("✘")} Failed to delete game: ${e}`);
+        throw new Error(`Failed to delete game: ${e}`);
     }
-    return;
 }
