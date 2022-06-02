@@ -16,7 +16,7 @@ export default function getQueryParameters(url?: string): {
   [key: string]: string;
 } {
   const search = url ? new URL(url).search : window.location.search;
-  const params = {};
+  const params: Record<string, string> = {};
   new URLSearchParams(search).forEach((value, key) => (params[key] = value));
   return params;
 }

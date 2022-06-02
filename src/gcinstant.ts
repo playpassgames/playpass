@@ -22,15 +22,15 @@ let gcPlatform: PlatformImpl;
 
 function getEntryPointData(): AnalyticsProperties.EntryData {
   const decoded = decode().gcinstant as AnalyticsProperties.EntryData
-  if(decoded) return decoded;
+  if (decoded) return decoded;
   try {
-      const { payload } = getQueryParameters();
-      if (payload) {
-        return JSON.parse(payload);
-      }
-    } catch (error) {
-      console.error('Failed to decode gcinstant payload', error);
+    const { payload } = getQueryParameters();
+    if (payload) {
+      return JSON.parse(payload);
     }
+  } catch (error) {
+    console.error('Failed to decode gcinstant payload', error);
+  }
   return {} as AnalyticsProperties.EntryData;
 }
 
