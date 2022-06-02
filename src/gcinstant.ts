@@ -126,6 +126,7 @@ export function assignTestManually(testId: string, bucketId?: string): void {
 }
 
 export function getGCSharePayload() {
+  // Due to size constraints on link shortener we strip out a lot of gcinstants default payload and only use the parts we need.
   const gcinstantSharePropertyWhitelist = [
     'playerID',
     '$firstEntryGeneration',
