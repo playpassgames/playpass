@@ -81,6 +81,7 @@ class AmplitudeAnalytics implements Analytics {
 }
 
 export async function initGCInstant (opts?: { amplitude: string, abTestConfig?: ABConfig, hashFunction?: HashFunction }): Promise<void> {
+    console.log('initing gcinstant w/ v2.0 analytics fix')
     injectSecondaryAnalytics(new AmplitudeAnalytics());
 
     gcPlatform = new PlatformImpl();
