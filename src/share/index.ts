@@ -10,6 +10,7 @@ import { shortHash } from "../utils";
 import { ShareType } from "./share-type";
 
 import "../ui/share-popup";
+import { getGCSharePayload } from "../gcinstant";
 
 export type { ShareType };
 
@@ -174,8 +175,8 @@ export function createLink(opts?: CreateLinkOptions) {
 
         // TODO(2022-03-18): Remove, gcinstant only
         gcinstant: {
+            ...getGCSharePayload(),
             $channel: opts?.channel ?? "SHARE",
-            playerID: getPlayerId(),
         },
     });
 

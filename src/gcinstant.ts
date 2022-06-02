@@ -52,7 +52,7 @@ class PlatformImpl extends PlatformWeb {
         this.setPlayerID(playerId);
     }
 
-    /** Grab entry point data from link payload. */
+    /** If gcinstant is set, use that. Otherwise fallback on the default gcinstant handling for `payload` */
     public override _getEntryPointDataForce(): AnalyticsProperties.EntryData {
         return decode().gcinstant as AnalyticsProperties.EntryData || super._getEntryPointDataForce();
     }
@@ -122,4 +122,26 @@ export function getBucketId(testId: string): string | undefined {
 
 export function assignTestManually(testId: string, bucketId?: string): void {
     gcPlatform.abTests?.assignTestManually(testId, bucketId);
+}
+
+export function getGCSharePayload() {
+    // Due to size constraints on link shortener we strip out a lot of gcinstants default payload and only use the parts we need.
+    const gcinstantSharePropertyWhitelist = [
+        "playerID",
+        "$firstEntryGeneration",
+        /\$?zeroEntry/,
+    ];
+    // we filter this because of size constraints.
+    const payload = gcPlatform ? gcPlatform.getPlatformPayloadData() : {};
+    const filteredPayload = Object.entries(payload).reduce((acc, [key, val]) => {
+        const matchFound = !!gcinstantSharePropertyWhitelist.find(matcher => {
+            if(matcher instanceof RegExp) return matcher.test(key);
+            else return matcher === key;
+        });
+        if(matchFound) {
+            acc[key] = val;
+        }
+        return acc;
+    }, {} as Record<string, string>);
+    return filteredPayload;
 }
