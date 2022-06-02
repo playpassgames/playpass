@@ -20,10 +20,14 @@ import getQueryParameters from "./utils";
 
 let gcPlatform: PlatformImpl;
 
+// this should never be fatal.
 function getEntryPointData(): AnalyticsProperties.EntryData {
-    const decoded = decode().gcinstant as AnalyticsProperties.EntryData;
-    if (decoded) return decoded;
     try {
+        // internal share payload format
+        const decoded = decode().gcinstant as AnalyticsProperties.EntryData;
+        if (decoded) return decoded;
+
+        // else we use the old gcinstant payload handling format.
         const { payload } = getQueryParameters();
         if (payload) {
             return JSON.parse(payload);
