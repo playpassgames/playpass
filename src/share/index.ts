@@ -4,7 +4,7 @@
 
 import { analytics } from "../analytics";
 import { encode } from "../links";
-import { getPlayerId } from "../init";
+import { getGCInstantEntryData, getPlayerId } from "../init";
 import { shortHash } from "../utils";
 
 import { ShareType } from "./share-type";
@@ -174,8 +174,8 @@ export function createLink(opts?: CreateLinkOptions) {
 
         // TODO(2022-03-18): Remove, gcinstant only
         gcinstant: {
+            ...getGCInstantEntryData(),
             $channel: opts?.channel ?? "SHARE",
-            playerID: getPlayerId(),
         },
     });
 

@@ -52,7 +52,7 @@ class PlatformImpl extends PlatformWeb {
         this.setPlayerID(playerId);
     }
 
-    /** Grab entry point data from link payload. */
+    /** If gcinstant is set, use that. Otherwise fallback on the default gcinstant handling for `payload` */
     public override _getEntryPointDataForce(): AnalyticsProperties.EntryData {
         return decode().gcinstant as AnalyticsProperties.EntryData || super._getEntryPointDataForce();
     }
@@ -122,4 +122,8 @@ export function getBucketId(testId: string): string | undefined {
 
 export function assignTestManually(testId: string, bucketId?: string): void {
     gcPlatform.abTests?.assignTestManually(testId, bucketId);
+}
+
+export function getGCSharePayload() {
+  return gcPlatform ? gcPlatform.getPlatformPayloadData() : {};
 }
