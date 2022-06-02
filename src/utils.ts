@@ -12,6 +12,15 @@ export function randomId (prefix: string) {
     return str;
 }
 
+export default function getQueryParameters(url?: string): {
+  [key: string]: string;
+} {
+  const search = url ? new URL(url).search : window.location.search;
+  const params = {};
+  new URLSearchParams(search).forEach((value, key) => (params[key] = value));
+  return params;
+}
+
 export function shortHash (input: string) {
     // First calculate an unsigned 32 bit hash of the input
     let n = 0;
