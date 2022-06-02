@@ -21,17 +21,17 @@ import getQueryParameters from "./utils";
 let gcPlatform: PlatformImpl;
 
 function getEntryPointData(): AnalyticsProperties.EntryData {
-  const decoded = decode().gcinstant as AnalyticsProperties.EntryData
-  if (decoded) return decoded;
-  try {
-    const { payload } = getQueryParameters();
-    if (payload) {
-      return JSON.parse(payload);
+    const decoded = decode().gcinstant as AnalyticsProperties.EntryData;
+    if (decoded) return decoded;
+    try {
+        const { payload } = getQueryParameters();
+        if (payload) {
+            return JSON.parse(payload);
+        }
+    } catch (error) {
+        console.error("Failed to decode gcinstant payload", error);
     }
-  } catch (error) {
-    console.error('Failed to decode gcinstant payload', error);
-  }
-  return {} as AnalyticsProperties.EntryData;
+    return {} as AnalyticsProperties.EntryData;
 }
 
 // we invoke this on load because the URL will get stripped when playpass inits. 
