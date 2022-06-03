@@ -16,8 +16,30 @@ import { getPWADisplayMode } from "./pwa";
 import { getPlayerId } from "./init";
 import { internalStorage } from "./storage";
 import { isArray, isObject } from "util";
+import getQueryParameters from "./utils";
 
 let gcPlatform: PlatformImpl;
+
+// this should never be fatal.
+function getEntryPointData(): AnalyticsProperties.EntryData {
+    try {
+        // internal share payload format
+        const decoded = decode().gcinstant as AnalyticsProperties.EntryData;
+        if (decoded) return decoded;
+
+        // else we use the old gcinstant payload handling format.
+        const { payload } = getQueryParameters();
+        if (payload) {
+            return JSON.parse(payload);
+        }
+    } catch (error) {
+        console.error("Failed to decode gcinstant payload", error);
+    }
+    return {} as AnalyticsProperties.EntryData;
+}
+
+// we invoke this on load because the URL will get stripped when playpass inits. 
+const entryPointData = getEntryPointData();
 
 class PlatformImpl extends PlatformWeb {
     /** Same as initializeAsync, but pass the player ID to initialize Amplitude. */
@@ -54,7 +76,7 @@ class PlatformImpl extends PlatformWeb {
 
     /** If gcinstant is set, use that. Otherwise fallback on the default gcinstant handling for `payload` */
     public override _getEntryPointDataForce(): AnalyticsProperties.EntryData {
-        return decode().gcinstant as AnalyticsProperties.EntryData || super._getEntryPointDataForce();
+        return entryPointData;
     }
 }
 

@@ -10,6 +10,15 @@ import { IDBStorage } from "../../src/storage/idb-storage";
 
 import * as playpass from "../../src";
 
+jest.mock("./../../src/links", () => {
+    const old = jest.requireActual("./../../src/links");
+    return {
+        ...old,
+        decode: jest.fn().mockReturnValue({}),
+        encode: jest.fn().mockReturnValue({}),
+    };
+});
+
 describe("feature flag tests", () => {
     // Hide noisy console logs:
     console.error = jest.fn();
@@ -36,9 +45,8 @@ describe("feature flag tests", () => {
         },
         gcinstant: {}
     };
-    location.href = links.encode(mockPayload);
     const analyticsMock = jest.spyOn(analytics, "setUserProperties");
-    // jest.spyOn(links, 'decode').mockReturnValue(mockPayload);
+    jest.spyOn(links, "decode").mockReturnValue(mockPayload);
 
     beforeEach(() => {
         jest.clearAllMocks();
