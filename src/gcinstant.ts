@@ -151,6 +151,7 @@ export function getGCSharePayload() {
     const gcinstantSharePropertyWhitelist = [
         "playerID",
         "$firstEntryGeneration",
+        "$firstEntryChannel",
         /\$?zeroEntry/,
     ];
     // we filter this because of size constraints.
