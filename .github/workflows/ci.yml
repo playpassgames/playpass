@@ -75,7 +75,7 @@ jobs:
             - run: npm run build
             - run: npm test
 
-            - name: CLI sanity check
-              run: tests/cli-smoke-test.sh
+            - name: CLI smoke check
+              run: test/cli-smoke-test.sh
               env:
                   PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}
