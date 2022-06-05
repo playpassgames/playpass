@@ -10,7 +10,6 @@ import { shortHash } from "../utils";
 import { ShareType } from "./share-type";
 
 import "../ui/share-popup";
-import { getGCSharePayload } from "../gcinstant";
 
 export type { ShareType };
 
@@ -157,6 +156,11 @@ function openNewTab (url: string, params: Record<string,string>) {
     // TODO(2022-05-16): Detect popup blocked
 }
 
+let gcinstantSharePayload: Record<string,string> = {};
+export function setGCSharePayload (sharePayload: Record<string,string>) {
+    gcinstantSharePayload = sharePayload;
+}
+
 /**
  * Generate a short link for sharing the game.  Use this when a shareable link is desired for use outside of the `share` method.
  * @param opts - CreateLinkOptions
@@ -175,7 +179,7 @@ export function createLink(opts?: CreateLinkOptions) {
 
         // TODO(2022-03-18): Remove, gcinstant only
         gcinstant: {
-            ...getGCSharePayload(),
+            ...gcinstantSharePayload,
             $channel: opts?.channel ?? "SHARE",
         },
     });
