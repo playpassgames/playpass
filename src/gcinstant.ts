@@ -15,8 +15,10 @@ import { decode } from "./links";
 import { getPWADisplayMode } from "./pwa";
 import { getPlayerId } from "./init";
 import { internalStorage } from "./storage";
-import { isArray, isObject } from "util";
 import getQueryParameters from "./utils";
+
+import type { CreateLinkOptions } from "./share";
+import share from "./share";
 
 let gcPlatform: PlatformImpl;
 
@@ -136,6 +138,21 @@ export async function initGCInstant (opts?: { amplitude: string, abTestConfig?: 
     // Send an EntryFinal to Amplitude
     await gcPlatform.startGameAsync();
     void gcPlatform.sendEntryFinalAnalytics({}, {}, {});
+
+    // decorate share link data with gcinstant payload information
+    const getLinkPayload = share.getLinkPayload;
+    share.getLinkPayload = function (opts?: CreateLinkOptions) {
+        const payload = getLinkPayload(opts);
+        return {
+            ...payload,
+            
+            // TODO(2022-03-18): Remove, gcinstant only
+            gcinstant: {
+                ...getGCSharePayload(),
+                ...payload.gcinstant,
+            },
+        };
+    };
 }
 
 export function getBucketId(testId: string): string | undefined {
