@@ -77,7 +77,7 @@ jobs:
 
             - name: CLI smoke check
               run: |
-                  node ../dist/cjs/cli/index.js create ../test-project --local --template https://github.com/playpassgames/playpass-game-template
+                  node ./dist/cjs/cli/index.js create ../test-project --local --template https://github.com/playpassgames/playpass-game-template
 
                   npm pack
                   cd test-project
