@@ -77,12 +77,18 @@ jobs:
 
             - name: CLI smoke check
               run: |
-                  node ./dist/cjs/cli/index.js create ../test-project --local --template https://github.com/playpassgames/playpass-game-template
+                  # Create a test project
+                  node ./dist/cjs/cli/index.js create ./test-project --local --template https://github.com/playpassgames/playpass-game-template
 
+                  # Build and install a tarball to fully emulate a live environment. We also remove
+                  # the node_modules directory here to prevent picking up stray dependencies in the
+                  # smoke test.
                   npm pack
+                  rm -rf ./node_modules
                   mv playpass-*.tgz playpass-tarball.tgz
-                  cd ../test-project
-                  npm install ../playpass/playpass-tarball.tgz
+
+                  cd test-project
+                  npm install ../playpass-tarball.tgz
 
                   npx playpass help
                   npm run build
