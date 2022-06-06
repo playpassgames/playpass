@@ -80,8 +80,9 @@ jobs:
                   node ./dist/cjs/cli/index.js create ../test-project --local --template https://github.com/playpassgames/playpass-game-template
 
                   npm pack
+                  mv playpass-*.tgz playpass-tarball.tgz
                   cd ../test-project
-                  npm install ../playpass/playpass-*.tgz
+                  npm install ../playpass/playpass-tarball.tgz
 
                   npx playpass help
                   npm run build
