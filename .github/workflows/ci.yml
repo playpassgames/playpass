@@ -88,6 +88,5 @@ jobs:
 
                   # TODO(2022-06-05): Deploy projects in CLI smoke test
                   # npx playpass deploy
-              shell: bash
               env:
                   PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}
