@@ -75,12 +75,28 @@ jobs:
             - run: npm run build
             - run: npm test
 
-            - name: CLI sanity check
+            - name: CLI smoke check
               run: |
-                  node ./dist/cjs/cli/index.js help
-                  node ./dist/cjs/cli/index.js create test-project --local --template https://github.com/playpassgames/playpass-game-template
+                  # Create a test project
+                  node ./dist/cjs/cli/index.js create ./test-project --local --template https://github.com/playpassgames/playpass-game-template
+
+                  # Build and install a tarball to fully emulate a live environment. We also remove
+                  # the node_modules directory here to prevent picking up stray dependencies in the
+                  # smoke test.
+                  npm pack
+                  rm -rf ./node_modules
+
                   cd test-project
-                  npm run build
-                  # node ../dist/cjs/cli/index.js deploy
+                  if [ "$RUNNER_OS" != "Windows" ]; then
+                      # This hangs the Windows runner for whatever reason, so avoid it there
+                      npm install ../playpass-*.tgz
+
+                      npx playpass help
+                      npm run build
+                  fi
+
+                  # TODO(2022-06-05): Deploy projects in CLI smoke test
+                  # npx playpass deploy
+              shell: bash
               env:
                   PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}

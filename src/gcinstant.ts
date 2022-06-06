@@ -14,8 +14,8 @@ import { Analytics, injectSecondaryAnalytics } from "./analytics";
 import { decode } from "./links";
 import { getPWADisplayMode } from "./pwa";
 import { getPlayerId } from "./init";
+import { setGCSharePayload } from "./share";
 import { internalStorage } from "./storage";
-import { isArray, isObject } from "util";
 import getQueryParameters from "./utils";
 
 let gcPlatform: PlatformImpl;
@@ -135,7 +135,10 @@ export async function initGCInstant (opts?: { amplitude: string, abTestConfig?: 
 
     // Send an EntryFinal to Amplitude
     await gcPlatform.startGameAsync();
-    void gcPlatform.sendEntryFinalAnalytics({}, {}, {});
+    await gcPlatform.sendEntryFinalAnalytics({}, {}, {});
+
+    // Inject GCInstant-specific link parameters
+    setGCSharePayload(getGCSharePayload());
 }
 
 export function getBucketId(testId: string): string | undefined {
@@ -146,7 +149,7 @@ export function assignTestManually(testId: string, bucketId?: string): void {
     gcPlatform.abTests?.assignTestManually(testId, bucketId);
 }
 
-export function getGCSharePayload() {
+function getGCSharePayload() {
     // Due to size constraints on link shortener we strip out a lot of gcinstants default payload and only use the parts we need.
     const gcinstantSharePropertyWhitelist = [
         "playerID",
