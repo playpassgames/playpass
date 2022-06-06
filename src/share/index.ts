@@ -9,8 +9,6 @@ import { shortHash } from "../utils";
 
 import { ShareType } from "./share-type";
 
-import { getBucketId } from "../gcinstant";
-
 import "../ui/share-popup";
 
 export type { ShareType };
@@ -175,7 +173,7 @@ export function createLink(opts?: CreateLinkOptions) {
         : location.hostname;
 
     const longUrl = encode({
-        channel: getBucketId("KABOOM"),
+        channel: opts?.channel ?? "SHARE",
         data: opts?.data,
         referrer: getPlayerId(),
 
