@@ -85,10 +85,12 @@ jobs:
                   # smoke test.
                   npm pack
                   rm -rf ./node_modules
-                  mv playpass-*.tgz playpass-tarball.tgz
 
                   cd test-project
-                  npm install ../playpass-tarball.tgz
+                  if [ "$RUNNER_OS" == "Windows" ]; then
+                      # This hangs the Windows runner for whatever reason, so avoid it there
+                      npm install ../playpass-*.tgz
+                  fi
 
                   npx playpass help
                   npm run build
