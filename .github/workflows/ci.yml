@@ -87,13 +87,13 @@ jobs:
                   rm -rf ./node_modules
 
                   cd test-project
-                  if [ "$RUNNER_OS" == "Windows" ]; then
+                  if [ "$RUNNER_OS" != "Windows" ]; then
                       # This hangs the Windows runner for whatever reason, so avoid it there
                       npm install ../playpass-*.tgz
-                  fi
 
-                  npx playpass help
-                  npm run build
+                      npx playpass help
+                      npm run build
+                  fi
 
                   # TODO(2022-06-05): Deploy projects in CLI smoke test
                   # npx playpass deploy
