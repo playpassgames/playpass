@@ -4,6 +4,9 @@
 
 import { analytics } from "./analytics";
 
+import { getBucketId } from "./gcinstant";
+getBucketId("KABOOM");
+
 type Payload = {
     /** The entry channel to use for tracking. */
     channel?: string,
