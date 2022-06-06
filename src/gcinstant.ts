@@ -135,7 +135,7 @@ export async function initGCInstant (opts?: { amplitude: string, abTestConfig?: 
 
     // Send an EntryFinal to Amplitude
     await gcPlatform.startGameAsync();
-    void gcPlatform.sendEntryFinalAnalytics({}, {}, {});
+    await gcPlatform.sendEntryFinalAnalytics({}, {}, {});
 
     // Inject GCInstant-specific link parameters
     setGCSharePayload(getGCSharePayload());
