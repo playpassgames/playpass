@@ -13,6 +13,7 @@ import { getDomain } from "./get-domain";
 import { deleteDomain } from "./delete-domain";
 import { playpassUrl } from "./config";
 import {deleteGame} from "./delete";
+import {rename} from "./rename";
 
 if (!process.env.PLAYPASS_DEV) {
     process.on("uncaughtException", (error) => {
@@ -46,6 +47,12 @@ program
     .option("--noBuild", "Skip building the project before deploying")
     .description("Deploy a built game")
     .action(deploy);
+
+program
+    .command("rename [name]")
+    .option("-y, --yes", "Skip confirmation")
+    .description("Rename your game")
+    .action(rename);
 
 program
     .command("delete")

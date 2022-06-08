@@ -109,6 +109,23 @@ export default class PlaypassClient {
             });
     }
 
+    public async updateGame(gameId: string, name: string): Promise<Game> {
+        return axios.request({
+            method: "PUT",
+            url: `${this.host}/api/v1/games/${gameId}`,
+            headers: {
+                "X-API-TOKEN": this.authToken
+            },
+            data: {
+                name
+            }
+        })
+            .then((res: AxiosResponse<Game>) => {
+                PlaypassClient.validateResponse(res, "Failed to update game.");
+                return res.data;
+            });
+    }
+
     public async deleteGame(gameId: string): Promise<Game> {
         return axios.request({
             method: "DELETE",
