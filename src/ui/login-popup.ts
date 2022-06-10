@@ -193,6 +193,7 @@ export class LoginPopup extends LitElement {
         this.loading = true;
 
         // input is embedded deep within
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const countryCode = (window as any).intlTelInputGlobals.getInstance(this.phoneElement[0].children[0].children[1]).s.dialCode as string;
         const phoneNumber = (this.phoneElement[0].children[0].children[1] as HTMLInputElement).value;
 

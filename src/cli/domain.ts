@@ -28,13 +28,7 @@ export async function domain(domain: string, opts: {certificate: string, private
         chain = await fs.readFile(path.resolve(opts.certificateChain), {encoding: "base64"});
     }
 
-    let result;
-    try {
-        result = await playpassClient.customDomain(gameId, domain, certificate, privateKey, chain);
-    } catch (e: any) {
-        console.log(`Failed to create custom domain: ${e.message}`);
-        return;
-    }
+    const result = await playpassClient.customDomain(gameId, domain, certificate, privateKey, chain);
 
     const status = result.distributionDeployed ? kleur.green("✔") : kleur.yellow("Deploying...");
     console.log(`${kleur.green("✔")} Custom domain successfully created`);

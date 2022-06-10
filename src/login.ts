@@ -69,6 +69,7 @@ export async function login (): Promise<boolean> {
     telephoneInput.autocomplete = "tel";
     telephoneInput.required = true;
     telephoneInputParent.appendChild(telephoneInput);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).intlTelInput(telephoneInput, {});
 
     const loginPopup = document.createElement("playpass-login");
