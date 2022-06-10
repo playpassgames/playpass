@@ -23,6 +23,9 @@ export type ShareOptions = {
 
     /** The type of share, defaults to "any". */
     type?: ShareType,
+
+    /** Additional tracking properties that will be sent along with the Share events. */
+    trackProps?: Record<string,unknown>,
 };
 
 /** Options to pass to {@link createLink}. */
@@ -64,7 +67,12 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
 
     const type = opts?.type || ShareType.Any;
 
-    const trackParams = { fileCount: files.length, textLength: text?.length ?? 0, type };
+    const trackParams = {
+        fileCount: files.length,
+        textLength: text?.length ?? 0,
+        type,
+        ...opts?.trackProps,
+    };
     analytics.track("SharePrompted", trackParams);
 
     const shareData = { files, text };

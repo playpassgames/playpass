@@ -20,6 +20,9 @@ let phoneCodeScript: HTMLScriptElement | undefined;
 export type InitOptions = {
     gameId: string;
     stripeAccount?: string;
+
+    /** Additional tracking properties that will be sent along with the Entry event. */
+    trackProps?: Record<string,unknown>;
 }
 
 /** Initialize the Playpass SDK. */
@@ -84,6 +87,8 @@ export async function init (opts?: InitOptions): Promise<void> {
 
         channel: payload.channel,
         $referrer_id: payload.referrer,
+
+        ...opts?.trackProps,
     });
 
     window.addEventListener("appinstalled", () => {
