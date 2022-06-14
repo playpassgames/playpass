@@ -35,10 +35,10 @@ Use the `playpass custom-domain create` command first:
 playpass custom-domain create <domain> --certificate <certificatePath> --privateKey <privateKeyPath> [--certificateChain <certificateChainPath>]
 ```
 
-You can also create it outside of your game's directory with the `gameId` flag:
+You can also create it outside of your game's directory with the `game` flag:
 
 ```shell
-playpass custom-domain create <domain> --certificate <certificatePath> --privateKey <privateKeyPath> [--certificateChain <certificateChainPath> --gameId <gameId>]
+playpass custom-domain create <domain> --certificate <certificatePath> --privateKey <privateKeyPath> [--certificateChain <certificateChainPath> --game <gameId>]
 ```
 
 To set up a custom domain with the CLI you need to provide the domain (e.g. `foo.example.com`) and its respective PEM encoded SSL certificate and private key.
