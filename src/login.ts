@@ -142,7 +142,7 @@ export async function initLogin (gameId: string): Promise<void> {
                 },
             },
 
-            version: "1.4.0",
+            version: "1.4.1",
             // endpoint: "https://replicant-lite.us-east-1.replicant-playpass.gc-internal.net/replicant-lite-dev",
         },
         stripeAccountId: getStripeAccount(),
