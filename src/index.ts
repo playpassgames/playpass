@@ -22,3 +22,5 @@ export type { FeatureFlagOptions } from "./featureFlags";
 export type { InitOptions } from "./init";
 export type { ShareType, ShareOptions, CreateLinkOptions } from "./share";
 export type { Storage } from "./storage";
+
+export { experiments } from "./experiments";
