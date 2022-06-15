@@ -81,7 +81,7 @@ class PlatformImpl extends PlatformWeb {
 }
 
 
-class AmplitudeAnalytics implements Analytics {
+export class AmplitudeAnalytics implements Analytics {
     track (name: string, props?: Record<string,unknown>) {
         gcAnalytics.pushEvent(name, props);
     }
