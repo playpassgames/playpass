@@ -87,18 +87,20 @@ class AmplitudeAnalytics implements Analytics {
     }
 
     setUserProperties (props: Record<string,unknown>) {
-        // amplitude doesn't support featureFlags in a {key: value} format, so we flatten it into an array.
-        const flattenedFeatureFlags = Object.entries(props.featureFlags as Record<string, unknown>).reduce((acc, [key, val]) => {
-            if(val) {
-                acc.push(key);
-            }
-            return acc;
-        }, [] as string[]);
+        const amplitudeUserProps = {...props};
 
-        gcAnalytics.setUserProperties({
-            ...props,
-            featureFlags: flattenedFeatureFlags,
-        } as Record<string, unknown>);
+        if (amplitudeUserProps.featureFlags) {
+            // amplitude doesn't support featureFlags in a {key: value} format, so we flatten it into an array.
+            const flattenedFeatureFlags = Object.entries(props.featureFlags as Record<string, unknown>).reduce((acc, [key, val]) => {
+                if(val) {
+                    acc.push(key);
+                }
+                return acc;
+            }, [] as string[]);
+            amplitudeUserProps.featureFlags  = flattenedFeatureFlags;
+        }
+
+        gcAnalytics.setUserProperties(amplitudeUserProps);
     }
 }
 
