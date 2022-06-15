@@ -74,7 +74,7 @@ customDomain
 
 customDomain
     .command("create")
-    .argument("<domain", "Custom domain")
+    .argument("<domain>", "Custom domain")
     .requiredOption("--certificate <certificatePath>", "Path to the PEM-encoded certificate")
     .requiredOption("--privateKey <privateKeyPath>", "Path to the PEM-encoded certificate private key")
     .option("--certificateChain <certificateChainPath>", "Path to the PEM-encoded full certificate chain")
