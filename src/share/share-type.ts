@@ -33,6 +33,9 @@ export enum ShareType {
     /** Share by copying text to the system clipboard. */
     Clipboard = "clipboard",
 
+    /** Share as a post on Reddit */
+    Reddit = "reddit",
+
     // /** Share as an email. */
     // Email = "email",
 }

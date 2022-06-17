@@ -145,7 +145,12 @@ async function doShare (type: ShareType, text: string): Promise<boolean> {
             url: urlMatch ? urlMatch[0] : createLink(),
         });
         return true;
-
+    case ShareType.Reddit:
+        openNewTab("https://www.reddit.com/submit", {
+            title: textNoUrls,
+            url: urlMatch ? urlMatch[0] : createLink(),
+        });
+        return true;
     case ShareType.Clipboard:
         void copyToClipboard(text);
         return true;
