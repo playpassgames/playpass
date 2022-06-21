@@ -37,6 +37,10 @@ export type CreateLinkOptions = {
     data?: unknown,
 };
 
+interface ShareAdapter {
+    (link: string): void | Promise<void>;
+}
+
 /**
  * Open the device share dialog.
  *
@@ -118,49 +122,62 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
     return shareSent;
 }
 
-async function doShare (type: ShareType, text: string): Promise<boolean> {
-    const urlPattern = /\bhttps?:\/\/[^\s]+/;
-    const urlMatch = text.match(urlPattern);
-    const textNoUrls = text.replace(urlPattern, "").trim();
+const Adapters: { [target: string]: ShareAdapter } = {
+    [ShareType.Facebook]: (text) => {
+        const urlPattern = /\bhttps?:\/\/[^\s]+/;
+        const urlMatch = text.match(urlPattern);
+        const textNoUrls = text.replace(urlPattern, "").trim();
 
-    switch (type) {
-    case ShareType.Facebook:
         openNewTab("https://www.facebook.com/sharer/sharer.php", {
             quote: textNoUrls,
             u: urlMatch ? urlMatch[0] : createLink(),
         });
-        return true;
-
-    case ShareType.Twitter:
+    },
+    [ShareType.Twitter]: (text) => {
         openNewTab("https://twitter.com/intent/tweet", { text });
-        return true;
-
-    case ShareType.WhatsApp:
+    },
+    [ShareType.WhatsApp]: (text) => {
         openNewTab("https://api.whatsapp.com/send", { text });
-        return true;
+    },
+    [ShareType.Telegram]: (text) => {
+        const urlPattern = /\bhttps?:\/\/[^\s]+/;
+        const urlMatch = text.match(urlPattern);
+        const textNoUrls = text.replace(urlPattern, "").trim();
 
-    case ShareType.Telegram:
         openNewTab("https://telegram.me/share/msg", {
             text: textNoUrls,
             url: urlMatch ? urlMatch[0] : createLink(),
         });
-        return true;
-    case ShareType.Reddit:
+    },
+    [ShareType.Reddit]: (text) => {
+        const urlPattern = /\bhttps?:\/\/[^\s]+/;
+        const urlMatch = text.match(urlPattern);
+        const textNoUrls = text.replace(urlPattern, "").trim();
+
         openNewTab("https://www.reddit.com/submit", {
             title: textNoUrls,
             url: urlMatch ? urlMatch[0] : createLink(),
         });
-        return true;
-    case ShareType.Clipboard:
+    },
+    [ShareType.Clipboard]: (text) => {
         void copyToClipboard(text);
-        return true;
+    },
+};
 
-    default:
-        throw new Error(`Unsupported share type: ${type}`);
-    }
+export async function registerCustomShare(target: string, adapter: ShareAdapter) {
+    Object.assign(Adapters, { [target]: adapter });
 }
 
-function openNewTab (url: string, params: Record<string,string>) {
+async function doShare (type: ShareType, text: string): Promise<boolean> {
+    if (type in Adapters) {
+        await Adapters[type](text);
+        return true;
+    }
+
+    throw new Error(`Unsupported share type: ${type}`);
+}
+
+export function openNewTab (url: string, params: Record<string,string>) {
     const u = new URL(url);
     for (const key in params) {
         u.searchParams.set(key, params[key]);
