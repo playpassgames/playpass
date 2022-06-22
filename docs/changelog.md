@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.0: June 22, 2022
+
+- Add Reddit as an option to `playpass.share`.
+- Optimize initialization by lazily loading certain components.
+
 ## 1.5.0: June 14, 2022
 
 - Add `playpass rename` to the CLI for renaming a game's subdomain.
