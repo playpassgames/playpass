@@ -13,6 +13,9 @@ import "./ui/login-popup";
 let replicantClient: ReplicantLite | undefined;
 export { replicantClient };
 
+let phoneCodeCss: HTMLLinkElement | undefined;
+let phoneCodeScript: HTMLScriptElement | undefined; 
+
 export function requireReplicantClient (funcName: string): ReplicantLite {
     requireInit(funcName);
     return replicantClient!;
@@ -61,6 +64,26 @@ export async function login (): Promise<boolean> {
         return pendingLogin; // Reuse a previous request to login()
     }
 
+    // country code drop down elements for phone
+    if (!phoneCodeCss) {
+        phoneCodeCss = document.createElement("link");
+        phoneCodeCss.rel = "stylesheet";
+        phoneCodeCss.href = "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css";
+        document.head.appendChild(phoneCodeCss);
+    }
+
+    if (!phoneCodeScript) {
+        phoneCodeScript = document.createElement("script");
+        phoneCodeScript.setAttribute("src", "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js");
+        phoneCodeScript.setAttribute("crossorigin", "anonymous");
+        document.head.appendChild(phoneCodeScript);
+
+        // TODO(2022-06-22): Clean this up by moving styling to the login popup?
+        const phoneInputStyle = document.createElement("style");
+        phoneInputStyle.innerText = ".phoneInput { transition: box-shadow; outline: none; box-shadow: none; border: 1px solid #a2afb9; padding: 0.75rem 1rem; font-size: 1.25rem; border-radius: 0.25rem; } .phoneInput:focus { box-shadow: 0 0 0 3px rgba(16, 149, 193, 0.125); border-color: var(--primary); }";
+        document.head.appendChild(phoneInputStyle);
+    }
+
     const telephoneInputParent = document.createElement("div");
     const telephoneInput = document.createElement("input");
     telephoneInput.id = "phone";
@@ -70,7 +93,15 @@ export async function login (): Promise<boolean> {
     telephoneInput.required = true;
     telephoneInputParent.appendChild(telephoneInput);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).intlTelInput(telephoneInput, {});
+    // (window as any).intlTelInput(telephoneInput, {});
+
+    if ((window as any).intlTelInput) {
+        (window as any).intlTelInput(telephoneInput);
+    } else {
+        phoneCodeScript.onload = () => {
+            (window as any).intlTelInput(telephoneInput);
+        };
+    }
 
     const loginPopup = document.createElement("playpass-login");
     loginPopup.appendChild(telephoneInputParent);

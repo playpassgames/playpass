@@ -15,6 +15,8 @@ let pendingPayment: Promise<boolean> | undefined;
 const stripeAPIKeyTest = "pk_test_51Kgx88IODOcOCMETY5iw5NRriwKv0BihFqKZ8Atq8BQnAjLDoNakwSUHUjywoifuqbNYdycwVGnqEY3lmSg9ZLz700mAmQlXWS";
 // const stripeAPIKeyProd = "pk_live_51Kgx88IODOcOCMETe3MPWhuJWetIdA4dHAYFqCB0vic4EfrxqlTYiwtQNK20lxOQBeaXZ2Z7muRHaBD8NR4KbsT500xZNpdob3";
 
+let stripeScriptLoad: Promise<void> | undefined;
+
 /**
  * Called after login, fetches and caches the subscription data
  */
@@ -44,6 +46,20 @@ export async function purchase(purchaseId: string): Promise<boolean> {
     // Set your publishable key: remember to change this to your live publishable key in production
     // See your keys here: https://dashboard.stripe.com/apikeys
     const stripeAccount = getStripeAccount();
+
+    // Lazy load stripe.js
+    if (!stripeScriptLoad) {
+        stripeScriptLoad = new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.setAttribute("src", "https://js.stripe.com/v3/");
+            script.setAttribute("crossorigin", "anonymous");
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error("Unable to load Stripe"));
+            document.head.appendChild(script);
+        });
+    }
+    await stripeScriptLoad;
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const stripe = (window as any).Stripe(
         stripeAPIKeyTest,
