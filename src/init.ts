@@ -12,9 +12,6 @@ import { initLogin } from "./login";
 let playerId = "";
 let initialized = false;
 let stripeAccount: string | undefined;
-let stripeScript: HTMLScriptElement | undefined;
-let phoneCodeCss: HTMLLinkElement | undefined;
-let phoneCodeScript: HTMLScriptElement | undefined; 
 
 /** Options to pass to {@link init}. */
 export type InitOptions = {
@@ -35,31 +32,6 @@ export async function init (opts?: InitOptions): Promise<void> {
     }
 
     stripeAccount = opts?.stripeAccount;
-    if (!stripeScript) {
-        stripeScript = document.createElement("script");
-        stripeScript.setAttribute("src", "https://js.stripe.com/v3/");
-        stripeScript.setAttribute("crossorigin", "anonymous");
-        document.head.appendChild(stripeScript);
-    }
-
-    // country code drop down elements for phone
-    if (!phoneCodeCss) {
-        phoneCodeCss = document.createElement("link");
-        phoneCodeCss.rel = "stylesheet";
-        phoneCodeCss.href = "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css";
-        document.head.appendChild(phoneCodeCss);
-    }
-
-    if (!phoneCodeScript) {
-        phoneCodeScript = document.createElement("script");
-        phoneCodeScript.setAttribute("src", "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js");
-        phoneCodeScript.setAttribute("crossorigin", "anonymous");
-        document.head.appendChild(phoneCodeScript);
-
-        const phoneInputStyle = document.createElement("style");
-        phoneInputStyle.innerText = ".phoneInput { transition: box-shadow; outline: none; box-shadow: none; border: 1px solid #a2afb9; padding: 0.75rem 1rem; font-size: 1.25rem; border-radius: 0.25rem; } .phoneInput:focus { box-shadow: 0 0 0 3px rgba(16, 149, 193, 0.125); border-color: var(--primary); }";
-        document.head.appendChild(phoneInputStyle);
-    }
 
     const gameId = opts?.gameId || "unknown";
 
