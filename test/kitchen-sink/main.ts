@@ -5,6 +5,7 @@
 import * as playpass from "../../src";
 
 (async () => {
+    document.querySelector("#bestShareType").textContent = playpass.device.getBestShareType();
     document.querySelector("#userAgent").textContent = navigator.userAgent;
     document.querySelector("#referrer").textContent = document.referrer;
     document.querySelector("#iframed").textContent = (window.top == window) ? "No" : "Yes";
