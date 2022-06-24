@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0: June 24, 2022
+
+- Add `playpass.device.getBestShareType`
+
 ## 1.6.0: June 22, 2022
 
 - Add Reddit as an option to `playpass.share`.
