@@ -40,8 +40,28 @@ if (data) {
 }
 ```
 
+## Sharing to the best place
+
+You can determine where will be the best social media platform or app to share your links to with `playpass.device.getBestShareType()`.
+This functionality depends on Referrer data, which allows playpass to determine which social media platform users are coming from and can allow you to post new share links on that same platform.  This is useful for boosting your game and community in a particular space.
+
+For example, if a player was referred by a link on twitter, we can make sure your share button posts back on twitter.
+
+```javascript
+const shareType = playpass.device.getBestShareType();
+
+document.getElementById("yourButton").onclick = function () {
+    const link = playpass.createLink();
+    playpass.share({
+        text: "I scored 742 points! " + link,
+        type: shareType,
+    });
+};
+```
+
 ## API reference
 
 - [`playpass.share()`](/api/#share)
 - [`playpass.createLink()`](/api/#createlink)
 - [`playpass.getLinkData()`](/api/#getlinkdata)
+- [`playpass.device.getBestShareType()`](/api/modules/device/#getBestShareType)
