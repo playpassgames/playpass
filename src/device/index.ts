@@ -31,8 +31,10 @@ const detectors: Detector[] = [
         // twitter.com seems unused, but included here for safety
         referrer: /\b(t\.co|twitter\.com)$/,
     },
-
-    // TODO(2022-06-23): Add Reddit?
+    {
+        shareType: ShareType.Twitter,
+        referrer: /\b(redd\.it|reddit\.com)$/,
+    },
 ];
 
 /**
