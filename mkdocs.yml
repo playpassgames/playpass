@@ -18,6 +18,7 @@ nav:
     - API Reference:
         - playpass: api/index.md
         - playpass.account: api/modules/account.md
+        - playpass.device: api/modules/device.md
         - playpass.groups: api/modules/groups.md
         - playpass.leaderboards: api/modules/leaderboards.md
     - Changelog: changelog.md
