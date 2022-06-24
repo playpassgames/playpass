@@ -37,9 +37,7 @@ export type CreateLinkOptions = {
     data?: unknown,
 };
 
-interface ShareAdapter {
-    (link: string): void | Promise<void>;
-}
+export type ShareAdapter = (link: string) => void | Promise<void>;
 
 /**
  * Open the device share dialog.
@@ -122,15 +120,20 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
     return shareSent;
 }
 
+export function stripUrlFromText(url: string) {
+    const urlPattern = /\bhttps?:\/\/[^\s]+/;
+    const urlMatch = url.match(urlPattern);
+    const textNoUrls = url.replace(urlPattern, "").trim();
+    return { textNoUrls, urlMatch: urlMatch?.[0] ?? createLink() } ;
+}
+
 const Adapters: { [target: string]: ShareAdapter } = {
     [ShareType.Facebook]: (text) => {
-        const urlPattern = /\bhttps?:\/\/[^\s]+/;
-        const urlMatch = text.match(urlPattern);
-        const textNoUrls = text.replace(urlPattern, "").trim();
+        const { textNoUrls, urlMatch } = stripUrlFromText(text);
 
         openNewTab("https://www.facebook.com/sharer/sharer.php", {
             quote: textNoUrls,
-            u: urlMatch ? urlMatch[0] : createLink(),
+            u: urlMatch,
         });
     },
     [ShareType.Twitter]: (text) => {
@@ -140,23 +143,19 @@ const Adapters: { [target: string]: ShareAdapter } = {
         openNewTab("https://api.whatsapp.com/send", { text });
     },
     [ShareType.Telegram]: (text) => {
-        const urlPattern = /\bhttps?:\/\/[^\s]+/;
-        const urlMatch = text.match(urlPattern);
-        const textNoUrls = text.replace(urlPattern, "").trim();
+        const { textNoUrls, urlMatch } = stripUrlFromText(text);
 
         openNewTab("https://telegram.me/share/msg", {
             text: textNoUrls,
-            url: urlMatch ? urlMatch[0] : createLink(),
+            url: urlMatch,
         });
     },
     [ShareType.Reddit]: (text) => {
-        const urlPattern = /\bhttps?:\/\/[^\s]+/;
-        const urlMatch = text.match(urlPattern);
-        const textNoUrls = text.replace(urlPattern, "").trim();
+        const { textNoUrls, urlMatch } = stripUrlFromText(text);
 
         openNewTab("https://www.reddit.com/submit", {
             title: textNoUrls,
-            url: urlMatch ? urlMatch[0] : createLink(),
+            url: urlMatch,
         });
     },
     [ShareType.Clipboard]: (text) => {
