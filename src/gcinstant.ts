@@ -104,7 +104,18 @@ export class AmplitudeAnalytics implements Analytics {
     }
 }
 
-export async function initGCInstant (opts?: { amplitude: string, abTestConfig?: ABConfig, hashFunction?: HashFunction }): Promise<void> {
+export async function initGCInstant (
+    opts?: { 
+        amplitude: string, 
+        abTestConfig?: ABConfig, 
+        hashFunction?: HashFunction, 
+        entryFinalProperties?: {
+            eventProperties?: {[key: string]: any},
+            firstEntryUserProperties?: {[key: string]: any},
+            lastEntryUserProperties?: {[key: string]: any},
+        }
+    },
+): Promise<void> {
     injectSecondaryAnalytics(new AmplitudeAnalytics());
 
     gcPlatform = new PlatformImpl();
@@ -137,7 +148,12 @@ export async function initGCInstant (opts?: { amplitude: string, abTestConfig?: 
 
     // Send an EntryFinal to Amplitude
     await gcPlatform.startGameAsync();
-    await gcPlatform.sendEntryFinalAnalytics({}, {}, {});
+
+    const entryFinalProperties = opts?.entryFinalProperties;
+    await gcPlatform.sendEntryFinalAnalytics(
+        entryFinalProperties?.eventProperties || {}, 
+        entryFinalProperties?.firstEntryUserProperties || {},  
+        entryFinalProperties?.lastEntryUserProperties || {});
 
     // Inject GCInstant-specific link parameters
     setGCSharePayload(getGCSharePayload());
