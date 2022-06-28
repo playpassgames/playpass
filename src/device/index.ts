@@ -32,7 +32,7 @@ const detectors: Detector[] = [
         referrer: /\b(t\.co|twitter\.com)$/,
     },
     {
-        shareType: ShareType.Twitter,
+        shareType: ShareType.Reddit,
         referrer: /\b(redd\.it|reddit\.com)$/,
     },
 ];
