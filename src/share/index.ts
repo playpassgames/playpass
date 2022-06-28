@@ -37,6 +37,8 @@ export type CreateLinkOptions = {
     data?: unknown,
 };
 
+export type ShareAdapter = (link: string) => void | Promise<void>;
+
 /**
  * Open the device share dialog.
  *
@@ -118,49 +120,63 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
     return shareSent;
 }
 
-async function doShare (type: ShareType, text: string): Promise<boolean> {
+export function stripUrlFromText(url: string) {
     const urlPattern = /\bhttps?:\/\/[^\s]+/;
-    const urlMatch = text.match(urlPattern);
-    const textNoUrls = text.replace(urlPattern, "").trim();
-
-    switch (type) {
-    case ShareType.Facebook:
-        openNewTab("https://www.facebook.com/sharer/sharer.php", {
-            quote: textNoUrls,
-            u: urlMatch ? urlMatch[0] : createLink(),
-        });
-        return true;
-
-    case ShareType.Twitter:
-        openNewTab("https://twitter.com/intent/tweet", { text });
-        return true;
-
-    case ShareType.WhatsApp:
-        openNewTab("https://api.whatsapp.com/send", { text });
-        return true;
-
-    case ShareType.Telegram:
-        openNewTab("https://telegram.me/share/msg", {
-            text: textNoUrls,
-            url: urlMatch ? urlMatch[0] : createLink(),
-        });
-        return true;
-    case ShareType.Reddit:
-        openNewTab("https://www.reddit.com/submit", {
-            title: textNoUrls,
-            url: urlMatch ? urlMatch[0] : createLink(),
-        });
-        return true;
-    case ShareType.Clipboard:
-        void copyToClipboard(text);
-        return true;
-
-    default:
-        throw new Error(`Unsupported share type: ${type}`);
-    }
+    const urlMatch = url.match(urlPattern);
+    const textNoUrls = url.replace(urlPattern, "").trim();
+    return { textNoUrls, urlMatch: urlMatch?.[0] ?? createLink() } ;
 }
 
-function openNewTab (url: string, params: Record<string,string>) {
+const Adapters: { [target: string]: ShareAdapter } = {
+    [ShareType.Facebook]: (text) => {
+        const { textNoUrls, urlMatch } = stripUrlFromText(text);
+
+        openNewTab("https://www.facebook.com/sharer/sharer.php", {
+            quote: textNoUrls,
+            u: urlMatch,
+        });
+    },
+    [ShareType.Twitter]: (text) => {
+        openNewTab("https://twitter.com/intent/tweet", { text });
+    },
+    [ShareType.WhatsApp]: (text) => {
+        openNewTab("https://api.whatsapp.com/send", { text });
+    },
+    [ShareType.Telegram]: (text) => {
+        const { textNoUrls, urlMatch } = stripUrlFromText(text);
+
+        openNewTab("https://telegram.me/share/msg", {
+            text: textNoUrls,
+            url: urlMatch,
+        });
+    },
+    [ShareType.Reddit]: (text) => {
+        const { textNoUrls, urlMatch } = stripUrlFromText(text);
+
+        openNewTab("https://www.reddit.com/submit", {
+            title: textNoUrls,
+            url: urlMatch,
+        });
+    },
+    [ShareType.Clipboard]: (text) => {
+        void copyToClipboard(text);
+    },
+};
+
+export async function registerCustomShare(target: string, adapter: ShareAdapter) {
+    Object.assign(Adapters, { [target]: adapter });
+}
+
+async function doShare (type: ShareType, text: string): Promise<boolean> {
+    if (type in Adapters) {
+        await Adapters[type](text);
+        return true;
+    }
+
+    throw new Error(`Unsupported share type: ${type}`);
+}
+
+export function openNewTab (url: string, params: Record<string,string>) {
     const u = new URL(url);
     for (const key in params) {
         u.searchParams.set(key, params[key]);
