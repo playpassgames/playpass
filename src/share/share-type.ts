@@ -36,6 +36,9 @@ export enum ShareType {
     /** Share as a post on Reddit. */
     Reddit = "reddit",
 
-    // /** Share as an email. */
-    // Email = "email",
+    /** Share on Instagram (not yet implemented). */
+    Instagram = "instagram",
+
+    /** Share on TikTok (not yet implemented). */
+    TikTok = "tiktok",
 }

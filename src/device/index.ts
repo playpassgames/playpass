@@ -35,6 +35,21 @@ const detectors: Detector[] = [
         shareType: ShareType.Reddit,
         referrer: /\b(redd\.it|reddit\.com)$/,
     },
+    {
+        shareType: ShareType.Instagram,
+
+        userAgent: /\bInstagram\b/,
+
+        // l.instagram.com
+        referrer: /\binstagram\.com$/,
+    },
+    {
+        shareType: ShareType.TikTok,
+
+        userAgent: /\bBytedanceWebview\//,
+
+        referrer: /\btiktok\.com$/,
+    },
 ];
 
 /**
