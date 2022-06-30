@@ -40,7 +40,7 @@ function getEntryPointData(): AnalyticsProperties.EntryData {
 }
 
 // we invoke this on load because the URL will get stripped when playpass inits. 
-const entryPointData = getEntryPointData();
+export const entryPointData = getEntryPointData();
 
 class PlatformImpl extends PlatformWeb {
     /** Same as initializeAsync, but pass the player ID to initialize Amplitude. */
