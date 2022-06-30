@@ -56,8 +56,8 @@ export function decodeRaw (href: string): Payload {
     return {};
 }
 
-export function encode (payload: Payload): string {
-    const url = new URL(location.href);
+export function encode (explicitURL: URL | undefined, payload: Payload): string {
+    const url = new URL(explicitURL ? explicitURL.href : location.href);
     const hash = new URL(url.hash.substring(1), url.origin);
     hash.searchParams.set("link", JSON.stringify(payload));
     url.hash = hash.pathname + hash.search;

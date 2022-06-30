@@ -35,6 +35,9 @@ export type CreateLinkOptions = {
 
     /** Payload to include with shared link. */
     data?: unknown,
+
+    /** Create a link to this explicit URL. It must have the same origin as the current document. If not specified, the current URL will be used. */
+    url?: URL,
 };
 
 /**
@@ -180,12 +183,16 @@ export function setGCSharePayload (sharePayload: Record<string,string>) {
  * @returns A string representing the shortened url containing the payload data
  */
 export function createLink(opts?: CreateLinkOptions) {
+    if (opts?.url && opts.url.origin !== document.location.origin) {
+        throw new Error('Invalid option \'url\' - url origin does not match document origin')
+    }
+
     // During local development or games hosted on *.playpass.games, use a fixed short domain
     const shortDomain = (location.port || location.hostname.endsWith(".playpass.games"))
         ? "playpass.link"
         : location.hostname;
 
-    const longUrl = encode({
+    const longUrl = encode(opts?.url, {
         channel: opts?.channel ?? "SHARE",
         data: opts?.data,
         referrer: getPlayerId(),
