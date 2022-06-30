@@ -17,6 +17,7 @@ import { getPlayerId } from "./init";
 import { setGCSharePayload } from "./share";
 import { internalStorage } from "./storage";
 import getQueryParameters from "./utils";
+import { getBestShareType, isWebview } from "./device";
 
 let gcPlatform: PlatformImpl;
 
@@ -150,13 +151,61 @@ export async function initGCInstant (
     await gcPlatform.startGameAsync();
 
     const entryFinalProperties = opts?.entryFinalProperties;
-    await gcPlatform.sendEntryFinalAnalytics(
+    await sendEntryFinalAnalytics(
         entryFinalProperties?.eventProperties || {}, 
         entryFinalProperties?.firstEntryUserProperties || {},  
         entryFinalProperties?.lastEntryUserProperties || {});
 
     // Inject GCInstant-specific link parameters
     setGCSharePayload(getGCSharePayload());
+}
+
+function sendEntryFinalAnalytics (
+    entryFinalEventProperties: Record<string,any>,
+    firstEntryUserProperties: Record<string,any>,
+    lastEntryUserProperties: Record<string,any>,
+): Promise<void> {
+    const bestShareType = getBestShareType();
+    const app = bestShareType == "any" ? null : bestShareType;
+    const webview = isWebview();
+
+    let referrer = null;
+    let toplevelHost = null;
+    if (document.referrer) {
+        referrer = new URL(document.referrer);
+        toplevelHost = referrer.hostname.split(".").slice(-2).join(".");
+    }
+
+    const standardEntryFinalEventProperties = {
+        // Nothing yet
+    };
+
+    const standardFirstEntryUserProperties = {
+        firstEntryHref: document.location.href,
+        firstEntryPath: document.location.pathname.toLowerCase(),
+        firstEntryIsWebview: webview,
+        firstEntryDetectedSocialApp: app,
+        firstEntryUserAgent: navigator.userAgent,
+        firstEntryReferrerHost: referrer?.hostname,
+        firstEntryReferrerToplevelHost: toplevelHost,
+        firstEntryReferrerHref: referrer?.href,
+    };
+
+    const standardLastEntryUserProperties = {
+        lastEntryHref: document.location.href,
+        lastEntryPath: document.location.pathname.toLowerCase(),
+        lastEntryIsWebview: webview,
+        lastEntryDetectedSocialApp: app,
+        lastEntryUserAgent: navigator.userAgent,
+        lastEntryReferrerHost: referrer?.hostname,
+        lastEntryReferrerToplevelHost: toplevelHost,
+        lastEntryReferrerHref: referrer?.href,
+    };
+
+    return gcPlatform.sendEntryFinalAnalytics(
+        { ...standardEntryFinalEventProperties, ...entryFinalEventProperties },
+        { ...standardFirstEntryUserProperties, ...firstEntryUserProperties },
+        { ...standardLastEntryUserProperties, ...lastEntryUserProperties });
 }
 
 export function getBucketId(testId: string): string | undefined {

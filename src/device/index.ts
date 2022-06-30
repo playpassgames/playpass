@@ -55,3 +55,12 @@ export function getBestShareType (): ShareType {
 
     return ShareType.Any;
 }
+
+export function isWebview (): boolean {
+    for (const detector of detectors) {
+        if (detector.userAgent?.test(navigator.userAgent)) {
+            return true;
+        }
+    }
+    return false;
+}
