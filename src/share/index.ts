@@ -184,7 +184,7 @@ export function setGCSharePayload (sharePayload: Record<string,string>) {
  */
 export function createLink(opts?: CreateLinkOptions) {
     if (opts?.url && opts.url.origin !== document.location.origin) {
-        throw new Error('Invalid option \'url\' - url origin does not match document origin')
+        throw new Error("Invalid option 'url' - url origin does not match document origin");
     }
 
     // During local development or games hosted on *.playpass.games, use a fixed short domain
