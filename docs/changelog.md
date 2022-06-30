@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.0: June 30, 2022
+
+- Add `ShareType.Instagram` and `ShareType.TikTok` for social app detection with
+  `playpass.device.getBestShareType`. Passing these to `playpass.share` is currently unimplemented,
+  where they are the same as passing `ShareType.Any`.
+
 ## 1.7.0: June 24, 2022
 
 - Add `playpass.device.getBestShareType`
