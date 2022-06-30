@@ -79,7 +79,7 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
 
     let shareSent = false;
 
-    if (type == ShareType.Any) {
+    if (type == ShareType.Any || type == ShareType.Instagram || type == ShareType.TikTok) {
         // Check for ontouchstart to blacklist desktop browsers in order to prevent using Chrome's
         // goofy share UX on Windows
         if (navigator.canShare?.(shareData) && navigator.share && "ontouchstart" in document.documentElement) {
