@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.0: July 1, 2022
+
+- Add `ShareOptions.inReplyTo`.
+- Add `CreateLinkOptions.url`.
+
 ## 1.8.0: June 30, 2022
 
 - Add `ShareType.Instagram` and `ShareType.TikTok` for social app detection with
