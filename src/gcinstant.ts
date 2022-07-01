@@ -111,9 +111,9 @@ export async function initGCInstant (
         abTestConfig?: ABConfig, 
         hashFunction?: HashFunction, 
         entryFinalProperties?: {
-            eventProperties?: {[key: string]: any},
-            firstEntryUserProperties?: {[key: string]: any},
-            lastEntryUserProperties?: {[key: string]: any},
+            eventProperties?: {[key: string]: unknown},
+            firstEntryUserProperties?: {[key: string]: unknown},
+            lastEntryUserProperties?: {[key: string]: unknown},
         }
     },
 ): Promise<void> {
@@ -161,9 +161,9 @@ export async function initGCInstant (
 }
 
 function sendEntryFinalAnalytics (
-    entryFinalEventProperties: Record<string,any>,
-    firstEntryUserProperties: Record<string,any>,
-    lastEntryUserProperties: Record<string,any>,
+    entryFinalEventProperties: Record<string,unknown>,
+    firstEntryUserProperties: Record<string,unknown>,
+    lastEntryUserProperties: Record<string,unknown>,
 ): Promise<void> {
     const bestShareType = getBestShareType();
     const app = bestShareType == "any" ? null : bestShareType;

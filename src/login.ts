@@ -10,6 +10,12 @@ import { clearSubscriptionCache, initSubscriptionCache } from "./purchase";
 
 import "./ui/login-popup";
 
+declare global {
+    interface Window {
+        intlTelInput?: (element: HTMLElement) => void;
+    }
+}
+
 let replicantClient: ReplicantLite | undefined;
 export { replicantClient };
 
@@ -92,14 +98,12 @@ export async function login (): Promise<boolean> {
     telephoneInput.autocomplete = "tel";
     telephoneInput.required = true;
     telephoneInputParent.appendChild(telephoneInput);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // (window as any).intlTelInput(telephoneInput, {});
 
-    if ((window as any).intlTelInput) {
-        (window as any).intlTelInput(telephoneInput);
+    if (window.intlTelInput) {
+        window.intlTelInput(telephoneInput);
     } else {
         phoneCodeScript.onload = () => {
-            (window as any).intlTelInput(telephoneInput);
+            window.intlTelInput!(telephoneInput);
         };
     }
 
