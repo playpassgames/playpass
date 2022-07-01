@@ -94,9 +94,17 @@ import * as playpass from "../../src";
         const link = playpass.createLink({ data: 1234 });
         playpass.share({ text: `This is a test share: ${link}`, type });
     }
+
+    function shareInReplyTo() {
+        const link = playpass.createLink({ data: 1234 });
+        const id = document.getElementById("twitter-reply-to").value
+        playpass.share({ text: `This is a test share: ${link}`, type: "twitter", inReplyTo: id});
+
+    }
     document.querySelector("#share").onclick = () => shareWithType(null);
     document.querySelector("#share-facebook").onclick = () => shareWithType("facebook");
     document.querySelector("#share-twitter").onclick = () => shareWithType("twitter");
+    document.querySelector("#share-twitter-reply").onclick = () => shareInReplyTo();
     document.querySelector("#share-whatsapp").onclick = () => shareWithType("whatsapp");
     document.querySelector("#share-telegram").onclick = () => shareWithType("telegram");
     document.querySelector("#share-clipboard").onclick = () => shareWithType("clipboard");
