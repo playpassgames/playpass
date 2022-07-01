@@ -38,6 +38,9 @@ export type CreateLinkOptions = {
 
     /** Payload to include with shared link. */
     data?: unknown,
+
+    /** Create a link to this explicit URL. It must have the same origin as the current document. If not specified, the current URL will be used. */
+    url?: string,
 };
 
 /**
@@ -192,7 +195,7 @@ export function createLink(opts?: CreateLinkOptions) {
         ? "playpass.link"
         : location.hostname;
 
-    const longUrl = encode({
+    const longUrl = encode(opts?.url, {
         channel: opts?.channel ?? "SHARE",
         data: opts?.data,
         referrer: getPlayerId(),
