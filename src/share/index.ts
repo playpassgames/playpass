@@ -26,6 +26,9 @@ export type ShareOptions = {
 
     /** Additional tracking properties that will be sent along with the Share events. */
     trackProps?: Record<string,unknown>,
+
+    /** Optional, share type dependent, ID of a social media post at which to target this share. Twitter is only supported. */
+    inReplyTo?: string,
 };
 
 /** Options to pass to {@link createLink}. */
@@ -108,7 +111,7 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
             });
         }
 
-    } else if (text && await doShare(type, text)) {
+    } else if (text && await doShare(type, text, {inReplyTo: opts?.inReplyTo})) {
         shareSent = true;
     }
 
@@ -118,7 +121,7 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
     return shareSent;
 }
 
-async function doShare (type: ShareType, text: string): Promise<boolean> {
+async function doShare (type: ShareType, text: string, options?: {inReplyTo?: string}): Promise<boolean> {
     const urlPattern = /\bhttps?:\/\/[^\s]+/;
     const urlMatch = text.match(urlPattern);
     const textNoUrls = text.replace(urlPattern, "").trim();
@@ -132,7 +135,11 @@ async function doShare (type: ShareType, text: string): Promise<boolean> {
         return true;
 
     case ShareType.Twitter:
-        openNewTab("https://twitter.com/intent/tweet", { text });
+        if (options?.inReplyTo) {
+            openNewTab("https://twitter.com/intent/tweet", { text, in_reply_to: options.inReplyTo });
+        } else {
+            openNewTab("https://twitter.com/intent/tweet", { text });
+        }
         return true;
 
     case ShareType.WhatsApp:
