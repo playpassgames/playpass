@@ -97,7 +97,7 @@ import * as playpass from "../../src";
 
     function shareInReplyTo() {
         const link = playpass.createLink({ data: 1234 });
-        const id = document.getElementById("twitter-reply-to").value
+        const id = document.getElementById("twitter-reply-to").value;
         playpass.share({ text: `This is a test share: ${link}`, type: "twitter", inReplyTo: id});
 
     }
