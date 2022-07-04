@@ -191,7 +191,7 @@ export function setGCSharePayload (sharePayload: Record<string,string>) {
  */
 export function createLink(opts?: CreateLinkOptions) {
     // During local development or games hosted on *.playpass.games, use a fixed short domain
-    const shortDomain = (location.port || location.hostname.endsWith(".playpass.games"))
+    const shortDomain = (location.port || location.hostname.includes(".playpass"))
         ? "playpass.link"
         : location.hostname;
 
