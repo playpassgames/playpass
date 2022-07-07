@@ -114,7 +114,8 @@ export async function initGCInstant (
             eventProperties?: {[key: string]: unknown},
             firstEntryUserProperties?: {[key: string]: unknown},
             lastEntryUserProperties?: {[key: string]: unknown},
-        }
+        },
+        version?: string,
     },
 ): Promise<void> {
     injectSecondaryAnalytics(new AmplitudeAnalytics());
@@ -138,7 +139,7 @@ export async function initGCInstant (
 
         appID: "playco-game",
         shortName: "playco-game",
-        version: "0.0.0",
+        version: opts?.version || "0.0.0",
     });
 
     if (!!opts?.abTestConfig && !!opts?.hashFunction) {
