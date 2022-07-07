@@ -16,16 +16,7 @@ function toPromise<T> (request: IDBRequest<T>): Promise<T> {
 }
 
 export class IDBStorage implements Storage {
-    private db: Promise<IDBDatabase>;
-
     constructor (private internal: boolean) {
-        const open = indexedDB.open("Playpass", 1);
-        open.onupgradeneeded = () => {
-            const db = open.result;
-            db.createObjectStore("Internal");
-            db.createObjectStore("Game");
-        };
-        this.db = toPromise(open);
     }
 
     set (key: string, value: unknown): Promise<void> {
@@ -49,7 +40,14 @@ export class IDBStorage implements Storage {
     }
 
     private async callStore (mode: IDBTransactionMode, fn: (store: IDBObjectStore) => IDBRequest): Promise<unknown> {
-        const db = await this.db;
+        const open = indexedDB.open("Playpass", 1);
+        open.onupgradeneeded = () => {
+            const db = open.result;
+            db.createObjectStore("Internal");
+            db.createObjectStore("Game");
+        };
+        const db = await toPromise(open);
+
         const storeName = this.internal ? "Internal" : "Game";
         const store = db.transaction(storeName, mode).objectStore(storeName);
 
@@ -57,6 +55,8 @@ export class IDBStorage implements Storage {
         // should be considered valid only for the current frame.
         const request = fn(store);
 
-        return toPromise(request);
+        const result = await toPromise(request);
+        db.close();
+        return result;
     }
 }
