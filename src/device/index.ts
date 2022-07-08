@@ -7,9 +7,14 @@ import { ShareType } from "../share/share-type";
 type Detector = {
     shareType: ShareType;
 
-    // If either one of these tests pass, it's a hit
+    // User Agent pattern
     userAgent?: RegExp;
+
+    // HTTP referrer pattern
     referrer?: RegExp;
+
+    // Match if this URL query param exists
+    queryParam?: string;
 };
 
 const detectors: Detector[] = [
@@ -22,6 +27,9 @@ const detectors: Detector[] = [
 
         // l.facebook.com and lm.facebook.com
         referrer: /\bfacebook\.com$/,
+
+        // Set on traffic from Facebook ads
+        queryParam: "fbclid",
     },
     {
         shareType: ShareType.Twitter,
@@ -30,6 +38,9 @@ const detectors: Detector[] = [
 
         // twitter.com seems unused, but included here for safety
         referrer: /\b(t\.co|twitter\.com)$/,
+
+        // Set on traffic from Twitter ads
+        queryParam: "twclid",
     },
     {
         shareType: ShareType.Reddit,
@@ -61,9 +72,12 @@ const detectors: Detector[] = [
  */
 export function getBestShareType (): ShareType {
     const referrer = document.referrer && new URL(document.referrer).hostname;
+    const url = new URL(location.href);
 
     for (const detector of detectors) {
-        if (detector.userAgent?.test(navigator.userAgent) || detector.referrer?.test(referrer)) {
+        if (detector.userAgent?.test(navigator.userAgent)
+            || detector.referrer?.test(referrer)
+            || (detector.queryParam && url.searchParams.has(detector.queryParam))) {
             return detector.shareType;
         }
     }
