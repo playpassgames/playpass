@@ -107,6 +107,7 @@ import * as playpass from "../../src";
     document.querySelector("#share-twitter-reply").onclick = () => shareInReplyTo();
     document.querySelector("#share-whatsapp").onclick = () => shareWithType("whatsapp");
     document.querySelector("#share-telegram").onclick = () => shareWithType("telegram");
+    document.querySelector("#share-reddit").onclick = () => shareWithType("reddit");
     document.querySelector("#share-clipboard").onclick = () => shareWithType("clipboard");
 
     document.querySelector("#subscribe").onclick = async () => {
