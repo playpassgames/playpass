@@ -8,6 +8,7 @@ import { initFeatureFlags } from "./featureFlags";
 import { internalStorage } from "./storage";
 import { analytics, playpassAnalytics } from "./analytics";
 import { initLogin } from "./login";
+import { experiments, Experiment } from "./experiments";
 
 let playerId = "";
 let initialized = false;
@@ -20,6 +21,9 @@ export type InitOptions = {
 
     /** Additional tracking properties that will be sent along with the Entry event. */
     trackProps?: Record<string,unknown>;
+
+    /* AB Testing configuration */
+    experiments?: Experiment[];
 }
 
 /** Initialize the Playpass SDK. */
@@ -42,6 +46,21 @@ export async function init (opts?: InitOptions): Promise<void> {
     ]);
 
     playpassAnalytics.init(gameId);
+
+    if (opts?.experiments) {
+        experiments.init(opts.experiments, playerId);
+
+        /* decorate the analytics with active experiments */
+        const activeVariants = experiments.getActiveVariants();
+        const userProps: Record<string, string> = Object.entries(activeVariants).reduce(
+            (props, [test, variant]) => Object.assign(props, {
+                [`experiment__${test}`]: variant,
+            }),
+            {}
+        );
+
+        playpassAnalytics.setUserProperties(userProps);
+    }
 
     const payload = decode();
     const gcInstantEntryData = getGCInstantEntryData();
