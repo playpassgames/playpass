@@ -41,6 +41,15 @@ export type CreateLinkOptions = {
 
     /** Create a link to this explicit URL. It must have the same origin as the current document. If not specified, the current URL will be used. */
     url?: string,
+
+    /** Open Graph title to display in embedded shares. */
+    title?: string,
+
+    /** Open Graph description to display in embedded shares. */
+    description?: string,
+
+    /** Open Graph image to display in embedded shares. */
+    image?: string,
 };
 
 /**
@@ -195,6 +204,18 @@ export function createLink(opts?: CreateLinkOptions) {
         ? "playpass.link"
         : location.hostname;
 
+    const meta = new Map();
+    if (opts?.title) {
+        meta.set("og:title", opts.title);
+    }
+    if (opts?.description) {
+        meta.set("og:description", opts.description);
+    }
+    if (opts?.image) {
+        meta.set("og:image", opts.image);
+        meta.set("twitter:card", "summary_large_image");
+    }
+
     const longUrl = encode(opts?.url, {
         channel: opts?.channel ?? "SHARE",
         data: opts?.data,
@@ -205,7 +226,7 @@ export function createLink(opts?: CreateLinkOptions) {
             ...gcinstantSharePayload,
             $channel: opts?.channel ?? "SHARE",
         },
-    });
+    }, meta);
 
     // Perform a background API request to actually create the shortlink
     void callShortener(longUrl);

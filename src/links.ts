@@ -56,11 +56,18 @@ export function decodeRaw (href: string): Payload {
     return {};
 }
 
-export function encode (explicitURL: string | undefined, payload: Payload): string {
+export function encode (explicitURL: string | undefined, payload: Payload, meta?: Map<string,unknown>): string {
     const url = explicitURL ? new URL(explicitURL, location.origin) : new URL(location.href);
+
     const hash = new URL(url.hash.substring(1), url.origin);
     hash.searchParams.set("link", JSON.stringify(payload));
     url.hash = hash.pathname + hash.search;
+
+    // Include Open Graph metatags if available
+    if (meta && meta.size) {
+        url.searchParams.set("playpass-meta", JSON.stringify(Object.fromEntries(meta)));
+    }
+
     return url.toString();
 }
 

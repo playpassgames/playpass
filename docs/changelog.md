@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.0: July 14, 2022
+
+- Add title, description, and image fields to `CreateLinkOptions`.
+
 ## 1.9.0: July 1, 2022
 
 - Add `ShareOptions.inReplyTo`.
