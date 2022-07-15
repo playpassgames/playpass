@@ -3,7 +3,7 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import { Analytics } from "./analytics";
-import { randomId } from "../utils";
+import { randomId, sendBackground } from "../utils";
 import { getPlayerId } from "../init";
 
 // Milliseconds to wait before flushing a batch of events
@@ -27,25 +27,8 @@ type EventData = {
 };
 
 // Sends a request to the backend API
-function send(body: RequestData) {
-    const url = "https://t.playpass.games/record";
-    const json = JSON.stringify(body);
-
-    // Use the beacon API if available, otherwise fallback to fetch
-    if (navigator.sendBeacon) {
-        navigator.sendBeacon(
-            url,
-            new Blob([json], { type: "application/json" })
-        );
-    } else {
-        void fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: json,
-        });
-    }
+function record(body: RequestData) {
+    sendBackground("https://t.playpass.games/record", body);
 }
 
 export class PlaypassAnalytics implements Analytics {
@@ -112,7 +95,7 @@ export class PlaypassAnalytics implements Analytics {
         if (this.eventQueue.length) {
             // console.log("Will send events", this.eventQueue.slice());
             if (this.gameId) {
-                send({
+                record({
                     project_id: this.gameId,
                     events: this.eventQueue,
                 });

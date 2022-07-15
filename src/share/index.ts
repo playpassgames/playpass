@@ -5,7 +5,7 @@
 import { analytics } from "../analytics";
 import { encode } from "../links";
 import { getPlayerId } from "../init";
-import { shortHash } from "../utils";
+import { shortHash, sendBackground } from "../utils";
 
 import { ShareType } from "./share-type";
 
@@ -229,25 +229,10 @@ export function createLink(opts?: CreateLinkOptions) {
     }, meta);
 
     // Perform a background API request to actually create the shortlink
-    void callShortener(longUrl);
+    sendBackground("https://api.playpass.link", { url: longUrl });
 
     // We locally compute what the shortlink will be to avoid waiting
     return `https://${shortDomain}/${shortHash(longUrl)}`;
-}
-
-async function callShortener (longUrl: string): Promise<void> {
-    const response = await fetch("https://api.playpass.link", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Basic d29yZHMuZ2c6RHV4ZXRTMVhPTXBEd3JjZA==",
-        },
-        body: JSON.stringify({
-            url: longUrl,
-        }),
-    });
-
-    await response.json();
 }
 
 /** @hidden */
