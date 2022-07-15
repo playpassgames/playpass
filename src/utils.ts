@@ -41,3 +41,16 @@ export function shortHash (input: string) {
     }
     return output;
 }
+
+/** Post a JSON object to a URL. */
+export function sendBackground (url: string, body: unknown): void {
+    void fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+        keepalive: true,
+    });
+}
+
