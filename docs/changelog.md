@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.11.0: July 20, 2022
+
+- Add `playpass.uploadTemporaryImage()`.
+
 ## 1.10.0: July 14, 2022
 
 - Add title, description, and image fields to `CreateLinkOptions`.
