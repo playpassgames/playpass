@@ -90,13 +90,17 @@ import * as playpass from "../../src";
         updateUI();
     };
 
+    const createLinkOpts: playpass.CreateLinkOptions = {
+        data: 1234,
+    };
+
     function shareWithType (type) {
-        const link = playpass.createLink({ data: 1234 });
+        const link = playpass.createLink(createLinkOpts);
         playpass.share({ text: `This is a test share: ${link}`, type });
     }
 
     function shareInReplyTo() {
-        const link = playpass.createLink({ data: 1234 });
+        const link = playpass.createLink(createLinkOpts);
         const id = document.getElementById("twitter-reply-to").value;
         playpass.share({ text: `This is a test share: ${link}`, type: "twitter", inReplyTo: id});
 
@@ -109,6 +113,40 @@ import * as playpass from "../../src";
     document.querySelector("#share-telegram").onclick = () => shareWithType("telegram");
     document.querySelector("#share-reddit").onclick = () => shareWithType("reddit");
     document.querySelector("#share-clipboard").onclick = () => shareWithType("clipboard");
+
+    document.querySelector("#upload-temporary-image").onclick = async () => {
+        const link = document.querySelector("#upload-temporary-image-result") as HTMLAnchorElement;
+        link.textContent = "...";
+
+        // Create a smiley face test image with randomized colors
+        const canvas = document.createElement("canvas");
+        canvas.width = 300;
+        canvas.height = 200;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = `rgb(${Math.floor(255*Math.random())},${Math.floor(255*Math.random())},${Math.floor(255*Math.random())})`;
+        ctx.beginPath();
+        ctx.arc(canvas.width/2, canvas.height/2, canvas.height/2, 0, 2*Math.PI);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = `rgb(${Math.floor(255*Math.random())},${Math.floor(255*Math.random())},${Math.floor(255*Math.random())})`;
+        ctx.arc(0.7*canvas.width/2, 0.7*canvas.height/2, 0.1*canvas.height/2, 0, 2*Math.PI);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(1.3*canvas.width/2, 0.7*canvas.height/2, 0.1*canvas.height/2, 0, 2*Math.PI);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(canvas.width/2, 1.5*canvas.height/2, 0.3*canvas.height/2, 0, 2*Math.PI);
+        ctx.fill();
+
+        const url = await playpass.uploadTemporaryImage(canvas);
+        link.href = url;
+        link.textContent = url;
+
+        // Use it for future share tests
+        createLinkOpts.title = "This is the title";
+        createLinkOpts.description = "Description goes here";
+        createLinkOpts.image = url;
+    };
 
     document.querySelector("#subscribe").onclick = async () => {
         try {

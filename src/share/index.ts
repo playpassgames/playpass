@@ -235,6 +235,46 @@ export function createLink(opts?: CreateLinkOptions) {
     return `https://${shortDomain}/${shortHash(longUrl)}`;
 }
 
+function toBlob (canvas: HTMLCanvasElement, type?: string): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+        canvas.toBlob(blob => {
+            if (!blob) {
+                reject(new Error(`Could not encode canvas to ${type}`));
+            } else {
+                resolve(blob);
+            }
+        }, type);
+    });
+}
+
+/**
+ * Uploads an image to a temporary URL. The image URL will only be valid for up to 90 days.
+ *
+ * This is designed to be used in combination with `createLink()` for dynamic share images.
+ *
+ * ```js
+ * const imageUrl = await playpass.uploadTemporaryImage(canvas);
+ *
+ * const link = playpass.createLink({
+ *     image: imageUrl,
+ * });
+ * ```
+ */
+export async function uploadTemporaryImage (canvas: HTMLCanvasElement, type?: "image/png" | "image/jpeg"): Promise<string> {
+    const [ req, blob ] = await Promise.all([
+        fetch("https://25spy6tc6yax3echnmksbm5yve0pfisl.lambda-url.us-east-1.on.aws"),
+        toBlob(canvas, type),
+    ]);
+    const json = await req.json();
+
+    await fetch(json.putUrl, {
+        method: "PUT",
+        body: blob,
+    });
+
+    return json.getUrl;
+}
+
 /** @hidden */
 export async function copyToClipboard (text: string): Promise<void> {
     try {
