@@ -3,13 +3,25 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import kleur from "kleur";
+import * as readline from 'readline';
 import {requireToken} from "./auth";
 import PlaypassClient from "./playpass-client";
-import fs from "fs/promises";
 import * as path from "path";
 import {loadConfig} from "./config";
+import { exit } from "process";
 
-export async function domain(domain: string, opts: {certificate: string, privateKey: string, certificateChain?: string, game?: string}): Promise<void> {
+const timeoutPromise = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const readlineQuestionPromise = (question: string): Promise<string> => {
+    return new Promise((resolve) => {
+        const i = readline.createInterface({input: process.stdin, output: process.stdout});
+        i.question(question, (answer) => {
+          resolve(answer);
+        });
+    });
+}
+
+export async function domain(domain: string, opts: { game?: string }): Promise<void> {
     let gameId;
     if (opts.game) {
         gameId = opts.game;
@@ -21,17 +33,35 @@ export async function domain(domain: string, opts: {certificate: string, private
     const token = await requireToken();
     const playpassClient = new PlaypassClient(token);
 
-    const certificate = await fs.readFile(path.resolve(opts.certificate), {encoding: "base64"});
-    const privateKey = await fs.readFile(path.resolve(opts.privateKey), {encoding: "base64"});
-    let chain;
-    if (opts.certificateChain) {
-        chain = await fs.readFile(path.resolve(opts.certificateChain), {encoding: "base64"});
+    const result = await playpassClient.customDomain(gameId, domain);
+
+    if(result.customDomain.config.customDomainStatus === 'VALID') {
+      console.log(`${kleur.green("✔")} Custom domain successfully created`);
+      console.log(`Distribution URL: ${result.distributionDomainName} ${status}`);
+      console.log(`Please create an alias record that points to ${result.distributionDomainName} in your DNS provider.`);
+      return;
+    }
+    console.log(`Please create the following alias records`);
+    console.log(`${kleur.cyan(domain)} => ${kleur.cyan(result.distributionDomainName!)}`);
+    for(const record of result.recordsRequired) {
+        console.log(`${kleur.cyan(record.alias)} => ${kleur.cyan(record.target)}`);
     }
 
-    const result = await playpassClient.customDomain(gameId, domain, certificate, privateKey, chain);
+    let answer 
+    while(answer !== 'y'){
+      answer = await readlineQuestionPromise(`Please confirm when you have created the records (${kleur.green('y')})`);
+      answer = answer.toLowerCase().trim();
+    }
 
-    const status = result.distributionDeployed ? kleur.green("✔") : kleur.yellow("Deploying...");
-    console.log(`${kleur.green("✔")} Custom domain successfully created`);
-    console.log(`Distribution URL: ${result.distributionDomainName} ${status}`);
-    console.log(`Please create an alias record that points to ${result.distributionDomainName} in your DNS provider.`);
+    let validationStatus: string | undefined;
+
+    console.log('Validation may take up to 5 minutes to complete');
+    while(validationStatus !== 'VALID') {
+      console.log('Waiting for validation...');
+      await timeoutPromise(5000);
+      const response = await playpassClient.validateCustomDomain(gameId);
+      validationStatus = response.status;
+    }
+    console.log(`${kleur.green('✔')} Domain successfully validated. Visit ${kleur.cyan(`https://${domain}`)}.`);
+    exit(0);
 }
