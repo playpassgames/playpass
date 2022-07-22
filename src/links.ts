@@ -20,6 +20,9 @@ type Payload = {
     /** Tracking parameters to send along with the entry event. */
     // TODO(2022-03-18): Rename to "entry" when we remove gcinstant
     gcinstant?: Record<string,unknown>,
+
+    /** See CreateLinkOptions.trackProps. */
+    trackProps?: Record<string,unknown>,
 };
 
 let cachedPayload: Payload;

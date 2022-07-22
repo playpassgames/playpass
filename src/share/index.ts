@@ -6,6 +6,7 @@ import { analytics } from "../analytics";
 import { encode } from "../links";
 import { getPlayerId } from "../init";
 import { shortHash, sendBackground } from "../utils";
+import { getBestShareType, isWebview } from "../device";
 
 import { ShareType } from "./share-type";
 
@@ -33,7 +34,7 @@ export type ShareOptions = {
 
 /** Options to pass to {@link createLink}. */
 export type CreateLinkOptions = {
-    /** The entry channel to use for tracking. */
+    /** The entry channel to use for tracking, defaults to "SHARE". */
     channel?: string,
 
     /** Payload to include with shared link. */
@@ -50,6 +51,19 @@ export type CreateLinkOptions = {
 
     /** Open Graph image to display in embedded shares. */
     image?: string,
+
+    /**
+     * Additional tracking properties that will be sent along with the EntryFinal/EntryConversion
+     * event.
+     *
+     * The event properties will also be prefixed and stored as firstEntry and lastEntry user
+     * properties for the converted user.
+     *
+     * Eg: The link created by `playpass.createLink({ trackProps: { feature: "test" }})` will send a
+     * `feature` event property with EntryFinal, and set the `lastEntryFeature` and
+     * `firstEntryFeature` user properties.
+     */
+    trackProps?: Record<string,unknown>,
 };
 
 /**
@@ -216,6 +230,16 @@ export function createLink(opts?: CreateLinkOptions) {
         meta.set("twitter:card", "summary_large_image");
     }
 
+    const bestShareType = getBestShareType();
+    const app = bestShareType == "any" ? null : bestShareType;
+    const webview = isWebview();
+    const trackProps = {
+        shareOriginApp: app,
+        shareOriginIsWebview: webview,
+        // shareOriginDeviceType?
+        ...opts?.trackProps,
+    };
+
     const longUrl = encode(opts?.url, {
         channel: opts?.channel ?? "SHARE",
         data: opts?.data,
@@ -226,6 +250,8 @@ export function createLink(opts?: CreateLinkOptions) {
             ...gcinstantSharePayload,
             $channel: opts?.channel ?? "SHARE",
         },
+
+        trackProps,
     }, meta);
 
     // Perform a background API request to actually create the shortlink
