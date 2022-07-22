@@ -3,7 +3,7 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import kleur from "kleur";
-import * as readline from 'readline';
+import * as readline from "readline";
 import {requireToken} from "./auth";
 import PlaypassClient from "./playpass-client";
 import * as path from "path";
@@ -16,10 +16,10 @@ const readlineQuestionPromise = (question: string): Promise<string> => {
     return new Promise((resolve) => {
         const i = readline.createInterface({input: process.stdin, output: process.stdout});
         i.question(question, (answer) => {
-          resolve(answer);
+            resolve(answer);
         });
     });
-}
+};
 
 export async function domain(domain: string, opts: { game?: string }): Promise<void> {
     let gameId;
@@ -35,33 +35,33 @@ export async function domain(domain: string, opts: { game?: string }): Promise<v
 
     const result = await playpassClient.customDomain(gameId, domain);
 
-    if(result.customDomain.config.customDomainStatus === 'VALID') {
-      console.log(`${kleur.green("✔")} Custom domain successfully created`);
-      console.log(`Distribution URL: ${result.distributionDomainName} ${status}`);
-      console.log(`Please create an alias record that points to ${result.distributionDomainName} in your DNS provider.`);
-      return;
+    if(result.customDomain.config.customDomainStatus === "VALID") {
+        console.log(`${kleur.green("✔")} Custom domain successfully created`);
+        console.log(`Distribution URL: ${result.distributionDomainName} ${status}`);
+        console.log(`Please create an alias record that points to ${result.distributionDomainName} in your DNS provider.`);
+        return;
     }
-    console.log(`Please create the following alias records`);
+    console.log("Please create the following alias records");
     console.log(`${kleur.cyan(domain)} => ${kleur.cyan(result.distributionDomainName!)}`);
     for(const record of result.recordsRequired) {
         console.log(`${kleur.cyan(record.alias)} => ${kleur.cyan(record.target)}`);
     }
 
-    let answer 
-    while(answer !== 'y'){
-      answer = await readlineQuestionPromise(`Please confirm when you have created the records (${kleur.green('y')})`);
-      answer = answer.toLowerCase().trim();
+    let answer;
+    while(answer !== "y"){
+        answer = await readlineQuestionPromise(`Please confirm when you have created the records (${kleur.green("y")})`);
+        answer = answer.toLowerCase().trim();
     }
 
     let validationStatus: string | undefined;
 
-    console.log('Validation may take up to 5 minutes to complete');
-    while(validationStatus !== 'VALID') {
-      console.log('Waiting for validation...');
-      await timeoutPromise(5000);
-      const response = await playpassClient.validateCustomDomain(gameId);
-      validationStatus = response.status;
+    console.log("Validation may take up to 5 minutes to complete");
+    while(validationStatus !== "VALID") {
+        console.log("Waiting for validation...");
+        await timeoutPromise(5000);
+        const response = await playpassClient.validateCustomDomain(gameId);
+        validationStatus = response.status;
     }
-    console.log(`${kleur.green('✔')} Domain successfully validated. Visit ${kleur.cyan(`https://${domain}`)}.`);
+    console.log(`${kleur.green("✔")} Domain successfully validated. Visit ${kleur.cyan(`https://${domain}`)}.`);
     exit(0);
 }

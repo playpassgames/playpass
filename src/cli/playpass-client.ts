@@ -29,12 +29,12 @@ export type CustomDomain = {
         config: {
             certificateId: string;
             distributionId: string;
-            customDomainStatus: 'PENDING' | 'VALID'
+            customDomainStatus: "PENDING" | "VALID"
         }
     };
     distributionDeployed: boolean | undefined;
     distributionDomainName: string | undefined;
-    recordsRequired: { type: 'CNAME', alias: 'string', target: 'string' }[]
+    recordsRequired: { type: "CNAME", alias: "string", target: "string" }[]
 } & PlaypassResponse
 
 export type Deployment = {
@@ -44,7 +44,7 @@ export type Deployment = {
 } & PlaypassResponse
 
 export type CustomDomainVerification = {
-    status: 'PENDING' | 'VALID'
+    status: "PENDING" | "VALID"
 } & PlaypassResponse
 
 export default class PlaypassClient {
