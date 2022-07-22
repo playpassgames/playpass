@@ -178,7 +178,14 @@ function sendEntryFinalAnalytics (
     }
 
     const standardEntryFinalEventProperties = {
-        // Nothing yet
+        entryHref: document.location.href,
+        entryPath: document.location.pathname.toLowerCase(),
+        entryIsWebview: webview,
+        entryDetectedSocialApp: app,
+        entryUserAgent: navigator.userAgent,
+        entryReferrerHost: referrer?.hostname,
+        entryReferrerToplevelHost: toplevelHost,
+        entryReferrerHref: referrer?.href,
     };
 
     const standardFirstEntryUserProperties = {
