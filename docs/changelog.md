@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.0: July 22, 2022
+
+- Add `CreateLinkOptions.trackProps`.
+
 ## 1.11.0: July 20, 2022
 
 - Add `playpass.uploadTemporaryImage()`.
