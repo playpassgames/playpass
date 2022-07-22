@@ -12,7 +12,7 @@ export function randomId (prefix: string) {
     return str;
 }
 
-export default function getQueryParameters(url?: string): {
+export function getQueryParameters(url?: string): {
   [key: string]: string;
 } {
     const search = url ? new URL(url).search : window.location.search;
@@ -42,6 +42,10 @@ export function shortHash (input: string) {
     return output;
 }
 
+export function camelCasePrefix (prefix: string, str: string): string {
+    return prefix + str.charAt(0).toUpperCase() + str.substring(1);
+}
+
 /** Post a JSON object to a URL. */
 export function sendBackground (url: string, body: unknown): void {
     void fetch(url, {
@@ -53,4 +57,3 @@ export function sendBackground (url: string, body: unknown): void {
         keepalive: true,
     });
 }
-

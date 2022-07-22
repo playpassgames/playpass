@@ -16,7 +16,7 @@ import { getPWADisplayMode } from "./pwa";
 import { getPlayerId } from "./init";
 import { setGCSharePayload } from "./share";
 import { internalStorage } from "./storage";
-import getQueryParameters from "./utils";
+import { getQueryParameters, camelCasePrefix } from "./utils";
 import { getBestShareType, isWebview } from "./device";
 
 let gcPlatform: PlatformImpl;
@@ -177,31 +177,31 @@ function sendEntryFinalAnalytics (
         toplevelHost = referrer.hostname.split(".").slice(-2).join(".");
     }
 
-    const standardEntryFinalEventProperties = {
-        // Nothing yet
+    const trackProps = decode().trackProps;
+
+    const standardEntryFinalEventProperties: Record<string,unknown> = {
+        href: document.location.href,
+        path: document.location.pathname.toLowerCase(),
+        isWebview: webview,
+        detectedSocialApp: app,
+        userAgent: navigator.userAgent,
+        referrerHost: referrer?.hostname,
+        referrerToplevelHost: toplevelHost,
+        referrerHref: referrer?.href,
+
+        // ... shareOriginApp, feature, subFeature
+        ...trackProps,
     };
 
-    const standardFirstEntryUserProperties = {
-        firstEntryHref: document.location.href,
-        firstEntryPath: document.location.pathname.toLowerCase(),
-        firstEntryIsWebview: webview,
-        firstEntryDetectedSocialApp: app,
-        firstEntryUserAgent: navigator.userAgent,
-        firstEntryReferrerHost: referrer?.hostname,
-        firstEntryReferrerToplevelHost: toplevelHost,
-        firstEntryReferrerHref: referrer?.href,
-    };
+    const standardFirstEntryUserProperties: Record<string,unknown> = {};
+    const standardLastEntryUserProperties: Record<string,unknown> = {};
 
-    const standardLastEntryUserProperties = {
-        lastEntryHref: document.location.href,
-        lastEntryPath: document.location.pathname.toLowerCase(),
-        lastEntryIsWebview: webview,
-        lastEntryDetectedSocialApp: app,
-        lastEntryUserAgent: navigator.userAgent,
-        lastEntryReferrerHost: referrer?.hostname,
-        lastEntryReferrerToplevelHost: toplevelHost,
-        lastEntryReferrerHref: referrer?.href,
-    };
+    // Generate firstEntry* and lastEntry* user properties based on the EntryFinal event props
+    for (const key in standardEntryFinalEventProperties) {
+        const value = standardEntryFinalEventProperties[key];
+        standardFirstEntryUserProperties[camelCasePrefix("firstEntry", key)] = value;
+        standardLastEntryUserProperties[camelCasePrefix("lastEntry", key)] = value;
+    }
 
     return gcPlatform.sendEntryFinalAnalytics(
         { ...standardEntryFinalEventProperties, ...entryFinalEventProperties },
