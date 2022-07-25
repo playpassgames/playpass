@@ -184,6 +184,10 @@ async function doShare (type: ShareType, text: string, options?: {inReplyTo?: st
             url: urlMatch ? urlMatch[0] : createLink(),
         });
         return true;
+    case ShareType.Sms:
+        // https://stackoverflow.com/questions/43946861/href-link-to-send-text-message
+        openNewTab("sms:?&body=" + encodeURIComponent(text));
+        return true;
     case ShareType.Clipboard:
         void copyToClipboard(text);
         return true;
@@ -193,7 +197,7 @@ async function doShare (type: ShareType, text: string, options?: {inReplyTo?: st
     }
 }
 
-function openNewTab (url: string, params: Record<string,string>) {
+function openNewTab (url: string, params: Record<string,string> = {}) {
     const u = new URL(url);
     for (const key in params) {
         u.searchParams.set(key, params[key]);
