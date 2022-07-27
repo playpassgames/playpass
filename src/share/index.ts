@@ -64,6 +64,7 @@ export type CreateLinkOptions = {
      * `firstEntryFeature` user properties.
      */
     trackProps?: Record<string,unknown>,
+    useNewLinkFormat?: boolean,
 };
 
 /**
@@ -211,6 +212,11 @@ export function setGCSharePayload (sharePayload: Record<string,string>) {
     gcinstantSharePayload = sharePayload;
 }
 
+let amplitudeKey: string | undefined;
+export function setAmplitudeKey (key: string) {
+    amplitudeKey = key
+}
+
 /**
  * Generate a short link for sharing the game.  Use this when a shareable link is desired for use outside of the `share` method.
  * @param opts - CreateLinkOptions
@@ -256,7 +262,7 @@ export function createLink(opts?: CreateLinkOptions) {
         },
 
         trackProps,
-    }, meta);
+    }, { meta, amplitudeKey, useNewLinkFormat: opts?.useNewLinkFormat });
 
     // Perform a background API request to actually create the shortlink
     sendBackground("https://api.playpass.link", { url: longUrl });

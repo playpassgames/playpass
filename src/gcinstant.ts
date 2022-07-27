@@ -14,7 +14,7 @@ import { Analytics, injectSecondaryAnalytics } from "./analytics";
 import { decode } from "./links";
 import { getPWADisplayMode } from "./pwa";
 import { getPlayerId } from "./init";
-import { setGCSharePayload } from "./share";
+import { setGCSharePayload, setAmplitudeKey } from "./share";
 import { internalStorage } from "./storage";
 import { getQueryParameters, camelCasePrefix } from "./utils";
 import { getBestShareType, isWebview } from "./device";
@@ -119,6 +119,11 @@ export async function initGCInstant (
     },
 ): Promise<void> {
     injectSecondaryAnalytics(new AmplitudeAnalytics());
+
+    if(opts?.amplitude) {
+        console.log('setting amp');
+        setAmplitudeKey(opts.amplitude);
+    }
 
     gcPlatform = new PlatformImpl();
 

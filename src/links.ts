@@ -43,13 +43,22 @@ export function decode (): Payload {
 
 export function decodeRaw (href: string): Payload {
     const url = new URL(href);
+    // try the top level link payload
+    if (url.searchParams.has("link")) {
+        const link = url.searchParams.get("link");
+        if (link) {
+            return JSON.parse(link);
+        }
+    }
+
+    // LEGACY 2 ( 2022-07-27) else try to parse the hash link payload
     const hash = new URL(url.hash.substring(1), url.origin);
     const link = hash.searchParams.get("link");
     if (link) {
         return JSON.parse(link) || {};
     }
 
-    // Handle legacy link format where we stuck the JSON directly in the hash
+    // LEGACY 1 (2022-03-xx). Handle legacy link format where we stuck the JSON directly in the hash
     try {
         return JSON.parse(decodeURIComponent(url.hash.substring(1)));
     } catch (error) {
@@ -59,16 +68,28 @@ export function decodeRaw (href: string): Payload {
     return {};
 }
 
-export function encode (explicitURL: string | undefined, payload: Payload, meta?: Map<string,unknown>): string {
+export function encode (explicitURL: string | undefined,
+                        payload: Payload,
+                        opts: { meta?: Map<string,any>, amplitudeKey?: string, useNewLinkFormat?: boolean} = {}
+                       ): string {
     const url = explicitURL ? new URL(explicitURL, location.origin) : new URL(location.href);
 
-    const hash = new URL(url.hash.substring(1), url.origin);
-    hash.searchParams.set("link", JSON.stringify(payload));
-    url.hash = hash.pathname + hash.search;
+    url.searchParams.set("link", JSON.stringify(payload));
+
+    // prefix the longurl with /s to trigger the share link handler, it will be stripped off.
+    if (opts.meta) {
+        opts.meta.forEach((value, key) => {
+            url.searchParams.set(`meta-${key}`, value.toString());
+        });
+    }
+
+    if(opts.useNewLinkFormat) {
+        url.pathname = '/s' + url.pathname
+    }
 
     // Include Open Graph metatags if available
-    if (meta && meta.size) {
-        url.searchParams.set("playpass-meta", JSON.stringify(Object.fromEntries(meta)));
+    if (opts.meta && opts.meta.size) {
+        url.searchParams.set("meta", JSON.stringify({tags: Object.fromEntries(opts.meta), a: opts.amplitudeKey}));
     }
 
     return url.toString();
