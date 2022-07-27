@@ -94,7 +94,13 @@ export function encode (explicitURL: string | undefined,
 
     // Support local development or games hosted on *.playpass.games
     // TODO(2022-07-27): Route to https://playpass.link/share instead of the raw lambda URL
-    const opengrapherOrigin = hasCustomDomain ? location.origin : "https://k2irlh6aolrgletft7scfxuajq0jehfm.lambda-url.us-east-1.on.aws";
+    // const opengrapherOrigin = hasCustomDomain ? location.origin : "https://k2irlh6aolrgletft7scfxuajq0jehfm.lambda-url.us-east-1.on.aws";
+
+    // For now, since the new share endpoint requires CF configuration, we restrict it to Beadle and
+    // Tweedle. Once things settle we'll enable this for any game with a custom domain.
+    const opengrapherOrigin = (location.origin == "beadle.gg" || location.origin == "tweedle.app")
+        ? location.origin
+        : "https://k2irlh6aolrgletft7scfxuajq0jehfm.lambda-url.us-east-1.on.aws";
 
     const opengrapherUrl = new URL(opengrapherOrigin + "/share");
     opengrapherUrl.searchParams.set("meta", JSON.stringify(meta));
