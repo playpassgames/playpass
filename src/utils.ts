@@ -2,6 +2,12 @@
 // Playpass (c) Playco
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
+/**
+ * Whether the game has its own custom domain name. In other words, not running on localhost or
+ * foo.playpass.games or foo.playpass-staging.com.
+ */
+export const hasCustomDomain = !location.port && !location.hostname.includes(".playpass");
+
 const base62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 export function randomId (prefix: string) {

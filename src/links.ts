@@ -4,6 +4,22 @@
 
 import { analytics } from "./analytics";
 
+import { hasCustomDomain } from "./utils";
+
+// See playpass-opengrapher/lambda/src/app.ts
+type OpengrapherMetadata = {
+    // Open Graph <meta> tag names and values
+    tags?: Record<string,unknown>;
+
+    // The Amplitude key we should post events to
+    amplitude?: string;
+
+    // The base URL we should redirect to, *without* the encoded payload
+    url: string;
+
+    payload: Payload;
+};
+
 type Payload = {
     /** The entry channel to use for tracking. */
     channel?: string,
@@ -43,22 +59,14 @@ export function decode (): Payload {
 
 export function decodeRaw (href: string): Payload {
     const url = new URL(href);
-    // try the top level link payload
-    if (url.searchParams.has("link")) {
-        const link = url.searchParams.get("link");
-        if (link) {
-            return JSON.parse(link);
-        }
-    }
 
-    // LEGACY 2 ( 2022-07-27) else try to parse the hash link payload
     const hash = new URL(url.hash.substring(1), url.origin);
     const link = hash.searchParams.get("link");
     if (link) {
         return JSON.parse(link) || {};
     }
 
-    // LEGACY 1 (2022-03-xx). Handle legacy link format where we stuck the JSON directly in the hash
+    // LEGACY (2022-03-xx). Handle legacy link format where we stuck the JSON directly in the hash
     try {
         return JSON.parse(decodeURIComponent(url.hash.substring(1)));
     } catch (error) {
@@ -69,30 +77,28 @@ export function decodeRaw (href: string): Payload {
 }
 
 export function encode (explicitURL: string | undefined,
-                        payload: Payload,
-                        opts: { meta?: Map<string,any>, amplitudeKey?: string, useNewLinkFormat?: boolean} = {}
-                       ): string {
-    const url = explicitURL ? new URL(explicitURL, location.origin) : new URL(location.href);
+    payload: Payload,
+    opts: { tags?: Map<string,unknown>, amplitudeKey?: string } = {}
+): string {
+    // The URL should already have been stripped, but strip it again here just to be safe
+    const url = stripPayloadsFromUrl(explicitURL ? new URL(explicitURL, location.origin).href : location.href);
 
-    url.searchParams.set("link", JSON.stringify(payload));
+    const meta: OpengrapherMetadata = {
+        // Include Open Graph <meta> tags if available
+        tags: (opts.tags && opts.tags.size) ? Object.fromEntries(opts.tags) : undefined,
 
-    // prefix the longurl with /s to trigger the share link handler, it will be stripped off.
-    if (opts.meta) {
-        opts.meta.forEach((value, key) => {
-            url.searchParams.set(`meta-${key}`, value.toString());
-        });
-    }
+        amplitude: opts.amplitudeKey,
+        url,
+        payload,
+    };
 
-    if(opts.useNewLinkFormat) {
-        url.pathname = '/s' + url.pathname
-    }
+    // Support local development or games hosted on *.playpass.games
+    // TODO(2022-07-27): Route to https://playpass.link/share instead of the raw lambda URL
+    const opengrapherOrigin = hasCustomDomain ? location.origin : "https://k2irlh6aolrgletft7scfxuajq0jehfm.lambda-url.us-east-1.on.aws";
 
-    // Include Open Graph metatags if available
-    if (opts.meta && opts.meta.size) {
-        url.searchParams.set("meta", JSON.stringify({tags: Object.fromEntries(opts.meta), a: opts.amplitudeKey}));
-    }
-
-    return url.toString();
+    const opengrapherUrl = new URL(opengrapherOrigin + "/share");
+    opengrapherUrl.searchParams.set("meta", JSON.stringify(meta));
+    return opengrapherUrl.href;
 }
 
 /** Gets the custom link data. */

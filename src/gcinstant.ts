@@ -121,7 +121,6 @@ export async function initGCInstant (
     injectSecondaryAnalytics(new AmplitudeAnalytics());
 
     if(opts?.amplitude) {
-        console.log('setting amp');
         setAmplitudeKey(opts.amplitude);
     }
 
