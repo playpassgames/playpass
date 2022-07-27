@@ -24,6 +24,9 @@ type Payload = {
     /** The entry channel to use for tracking. */
     channel?: string,
 
+    /** When this link was created. */
+    createdAt?: number;
+
     /** Custom data exposed to the game. */
     data?: unknown,
 

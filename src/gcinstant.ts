@@ -181,7 +181,7 @@ function sendEntryFinalAnalytics (
         toplevelHost = referrer.hostname.split(".").slice(-2).join(".");
     }
 
-    const trackProps = decode().trackProps;
+    const payload = decode();
 
     const standardEntryFinalEventProperties: Record<string,unknown> = {
         href: document.location.href,
@@ -193,18 +193,24 @@ function sendEntryFinalAnalytics (
         referrerToplevelHost: toplevelHost,
         referrerHref: referrer?.href,
 
-        // ... shareOriginApp, feature, subFeature
-        ...trackProps,
+        ...payload.trackProps,
     };
 
+    // Generate firstEntry* and lastEntry* user properties based on the EntryFinal event props
     const standardFirstEntryUserProperties: Record<string,unknown> = {};
     const standardLastEntryUserProperties: Record<string,unknown> = {};
-
-    // Generate firstEntry* and lastEntry* user properties based on the EntryFinal event props
     for (const key in standardEntryFinalEventProperties) {
         const value = standardEntryFinalEventProperties[key];
         standardFirstEntryUserProperties[camelCasePrefix("firstEntry", key)] = value;
         standardLastEntryUserProperties[camelCasePrefix("lastEntry", key)] = value;
+    }
+
+    // Add additional event props to EntryFinal/EntryConversion ONLY
+    if (payload.createdAt) {
+        const elapsedMillis = Date.now() - payload.createdAt;
+        standardEntryFinalEventProperties["elapsedMinutes"] = elapsedMillis / (60*1000);
+        standardEntryFinalEventProperties["elapsedHours"] = elapsedMillis / (60*60*1000);
+        standardEntryFinalEventProperties["elapsedDays"] = elapsedMillis / (24*60*60*1000);
     }
 
     return gcPlatform.sendEntryFinalAnalytics(
