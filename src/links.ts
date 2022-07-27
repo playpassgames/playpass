@@ -39,6 +39,9 @@ type Payload = {
 
     /** See CreateLinkOptions.trackProps. */
     trackProps?: Record<string,unknown>,
+
+    /** The original HTTP Referer header if we were redirected through the opengrapher. */
+    httpReferrer?: string,
 };
 
 let cachedPayload: Payload;

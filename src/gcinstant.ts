@@ -17,7 +17,7 @@ import { getPlayerId } from "./init";
 import { setGCSharePayload, setAmplitudeKey } from "./share";
 import { internalStorage } from "./storage";
 import { getQueryParameters, camelCasePrefix } from "./utils";
-import { getBestShareType, isWebview } from "./device";
+import { getBestShareType, isWebview, getReferrer } from "./device";
 
 let gcPlatform: PlatformImpl;
 
@@ -176,8 +176,8 @@ function sendEntryFinalAnalytics (
 
     let referrer = null;
     let toplevelHost = null;
-    if (document.referrer) {
-        referrer = new URL(document.referrer);
+    if (getReferrer()) {
+        referrer = new URL(getReferrer());
         toplevelHost = referrer.hostname.split(".").slice(-2).join(".");
     }
 

@@ -5,6 +5,7 @@
 import { Analytics } from "./analytics";
 import { randomId, sendBackground } from "../utils";
 import { getPlayerId } from "../init";
+import { getReferrer } from "../device";
 
 // Milliseconds to wait before flushing a batch of events
 const SEND_DELAY = 250;
@@ -70,7 +71,7 @@ export class PlaypassAnalytics implements Analytics {
             event_time: new Date().toISOString(),
             event_type: name,
             page: document.location.href,
-            referrer: document.referrer,
+            referrer: getReferrer(),
             locale: navigator?.language,
             event_properties: props || {},
             user_properties: this.userProps,
