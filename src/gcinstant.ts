@@ -14,10 +14,10 @@ import { Analytics, injectSecondaryAnalytics } from "./analytics";
 import { decode } from "./links";
 import { getPWADisplayMode } from "./pwa";
 import { getPlayerId } from "./init";
-import { setGCSharePayload } from "./share";
+import { setGCSharePayload, setAmplitudeKey } from "./share";
 import { internalStorage } from "./storage";
 import { getQueryParameters, camelCasePrefix } from "./utils";
-import { getBestShareType, isWebview } from "./device";
+import { getBestShareType, isWebview, getReferrer } from "./device";
 
 let gcPlatform: PlatformImpl;
 
@@ -120,6 +120,10 @@ export async function initGCInstant (
 ): Promise<void> {
     injectSecondaryAnalytics(new AmplitudeAnalytics());
 
+    if(opts?.amplitude) {
+        setAmplitudeKey(opts.amplitude);
+    }
+
     gcPlatform = new PlatformImpl();
 
     gcPlatform.storage.setStorageAdapter({
@@ -172,8 +176,8 @@ function sendEntryFinalAnalytics (
 
     let referrer = null;
     let toplevelHost = null;
-    if (document.referrer) {
-        referrer = new URL(document.referrer);
+    if (getReferrer()) {
+        referrer = new URL(getReferrer());
         toplevelHost = referrer.hostname.split(".").slice(-2).join(".");
     }
 

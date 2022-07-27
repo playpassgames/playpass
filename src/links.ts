@@ -4,6 +4,22 @@
 
 import { analytics } from "./analytics";
 
+import { hasCustomDomain } from "./utils";
+
+// See playpass-opengrapher/lambda/src/app.ts
+type OpengrapherMetadata = {
+    // Open Graph <meta> tag names and values
+    tags?: Record<string,unknown>;
+
+    // The Amplitude key we should post events to
+    amplitude?: string;
+
+    // The base URL we should redirect to, *without* the encoded payload
+    url: string;
+
+    payload: Payload;
+};
+
 type Payload = {
     /** The entry channel to use for tracking. */
     channel?: string,
@@ -23,6 +39,9 @@ type Payload = {
 
     /** See CreateLinkOptions.trackProps. */
     trackProps?: Record<string,unknown>,
+
+    /** The original HTTP Referer header if we were redirected through the opengrapher. */
+    httpReferrer?: string,
 };
 
 let cachedPayload: Payload;
@@ -43,13 +62,14 @@ export function decode (): Payload {
 
 export function decodeRaw (href: string): Payload {
     const url = new URL(href);
+
     const hash = new URL(url.hash.substring(1), url.origin);
     const link = hash.searchParams.get("link");
     if (link) {
         return JSON.parse(link) || {};
     }
 
-    // Handle legacy link format where we stuck the JSON directly in the hash
+    // LEGACY (2022-03-xx). Handle legacy link format where we stuck the JSON directly in the hash
     try {
         return JSON.parse(decodeURIComponent(url.hash.substring(1)));
     } catch (error) {
@@ -59,19 +79,35 @@ export function decodeRaw (href: string): Payload {
     return {};
 }
 
-export function encode (explicitURL: string | undefined, payload: Payload, meta?: Map<string,unknown>): string {
-    const url = explicitURL ? new URL(explicitURL, location.origin) : new URL(location.href);
+export function encode (explicitURL: string | undefined,
+    payload: Payload,
+    opts: { tags?: Map<string,unknown>, amplitudeKey?: string } = {}
+): string {
+    // The URL should already have been stripped, but strip it again here just to be safe
+    const url = stripPayloadsFromUrl(explicitURL ? new URL(explicitURL, location.origin).href : location.href);
 
-    const hash = new URL(url.hash.substring(1), url.origin);
-    hash.searchParams.set("link", JSON.stringify(payload));
-    url.hash = hash.pathname + hash.search;
+    const meta: OpengrapherMetadata = {
+        // Include Open Graph <meta> tags if available
+        tags: (opts.tags && opts.tags.size) ? Object.fromEntries(opts.tags) : undefined,
 
-    // Include Open Graph metatags if available
-    if (meta && meta.size) {
-        url.searchParams.set("playpass-meta", JSON.stringify(Object.fromEntries(meta)));
-    }
+        amplitude: opts.amplitudeKey,
+        url,
+        payload,
+    };
 
-    return url.toString();
+    // Support local development or games hosted on *.playpass.games
+    // TODO(2022-07-27): Route to https://playpass.link/share instead of the raw lambda URL
+    // const opengrapherOrigin = hasCustomDomain ? location.origin : "https://k2irlh6aolrgletft7scfxuajq0jehfm.lambda-url.us-east-1.on.aws";
+
+    // For now, since the new share endpoint requires CF configuration, we restrict it to Beadle and
+    // Tweedle. Once things settle we'll enable this for any game with a custom domain.
+    const opengrapherOrigin = (location.origin == "beadle.gg" || location.origin == "tweedle.app")
+        ? location.origin
+        : "https://k2irlh6aolrgletft7scfxuajq0jehfm.lambda-url.us-east-1.on.aws";
+
+    const opengrapherUrl = new URL(opengrapherOrigin + "/share");
+    opengrapherUrl.searchParams.set("meta", JSON.stringify(meta));
+    return opengrapherUrl.href;
 }
 
 /** Gets the custom link data. */

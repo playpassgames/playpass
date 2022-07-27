@@ -3,6 +3,7 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import { ShareType } from "../share/share-type";
+import { decode } from "../links";
 
 type Detector = {
     shareType: ShareType;
@@ -63,6 +64,11 @@ const detectors: Detector[] = [
     },
 ];
 
+export function getReferrer (): string {
+    // Use referrer injected by the opengraph redirect if available
+    return decode().httpReferrer || document.referrer;
+}
+
 /**
  * Detect the best share type, based on the browser's user agent and referrer URL. For example, this
  * will return "facebook" if the game was launched from clicking a Facebook post, or is being played
@@ -71,7 +77,7 @@ const detectors: Detector[] = [
  * You can use this to create a share button that the player is more likely to engage with.
  */
 export function getBestShareType (): ShareType {
-    const referrer = document.referrer && new URL(document.referrer).hostname;
+    const referrer = getReferrer() && new URL(getReferrer()).hostname;
     const url = new URL(location.href);
 
     for (const detector of detectors) {

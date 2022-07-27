@@ -3,11 +3,12 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import * as playpass from "../../src";
+import { getReferrer } from "../../src/device"; // Private API!
 
 (async () => {
     document.querySelector("#bestShareType").textContent = playpass.device.getBestShareType();
     document.querySelector("#userAgent").textContent = navigator.userAgent;
-    document.querySelector("#referrer").textContent = document.referrer;
+    document.querySelector("#referrer").textContent = getReferrer();
     document.querySelector("#iframed").textContent = (window.top == window) ? "No" : "Yes";
 
     await playpass.init({

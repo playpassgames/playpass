@@ -5,7 +5,7 @@
 import { analytics } from "../analytics";
 import { encode } from "../links";
 import { getPlayerId } from "../init";
-import { shortHash, sendBackground } from "../utils";
+import { hasCustomDomain, shortHash, sendBackground } from "../utils";
 import { getBestShareType, isWebview } from "../device";
 
 import { ShareType } from "./share-type";
@@ -64,6 +64,7 @@ export type CreateLinkOptions = {
      * `firstEntryFeature` user properties.
      */
     trackProps?: Record<string,unknown>,
+    useNewLinkFormat?: boolean,
 };
 
 /**
@@ -211,6 +212,11 @@ export function setGCSharePayload (sharePayload: Record<string,string>) {
     gcinstantSharePayload = sharePayload;
 }
 
+let amplitudeKey: string | undefined;
+export function setAmplitudeKey (key: string) {
+    amplitudeKey = key;
+}
+
 /**
  * Generate a short link for sharing the game.  Use this when a shareable link is desired for use outside of the `share` method.
  * @param opts - CreateLinkOptions
@@ -218,20 +224,18 @@ export function setGCSharePayload (sharePayload: Record<string,string>) {
  */
 export function createLink(opts?: CreateLinkOptions) {
     // During local development or games hosted on *.playpass.games, use a fixed short domain
-    const shortDomain = (location.port || location.hostname.includes(".playpass"))
-        ? "playpass.link"
-        : location.hostname;
+    const shortDomain = hasCustomDomain ? location.hostname : "playpass.link";
 
-    const meta = new Map();
+    const tags = new Map();
     if (opts?.title) {
-        meta.set("og:title", opts.title);
+        tags.set("og:title", opts.title);
     }
     if (opts?.description) {
-        meta.set("og:description", opts.description);
+        tags.set("og:description", opts.description);
     }
     if (opts?.image) {
-        meta.set("og:image", opts.image);
-        meta.set("twitter:card", "summary_large_image");
+        tags.set("og:image", opts.image);
+        tags.set("twitter:card", "summary_large_image");
     }
 
     const bestShareType = getBestShareType();
@@ -256,7 +260,7 @@ export function createLink(opts?: CreateLinkOptions) {
         },
 
         trackProps,
-    }, meta);
+    }, { tags, amplitudeKey });
 
     // Perform a background API request to actually create the shortlink
     sendBackground("https://api.playpass.link", { url: longUrl });
