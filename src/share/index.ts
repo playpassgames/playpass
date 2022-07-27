@@ -64,7 +64,6 @@ export type CreateLinkOptions = {
      * `firstEntryFeature` user properties.
      */
     trackProps?: Record<string,unknown>,
-    useNewLinkFormat?: boolean,
 };
 
 /**
@@ -222,7 +221,7 @@ export function setAmplitudeKey (key: string) {
  * @param opts - CreateLinkOptions
  * @returns A string representing the shortened url containing the payload data
  */
-export function createLink(opts?: CreateLinkOptions) {
+export function createLink(opts?: CreateLinkOptions): string {
     // During local development or games hosted on *.playpass.games, use a fixed short domain
     const shortDomain = hasCustomDomain ? location.hostname : "playpass.link";
 
@@ -250,6 +249,7 @@ export function createLink(opts?: CreateLinkOptions) {
 
     const longUrl = encode(opts?.url, {
         channel: opts?.channel ?? "SHARE",
+        createdAt: Date.now(),
         data: opts?.data,
         referrer: getPlayerId(),
 
