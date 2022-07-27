@@ -9,17 +9,18 @@ import { encode, decodeRaw, stripPayloadsFromUrl } from "../src/links";
 describe("links", () => {
     it("should encode/decode payloads", () => {
         const encoded = encode(undefined, { data: 123 });
-        expect(encoded).toBe("http://localhost/#/?link=%7B%22data%22%3A123%7D");
+        expect(encoded).toBe("http://localhost/share?meta=%7B%22url%22%3A%22http%3A%2F%2Flocalhost%2F%22%2C%22payload%22%3A%7B%22data%22%3A123%7D%7D");
 
-        const decoded = decodeRaw(encoded);
-        expect(decoded.data).toBe(123);
+        // encode/decode is no longer reversible since the opengrapher share changes
+        // const decoded = decodeRaw(encoded);
+        // expect(decoded.data).toBe(123);
 
         expect(decodeRaw("https://blingo.gg/some/deep/path#/?link=%7B%22data%22%3A123%7D").data).toBe(123);
     });
 
     it("should encode specific links", () => {
-        const encoded = encode(new URL("http://localhost/foo"), { data: 123 });
-        expect(encoded).toBe("http://localhost/foo#/?link=%7B%22data%22%3A123%7D");
+        const encoded = encode("http://localhost/foo", { data: 123 });
+        expect(encoded).toBe("http://localhost/share?meta=%7B%22url%22%3A%22http%3A%2F%2Flocalhost%2Ffoo%22%2C%22payload%22%3A%7B%22data%22%3A123%7D%7D");
     });
 
     it("should handle links with no payload", () => {
