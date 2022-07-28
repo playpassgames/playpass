@@ -29,16 +29,22 @@ export type CustomDomain = {
         config: {
             certificateId: string;
             distributionId: string;
+            customDomainStatus: "PENDING" | "VALID"
         }
     };
     distributionDeployed: boolean | undefined;
     distributionDomainName: string | undefined;
+    recordsRequired: { type: "CNAME", alias: "string", target: "string" }[]
 } & PlaypassResponse
 
 export type Deployment = {
     gameUrl: string,
     uploadUrl: string,
     customDomain?: CustomDomain,
+} & PlaypassResponse
+
+export type CustomDomainVerification = {
+    status: "PENDING" | "VALID"
 } & PlaypassResponse
 
 export default class PlaypassClient {
@@ -164,7 +170,7 @@ export default class PlaypassClient {
             });
     }
 
-    public async customDomain(gameId: string, customDomain: string, certificate: string, privateKey: string, certificateChain?: string) {
+    public async customDomain(gameId: string, customDomain: string) {
         return axios.request({
             method: "POST",
             url: `${this.host}/api/v1/games/${gameId}/custom-domain`,
@@ -173,13 +179,24 @@ export default class PlaypassClient {
             },
             data: {
                 customDomain,
-                certificate,
-                privateKey,
-                certificateChain
             }
         })
             .then((a: AxiosResponse<CustomDomain>) => {
                 PlaypassClient.validateResponse(a, "Failed to create custom domain.");
+                return a.data;
+            });
+    }
+
+    public async validateCustomDomain(gameId: string) {
+        return axios.request({
+            method: "POST",
+            url: `${this.host}/api/v1/games/${gameId}/custom-domain/verify`,
+            headers: {
+                "X-API-TOKEN": this.authToken
+            },
+        })
+            .then((a: AxiosResponse<CustomDomainVerification>) => {
+                PlaypassClient.validateResponse(a, "Failed to validate domain");
                 return a.data;
             });
     }
