@@ -9,7 +9,7 @@ import { encode, decodeRaw, stripPayloadsFromUrl } from "../src/links";
 describe("links", () => {
     it("should encode/decode payloads", () => {
         const encoded = encode(undefined, { data: 123 });
-        expect(encoded).toBe("https://k2irlh6aolrgletft7scfxuajq0jehfm.lambda-url.us-east-1.on.aws/share?meta=%7B%22url%22%3A%22http%3A%2F%2Flocalhost%2F%22%2C%22payload%22%3A%7B%22data%22%3A123%7D%7D");
+        expect(encoded).toBe("https://playpass.link/share?meta=%7B%22url%22%3A%22http%3A%2F%2Flocalhost%2F%22%2C%22payload%22%3A%7B%22data%22%3A123%7D%7D");
 
         // encode/decode is no longer reversible since the opengrapher share changes
         // const decoded = decodeRaw(encoded);
@@ -20,7 +20,7 @@ describe("links", () => {
 
     it("should encode specific links", () => {
         const encoded = encode("http://localhost/foo", { data: 123 });
-        expect(encoded).toBe("https://k2irlh6aolrgletft7scfxuajq0jehfm.lambda-url.us-east-1.on.aws/share?meta=%7B%22url%22%3A%22http%3A%2F%2Flocalhost%2Ffoo%22%2C%22payload%22%3A%7B%22data%22%3A123%7D%7D");
+        expect(encoded).toBe("https://playpass.link/share?meta=%7B%22url%22%3A%22http%3A%2F%2Flocalhost%2Ffoo%22%2C%22payload%22%3A%7B%22data%22%3A123%7D%7D");
     });
 
     it("should handle links with no payload", () => {
