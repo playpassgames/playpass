@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.13.0: July 28, 2002
+
+- New flow for creating custom domains.
+
 ## 1.12.0: July 22, 2022
 
 - Add `CreateLinkOptions.trackProps`.
