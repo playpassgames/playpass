@@ -241,9 +241,8 @@ export function createLink(opts?: CreateLinkOptions): string {
     const app = bestShareType == "any" ? null : bestShareType;
     const webview = isWebview();
     const trackProps = {
-        shareOriginApp: app,
-        shareOriginIsWebview: webview,
-        // shareOriginDeviceType?
+        sourcePlatform: app,
+        sourcePlatformIsWebview: webview,
         ...opts?.trackProps,
     };
 
