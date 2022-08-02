@@ -52,7 +52,7 @@ export function camelCasePrefix (prefix: string, str: string): string {
     return prefix + str.charAt(0).toUpperCase() + str.substring(1);
 }
 
-/** Post a JSON object to a URL. */
+/** Post a JSON object to a URL in the background. */
 export function sendBackground (url: string, body: unknown): void {
     void fetch(url, {
         method: "POST",
@@ -63,3 +63,20 @@ export function sendBackground (url: string, body: unknown): void {
         keepalive: true,
     });
 }
+/** Post a JSON object to a URL. */
+export function sendPost (url: string, body: unknown) {
+    return fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+        keepalive: true,
+    }).then((res) => {
+        if (res.status != 200) {
+            throw new Error(`HTTP ${res.status}`);
+        }
+        return res;
+    });
+}
+

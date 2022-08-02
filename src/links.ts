@@ -82,11 +82,12 @@ export function decodeRaw (href: string): Payload {
     return {};
 }
 
-export function encode (explicitURL: string | undefined,
+export function constructMetaPayload(
+    explicitURL: string | undefined,
     payload: Payload,
     opts: { tags?: Map<string,unknown>, amplitudeKey?: string } = {}
-): string {
-    // The URL should already have been stripped, but strip it again here just to be safe
+) {
+ // The URL should already have been stripped, but strip it again here just to be safe
     const url = stripPayloadsFromUrl(explicitURL ? new URL(explicitURL, location.origin).href : location.href);
 
     const meta: OpengrapherMetadata = {
@@ -97,15 +98,16 @@ export function encode (explicitURL: string | undefined,
         url,
         payload,
     };
+    return meta;
+}
 
-    // Support local development or games hosted on *.playpass.games
-    // const opengrapherOrigin = hasCustomDomain ? location.origin : "https://playpass.link";
+export function encode (explicitURL: string | undefined,
+    payload: Payload,
+    opts: { tags?: Map<string,unknown>, amplitudeKey?: string } = {}
+): string {
+    const opengrapherOrigin = location.origin
 
-    // For now, since the new share endpoint requires CF configuration, we restrict it to Beadle and
-    // Tweedle. Once things settle we'll enable this for any game with a custom domain.
-    const opengrapherOrigin = (location.hostname == "beadle.gg" || location.hostname == "tweedle.app")
-        ? location.origin
-        : "https://playpass.link";
+    const meta = constructMetaPayload(explicitURL, payload, opts);
 
     const opengrapherUrl = new URL(opengrapherOrigin + "/share");
     opengrapherUrl.searchParams.set("meta", JSON.stringify(meta));
