@@ -105,7 +105,9 @@ export function encode (explicitURL: string | undefined,
     payload: Payload,
     opts: { tags?: Map<string,unknown>, amplitudeKey?: string } = {}
 ): string {
-    const opengrapherOrigin = location.origin;
+    const opengrapherOrigin = (location.hostname == "beadle.gg" || location.hostname == "tweedle.app")
+        ? location.origin
+        : "https://playpass.link";
 
     const meta = constructMetaPayload(explicitURL, payload, opts);
 
