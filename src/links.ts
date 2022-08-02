@@ -87,7 +87,7 @@ export function constructMetaPayload(
     payload: Payload,
     opts: { tags?: Map<string,unknown>, amplitudeKey?: string } = {}
 ) {
- // The URL should already have been stripped, but strip it again here just to be safe
+    // The URL should already have been stripped, but strip it again here just to be safe
     const url = stripPayloadsFromUrl(explicitURL ? new URL(explicitURL, location.origin).href : location.href);
 
     const meta: OpengrapherMetadata = {
@@ -105,7 +105,7 @@ export function encode (explicitURL: string | undefined,
     payload: Payload,
     opts: { tags?: Map<string,unknown>, amplitudeKey?: string } = {}
 ): string {
-    const opengrapherOrigin = location.origin
+    const opengrapherOrigin = location.origin;
 
     const meta = constructMetaPayload(explicitURL, payload, opts);
 
