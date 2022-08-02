@@ -3,7 +3,7 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import { analytics } from "../analytics";
-import { constructMetaPayload, encode } from "../links";
+import { encode, constructMetaPayload } from "../links";
 import { getPlayerId } from "../init";
 import { hasCustomDomain, shortHash, sendBackground, sendPost } from "../utils";
 import { getBestShareType, isWebview } from "../device";
@@ -16,54 +16,54 @@ export type { ShareType };
 
 /** Options to pass to {@link share}. */
 export type ShareOptions = {
-  /** Files to be included in share.  For file compatibility, see https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share#shareable_file_types */
-  files?: File[],
+    /** Files to be included in share.  For file compatibility, see https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share#shareable_file_types */
+    files?: File[],
 
-  /** Text to be shared. */
-  text?: string,
+    /** Text to be shared. */
+    text?: string,
 
-  /** The type of share, defaults to "any". */
-  type?: ShareType,
+    /** The type of share, defaults to "any". */
+    type?: ShareType,
 
-  /** Additional tracking properties that will be sent along with the Share events. */
-  trackProps?: Record<string, unknown>,
+    /** Additional tracking properties that will be sent along with the Share events. */
+    trackProps?: Record<string,unknown>,
 
-  /** Optional, share type dependent, ID of a social media post at which to target this share. Twitter is only supported. */
-  inReplyTo?: string,
+    /** Optional, share type dependent, ID of a social media post at which to target this share. Twitter is only supported. */
+    inReplyTo?: string,
 };
 
 /** Options to pass to {@link createLink}. */
 export type CreateLinkOptions = {
-  /** The entry channel to use for tracking, defaults to "SHARE". */
-  channel?: string,
+    /** The entry channel to use for tracking, defaults to "SHARE". */
+    channel?: string,
 
-  /** Payload to include with shared link. */
-  data?: unknown,
+    /** Payload to include with shared link. */
+    data?: unknown,
 
-  /** Create a link to this explicit URL. It must have the same origin as the current document. If not specified, the current URL will be used. */
-  url?: string,
+    /** Create a link to this explicit URL. It must have the same origin as the current document. If not specified, the current URL will be used. */
+    url?: string,
 
-  /** Open Graph title to display in embedded shares. */
-  title?: string,
+    /** Open Graph title to display in embedded shares. */
+    title?: string,
 
-  /** Open Graph description to display in embedded shares. */
-  description?: string,
+    /** Open Graph description to display in embedded shares. */
+    description?: string,
 
-  /** Open Graph image to display in embedded shares. */
-  image?: string,
+    /** Open Graph image to display in embedded shares. */
+    image?: string,
 
-  /**
-   * Additional tracking properties that will be sent along with the EntryFinal/EntryConversion
-   * event.
-   *
-   * The event properties will also be prefixed and stored as firstEntry and lastEntry user
-   * properties for the converted user.
-   *
-   * Eg: The link created by `playpass.createLink({ trackProps: { feature: "test" }})` will send a
-   * `feature` event property with EntryFinal, and set the `lastEntryFeature` and
-   * `firstEntryFeature` user properties.
-   */
-  trackProps?: Record<string, unknown>,
+    /**
+     * Additional tracking properties that will be sent along with the EntryFinal/EntryConversion
+     * event.
+     *
+     * The event properties will also be prefixed and stored as firstEntry and lastEntry user
+     * properties for the converted user.
+     *
+     * Eg: The link created by `playpass.createLink({ trackProps: { feature: "test" }})` will send a
+     * `feature` event property with EntryFinal, and set the `lastEntryFeature` and
+     * `firstEntryFeature` user properties.
+     */
+    trackProps?: Record<string,unknown>,
 };
 
 /**
@@ -109,8 +109,8 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
     let shareSent = false;
 
     if (type == ShareType.Any || type == ShareType.Instagram || type == ShareType.TikTok) {
-    // Check for ontouchstart to blacklist desktop browsers in order to prevent using Chrome's
-    // goofy share UX on Windows
+        // Check for ontouchstart to blacklist desktop browsers in order to prevent using Chrome's
+        // goofy share UX on Windows
         if (navigator.canShare?.(shareData) && navigator.share && "ontouchstart" in document.documentElement) {
             try {
                 await navigator.share(shareData);
@@ -122,7 +122,7 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
                 if (error.name == "AbortError") {
                     analytics.track("ShareRejected", trackParams);
                 } else {
-                    analytics.track("ShareError", { ...trackParams, error: error.name });
+                    analytics.track("ShareError", {...trackParams, error: error.name});
                 }
             }
 
@@ -137,7 +137,7 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
             });
         }
 
-    } else if (text && await doShare(type, text, { inReplyTo: opts?.inReplyTo })) {
+    } else if (text && await doShare(type, text, {inReplyTo: opts?.inReplyTo})) {
         shareSent = true;
     }
 
@@ -147,7 +147,7 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
     return shareSent;
 }
 
-async function doShare(type: ShareType, text: string, options?: { inReplyTo?: string }): Promise<boolean> {
+async function doShare (type: ShareType, text: string, options?: {inReplyTo?: string}): Promise<boolean> {
     const urlPattern = /\bhttps?:\/\/[^\s]+/;
     const urlMatch = text.match(urlPattern);
     const textNoUrls = text.replace(urlPattern, "").trim();
@@ -197,7 +197,7 @@ async function doShare(type: ShareType, text: string, options?: { inReplyTo?: st
     }
 }
 
-function openNewTab(url: string, params: Record<string, string> = {}) {
+function openNewTab (url: string, params: Record<string,string> = {}) {
     const u = new URL(url);
     for (const key in params) {
         u.searchParams.set(key, params[key]);
@@ -206,13 +206,13 @@ function openNewTab(url: string, params: Record<string, string> = {}) {
     // TODO(2022-05-16): Detect popup blocked
 }
 
-let gcinstantSharePayload: Record<string, string> = {};
-export function setGCSharePayload(sharePayload: Record<string, string>) {
+let gcinstantSharePayload: Record<string,string> = {};
+export function setGCSharePayload (sharePayload: Record<string,string>) {
     gcinstantSharePayload = sharePayload;
 }
 
 let amplitudeKey: string | undefined;
-export function setAmplitudeKey(key: string) {
+export function setAmplitudeKey (key: string) {
     amplitudeKey = key;
 }
 
@@ -267,7 +267,6 @@ export function createLink(opts?: CreateLinkOptions): string {
     // We locally compute what the shortlink will be to avoid waiting
     return `https://${shortDomain}/${shortHash(longUrl)}`;
 }
-
 
 /**
  * Generate a context based share link. Use this when a shareable link is desired for use outside of the `share` method.
@@ -325,7 +324,8 @@ export async function createContextLink(opts?: CreateLinkOptions): Promise<strin
 }
 
 
-function toBlob(canvas: HTMLCanvasElement, type?: string): Promise<Blob> {
+
+function toBlob (canvas: HTMLCanvasElement, type?: string): Promise<Blob> {
     return new Promise((resolve, reject) => {
         canvas.toBlob(blob => {
             if (!blob) {
@@ -350,8 +350,8 @@ function toBlob(canvas: HTMLCanvasElement, type?: string): Promise<Blob> {
  * });
  * ```
  */
-export async function uploadTemporaryImage(canvas: HTMLCanvasElement, type?: "image/png" | "image/jpeg"): Promise<string> {
-    const [req, blob] = await Promise.all([
+export async function uploadTemporaryImage (canvas: HTMLCanvasElement, type?: "image/png" | "image/jpeg"): Promise<string> {
+    const [ req, blob ] = await Promise.all([
         fetch("https://25spy6tc6yax3echnmksbm5yve0pfisl.lambda-url.us-east-1.on.aws"),
         toBlob(canvas, type),
     ]);
@@ -366,7 +366,7 @@ export async function uploadTemporaryImage(canvas: HTMLCanvasElement, type?: "im
 }
 
 /** @hidden */
-export async function copyToClipboard(text: string): Promise<void> {
+export async function copyToClipboard (text: string): Promise<void> {
     try {
         analytics.track("ClipboardCopy");
 
@@ -374,7 +374,7 @@ export async function copyToClipboard(text: string): Promise<void> {
         await navigator.clipboard.writeText(text);
         analytics.track("ClipboardCopySuccess");
     } catch {
-    // Fall back to using execCommand on a dummy textarea element
+        // Fall back to using execCommand on a dummy textarea element
         const textArea = document.createElement("textarea");
 
         textArea.value = text;
