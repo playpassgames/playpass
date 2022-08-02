@@ -64,7 +64,7 @@ export function sendBackground (url: string, body: unknown): void {
     });
 }
 /** Post a JSON object to a URL. */
-export function sendPost (url: string, body: unknown) {
+export function sendPost (url: string, body: unknown): Promise<Response> {
     return fetch(url, {
         method: "POST",
         headers: {
