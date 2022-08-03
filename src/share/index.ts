@@ -315,7 +315,7 @@ export async function createContextLink(opts?: CreateLinkOptions): Promise<strin
         trackProps,
     }, { tags, amplitudeKey });
 
-    const res: { contextId: string } = await sendPost(`https://${shortDomain}/${shareServicePrefix}/new`, meta).then(r => r.json());
+    const res: { contextId: string } = await sendPost(`https://${shortDomain}/${shareServicePrefix}/new`, { meta }).then(r => r.json());
     if(!res.contextId) {
         throw new Error("Unable to construct short link");
     }
