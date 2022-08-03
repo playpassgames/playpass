@@ -3,9 +3,9 @@
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
 import { analytics } from "../analytics";
-import { encode } from "../links";
+import { encode, constructMetaPayload } from "../links";
 import { getPlayerId } from "../init";
-import { hasCustomDomain, shortHash, sendBackground } from "../utils";
+import { hasCustomDomain, shortHash, sendBackground, sendPost } from "../utils";
 import { getBestShareType, isWebview } from "../device";
 
 import { ShareType } from "./share-type";
@@ -267,6 +267,63 @@ export function createLink(opts?: CreateLinkOptions): string {
     // We locally compute what the shortlink will be to avoid waiting
     return `https://${shortDomain}/${shortHash(longUrl)}`;
 }
+
+/**
+ * Generate a context based share link. Use this when a shareable link is desired for use outside of the `share` method.
+ * @param opts - CreateLinkOptions
+ * @returns Promise<string> A string representing the shortened url containing the payload data
+ */
+export async function createContextLink(opts?: CreateLinkOptions): Promise<string> {
+    // During local development or games hosted on *.playpass.games, use a fixed short domain
+    // const shortDomain = hasCustomDomain ? location.hostname : "playpass.link";
+    const shortDomain = hasCustomDomain ? location.hostname : "playpass.link";
+    const shareServicePrefix = "share";
+
+    const tags = new Map();
+    if (opts?.title) {
+        tags.set("og:title", opts.title);
+    }
+    if (opts?.description) {
+        tags.set("og:description", opts.description);
+    }
+    if (opts?.image) {
+        tags.set("og:image", opts.image);
+        tags.set("twitter:card", "summary_large_image");
+    }
+
+    const bestShareType = getBestShareType();
+    const app = bestShareType == "any" ? null : bestShareType;
+    const webview = isWebview();
+    const trackProps = {
+        sourcePlatform: app,
+        sourcePlatformIsWebview: webview,
+        ...opts?.trackProps,
+    };
+
+    const meta = constructMetaPayload(opts?.url, {
+        channel: opts?.channel ?? "SHARE",
+        createdAt: Date.now(),
+        data: opts?.data,
+        referrer: getPlayerId(),
+
+        // TODO(2022-03-18): Remove, gcinstant only
+        gcinstant: {
+            ...gcinstantSharePayload,
+            $channel: opts?.channel ?? "SHARE",
+        },
+
+        trackProps,
+    }, { tags, amplitudeKey });
+
+    const res: { contextId: string } = await sendPost(`https://${shortDomain}/${shareServicePrefix}/new`, { meta }).then(r => r.json());
+    if(!res.contextId) {
+        throw new Error("Unable to construct short link");
+    }
+
+    return `https://${shortDomain}/${shareServicePrefix}/${res.contextId}`;
+}
+
+
 
 function toBlob (canvas: HTMLCanvasElement, type?: string): Promise<Blob> {
     return new Promise((resolve, reject) => {
