@@ -5,7 +5,7 @@
 export { analytics } from "./analytics";
 export { getLinkData } from "./links";
 export { init } from "./init";
-export { copyToClipboard, createLink, share, uploadTemporaryImage } from "./share";
+export { copyToClipboard, createLink, createContextLink, share, uploadTemporaryImage } from "./share";
 export { storage } from "./storage";
 export { createFeatureFlag, featureFlagIsEnabled, setFeatureFlagEnabled } from "./featureFlags";
 
