@@ -238,7 +238,7 @@ export function createLink(opts?: CreateLinkOptions): string {
     }
 
     const bestShareType = getBestShareType();
-    const app = bestShareType == "any" ? null : bestShareType;
+    const app = bestShareType == "any" ? "web" : bestShareType;
     const webview = isWebview();
     const trackProps = {
         sourcePlatform: app,
