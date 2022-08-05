@@ -162,7 +162,7 @@ export async function initGCInstant (
         entryFinalProperties?.lastEntryUserProperties || {});
 
     // Inject GCInstant-specific link parameters
-    setGCSharePayload(getGCSharePayload());
+    setGCSharePayload(gcPlatform.getPlatformPayloadData() as Record<string,string>);
 }
 
 function sendEntryFinalAnalytics (
@@ -205,14 +205,6 @@ function sendEntryFinalAnalytics (
         standardLastEntryUserProperties[camelCasePrefix("lastEntry", key)] = value;
     }
 
-    // Add additional event props to EntryFinal/EntryConversion ONLY
-    if (payload.createdAt) {
-        const elapsedMillis = Date.now() - payload.createdAt;
-        standardEntryFinalEventProperties["elapsedMinutes"] = elapsedMillis / (60*1000);
-        standardEntryFinalEventProperties["elapsedHours"] = elapsedMillis / (60*60*1000);
-        standardEntryFinalEventProperties["elapsedDays"] = elapsedMillis / (24*60*60*1000);
-    }
-
     return gcPlatform.sendEntryFinalAnalytics(
         { ...standardEntryFinalEventProperties, ...entryFinalEventProperties },
         { ...standardFirstEntryUserProperties, ...firstEntryUserProperties },
@@ -225,27 +217,4 @@ export function getBucketId(testId: string): string | undefined {
 
 export function assignTestManually(testId: string, bucketId?: string): void {
     gcPlatform.abTests?.assignTestManually(testId, bucketId);
-}
-
-function getGCSharePayload() {
-    // Due to size constraints on link shortener we strip out a lot of gcinstants default payload and only use the parts we need.
-    const gcinstantSharePropertyWhitelist = [
-        "playerID",
-        "$firstEntryGeneration",
-        "$firstEntryChannel",
-        /\$?zeroEntry/,
-    ];
-    // we filter this because of size constraints.
-    const payload = gcPlatform ? gcPlatform.getPlatformPayloadData() : {};
-    const filteredPayload = Object.entries(payload).reduce((acc, [key, val]) => {
-        const matchFound = !!gcinstantSharePropertyWhitelist.find(matcher => {
-            if(matcher instanceof RegExp) return matcher.test(key);
-            else return matcher === key;
-        });
-        if(matchFound) {
-            acc[key] = val;
-        }
-        return acc;
-    }, {} as Record<string, string>);
-    return filteredPayload;
 }

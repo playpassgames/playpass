@@ -211,6 +211,28 @@ export function setGCSharePayload (sharePayload: Record<string,string>) {
     gcinstantSharePayload = sharePayload;
 }
 
+function getFilteredGCSharePayload() {
+    // Due to size constraints on the legacy link shortener we strip out a lot of gcinstants default payload and only use the parts we need.
+    const gcinstantSharePropertyWhitelist = [
+        "playerID",
+        "$firstEntryGeneration",
+        "$firstEntryChannel",
+        /\$?zeroEntry/,
+    ];
+    // we filter this because of size constraints.
+    const filteredPayload = Object.entries(gcinstantSharePayload).reduce((acc, [key, val]) => {
+        const matchFound = !!gcinstantSharePropertyWhitelist.find(matcher => {
+            if(matcher instanceof RegExp) return matcher.test(key);
+            else return matcher === key;
+        });
+        if(matchFound) {
+            acc[key] = val;
+        }
+        return acc;
+    }, {} as Record<string, string>);
+    return filteredPayload;
+}
+
 let amplitudeKey: string | undefined;
 export function setAmplitudeKey (key: string) {
     amplitudeKey = key;
@@ -252,9 +274,8 @@ export function createLink(opts?: CreateLinkOptions): string {
         data: opts?.data,
         referrer: getPlayerId(),
 
-        // TODO(2022-03-18): Remove, gcinstant only
         gcinstant: {
-            ...gcinstantSharePayload,
+            ...getFilteredGCSharePayload(),
             $channel: opts?.channel ?? "SHARE",
         },
 
@@ -306,7 +327,6 @@ export async function createContextLink(opts?: CreateLinkOptions): Promise<strin
         data: opts?.data,
         referrer: getPlayerId(),
 
-        // TODO(2022-03-18): Remove, gcinstant only
         gcinstant: {
             ...gcinstantSharePayload,
             $channel: opts?.channel ?? "SHARE",
