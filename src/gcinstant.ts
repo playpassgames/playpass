@@ -19,7 +19,7 @@ import { internalStorage } from "./storage";
 import { getQueryParameters, camelCasePrefix } from "./utils";
 import { getBestShareType, isWebview, getReferrer } from "./device";
 
-let gcPlatform: PlatformImpl;
+export let gcPlatform: PlatformImpl;
 
 // this should never be fatal.
 function getEntryPointData(): AnalyticsProperties.EntryData {
