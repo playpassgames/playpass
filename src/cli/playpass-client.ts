@@ -211,6 +211,22 @@ export default class PlaypassClient {
         });
     }
 
+    public async invite(gameId: string, userId: string) {
+        return axios.request({
+            method: 'POST',
+            url: `${this.host}/api/v1/games/${gameId}/team/add`,
+            headers: {
+                "X-API-TOKEN": this.authToken
+            },
+            data: {
+                user: userId,
+            },
+        }).then((a: AxiosResponse<PlaypassResponse>) => {
+            PlaypassClient.validateResponse(a, "Failed to add user to the team.");
+            return a.data;
+        });
+    }
+
     private static validateResponse(a: AxiosResponse<{
         result?: boolean | undefined,
         error?: string | undefined
