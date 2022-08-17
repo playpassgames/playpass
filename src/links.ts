@@ -105,9 +105,16 @@ export function encode (explicitURL: string | undefined,
     payload: Payload,
     opts: { tags?: Map<string,unknown>, amplitudeKey?: string } = {}
 ): string {
-    const opengrapherOrigin = (location.hostname == "beadle.gg" || location.hostname == "tweedle.app")
-        ? location.origin
-        : "https://playpass.link";
+    // Setting up the opengrapher share URL fallback is currently a manual CloudFront configuration
+    // process. So for now we keep a whitelist for those CF distributions that have been configured,
+    // and default to using playpass.link otherwise. Once we automate this for new domains we can
+    // remove this.
+    const enabledHosts: Record<string,boolean> = {
+        "beadle.gg": true,
+        "tweedle.app": true,
+        "qomedyquiz.com": true,
+    };
+    const opengrapherOrigin = enabledHosts[location.hostname] ? location.origin : "https://playpass.link";
 
     const meta = constructMetaPayload(explicitURL, payload, opts);
 
