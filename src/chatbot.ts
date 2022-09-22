@@ -1,10 +1,18 @@
 import { replicantClient } from "./login";
 
-export const chatbots = {
-  isSubscribed: () => {
-    return replicantClient!.chatbotSubscriptions.isSubscribed();
-  },
-  subscribeToSms: (consentText: string) => {
-    return replicantClient!.chatbotSubscriptions.subscribeSms(consentText);
-  },
+export const isSubscribed = () => {
+  return replicantClient!.chatbotSubscriptions.isSubscribed();
+  //return false;
+};
+
+export const subscribeToSms = (consentText: string) => {
+  return replicantClient!.chatbotSubscriptions.subscribeToSms(consentText);
+};
+
+export const scheduleNotificationAfter = (opts: {
+  millis: number,
+  message: string,
+  notificationId: string,
+}) => {
+  return replicantClient!.chatbotSubscriptions.createNotification(opts);
 };
