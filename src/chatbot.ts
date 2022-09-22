@@ -1,12 +1,16 @@
+//
+// Playpass (c) Playco
+// https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
+
 import { replicantClient } from "./login";
 
 export const isSubscribed = () => {
-  return replicantClient!.chatbotSubscriptions.isSubscribed();
-  //return false;
+    return replicantClient!.chatbotSubscriptions.isSubscribed();
+    //return false;
 };
 
 export const subscribeToSms = (consentText: string) => {
-  return replicantClient!.chatbotSubscriptions.subscribeToSms(consentText);
+    return replicantClient!.chatbotSubscriptions.subscribeToSms(consentText);
 };
 
 export const scheduleNotificationAfter = (opts: {
@@ -14,5 +18,5 @@ export const scheduleNotificationAfter = (opts: {
   message: string,
   notificationId: string,
 }) => {
-  return replicantClient!.chatbotSubscriptions.createNotification(opts);
+    return replicantClient!.chatbotSubscriptions.createNotification(opts);
 };
