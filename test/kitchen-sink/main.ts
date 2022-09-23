@@ -102,7 +102,7 @@ import { getReferrer } from "../../src/device"; // Private API!
     }
 
     function updateChatbotSubscriptionStatus() {
-        const sub = playpass.account.isLoggedIn() ? playpass.chatbots.isSubscribed() : null;
+        const sub = playpass.account.isLoggedIn() ? playpass.notifications.isSubscribed() : null;
         document.querySelector("#subscriptionStatus").innerHTML = sub ? "Subscribed" : "Not Subscribed";
     }
 
@@ -225,13 +225,13 @@ import { getReferrer } from "../../src/device"; // Private API!
 
 
     document.querySelector("#subscribeSms").onclick = async () => {
-        await playpass.chatbots.subscribeSms("do you consent");
+        await playpass.notifications.subscribeSms("do you consent");
         updateUI();
     };
 
     document.querySelector("#sendSms").onclick = async () => {
         // in the "real world" you probably schedule this using airtable or similar.
-        await playpass.chatbots.scheduleNotificationAfter({
+        await playpass.notifications.scheduleNotificationAfter({
             message: `${document.getElementById("sendSmsInput").value!}`,
             millis: 1000 * 60 * 1, // 1 minute
             notificationId: "1-minute-notification" // this is effectively your dedupe key
