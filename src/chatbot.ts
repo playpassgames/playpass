@@ -9,8 +9,12 @@ export const isSubscribed = () => {
     //return false;
 };
 
-export const subscribeToSms = (consentText: string) => {
-    return replicantClient!.chatbotSubscriptions.subscribeToSms(consentText);
+export const subscribeSms = (consentText: string) => {
+    return replicantClient!.chatbotSubscriptions.subscribeSms(consentText);
+};
+
+export const unsubscribeSms = () => {
+    return replicantClient!.chatbotSubscriptions.unsubscribeSms();
 };
 
 export const scheduleNotificationAfter = (opts: {

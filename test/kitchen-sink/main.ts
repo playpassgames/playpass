@@ -225,7 +225,7 @@ import { getReferrer } from "../../src/device"; // Private API!
 
 
     document.querySelector("#subscribeSms").onclick = async () => {
-        await playpass.chatbots.subscribeToSms("do you consent");
+        await playpass.chatbots.subscribeSms("do you consent");
         updateUI();
     };
 
