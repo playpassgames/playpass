@@ -97,7 +97,7 @@ import { getReferrer } from "../../src/device"; // Private API!
 
     function shareWithType (type) {
         const link = playpass.createLink(createLinkOpts);
-        playpass.share({ text: `This is a test share: ${link}`, type });
+        playpass.share({ text: `This is a test share:\n${link}`, type });
     }
 
     function shareInReplyTo() {

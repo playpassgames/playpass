@@ -88,7 +88,9 @@ export class SharePopup extends Popup {
     override renderPopup () {
         return html`
             <p class="preview">
-                ${this.shareText}
+                ${map(this.shareText.split("\n"), shareLine => html`
+                    ${shareLine}<br/>
+                `)}
             </p>
             ${map(icons, icon => html`
                 <button style="background: ${icon.color}" name="${icon.type}" @click="${this.onShareClick}">
