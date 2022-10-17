@@ -9,10 +9,12 @@ export { copyToClipboard, createLink, createContextLink, share, uploadTemporaryI
 export { storage } from "./storage";
 export { createFeatureFlag, featureFlagIsEnabled, setFeatureFlagEnabled } from "./featureFlags";
 
+
 export * as account from "./exports/account";
 export * as device from "./exports/device";
 export * as groups from "./exports/groups";
 export * as leaderboards from "./exports/leaderboards";
+export * as notifications from "./notifications";
 
 /** @hidden */
 export * as payments from "./exports/payments";

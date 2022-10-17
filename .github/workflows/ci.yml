@@ -43,6 +43,15 @@ jobs:
               env:
                   PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}
 
+            - name: Deploy kitchen-sink to a preview
+              if: github.ref != 'refs/heads/main'
+              run: |
+                  playpass="../../dist/cjs/cli/index.js"
+                  $playpass deploy --prefix pr-${{ github.event.pull_request.number }}
+              working-directory: test/kitchen-sink
+              env:
+                  PLAYPASS_TOKEN: ${{ secrets.PLAYPASS_TOKEN }}
+
             - name: Deploy docs
               if: github.ref == 'refs/heads/main'
               run: |

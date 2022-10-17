@@ -11,18 +11,18 @@ import { clearSubscriptionCache, initSubscriptionCache } from "./purchase";
 import "./ui/login-popup";
 
 declare global {
-    interface Window {
-        intlTelInput?: (element: HTMLElement) => void;
-    }
+  interface Window {
+    intlTelInput?: (element: HTMLElement) => void;
+  }
 }
 
 let replicantClient: ReplicantLite | undefined;
 export { replicantClient };
 
 let phoneCodeCss: HTMLLinkElement | undefined;
-let phoneCodeScript: HTMLScriptElement | undefined; 
+let phoneCodeScript: HTMLScriptElement | undefined;
 
-export function requireReplicantClient (funcName: string): ReplicantLite {
+export function requireReplicantClient(funcName: string): ReplicantLite {
     requireInit(funcName);
     return replicantClient!;
 }
@@ -32,7 +32,7 @@ let pendingLogin: Promise<boolean> | undefined;
 
 let loggedIn = false;
 
-async function onLogin () {
+async function onLogin() {
     await Promise.all([
         cloudStorage.onLogin(replicantClient!),
         initSubscriptionCache(),
@@ -40,7 +40,7 @@ async function onLogin () {
     loggedIn = true;
 }
 
-function onLogout () {
+function onLogout() {
     clearSubscriptionCache();
     loggedIn = false;
 }
@@ -51,15 +51,15 @@ function onLogout () {
  *
  * The player's ID may change after a call to {@link login}.
  */
-export function getPlayerId (): string | undefined {
+export function getPlayerId(): string | undefined {
     return replicantClient?.getUserId();
 }
 
-export function isLoggedIn (): boolean {
+export function isLoggedIn(): boolean {
     return loggedIn;
 }
 
-export async function login (): Promise<boolean> {
+export async function login(): Promise<boolean> {
     requireInit("playpass.account.login");
 
     if (isLoggedIn()) {
@@ -74,19 +74,24 @@ export async function login (): Promise<boolean> {
     if (!phoneCodeCss) {
         phoneCodeCss = document.createElement("link");
         phoneCodeCss.rel = "stylesheet";
-        phoneCodeCss.href = "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css";
+        phoneCodeCss.href =
+      "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css";
         document.head.appendChild(phoneCodeCss);
     }
 
     if (!phoneCodeScript) {
         phoneCodeScript = document.createElement("script");
-        phoneCodeScript.setAttribute("src", "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js");
+        phoneCodeScript.setAttribute(
+            "src",
+            "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"
+        );
         phoneCodeScript.setAttribute("crossorigin", "anonymous");
         document.head.appendChild(phoneCodeScript);
 
         // TODO(2022-06-22): Clean this up by moving styling to the login popup?
         const phoneInputStyle = document.createElement("style");
-        phoneInputStyle.innerText = ".phoneInput { transition: box-shadow; outline: none; box-shadow: none; border: 1px solid #a2afb9; padding: 0.75rem 1rem; font-size: 1.25rem; border-radius: 0.25rem; } .phoneInput:focus { box-shadow: 0 0 0 3px rgba(16, 149, 193, 0.125); border-color: var(--primary); }";
+        phoneInputStyle.innerText =
+      ".phoneInput { transition: box-shadow; outline: none; box-shadow: none; border: 1px solid #a2afb9; padding: 0.75rem 1rem; font-size: 1.25rem; border-radius: 0.25rem; } .phoneInput:focus { box-shadow: 0 0 0 3px rgba(16, 149, 193, 0.125); border-color: var(--primary); }";
         document.head.appendChild(phoneInputStyle);
     }
 
@@ -103,7 +108,7 @@ export async function login (): Promise<boolean> {
         window.intlTelInput(telephoneInput);
     } else {
         phoneCodeScript.onload = () => {
-            window.intlTelInput!(telephoneInput);
+      window.intlTelInput!(telephoneInput);
         };
     }
 
@@ -111,7 +116,7 @@ export async function login (): Promise<boolean> {
     loginPopup.appendChild(telephoneInputParent);
     document.body.appendChild(loginPopup);
 
-    pendingLogin = new Promise(resolve => {
+    pendingLogin = new Promise((resolve) => {
         loginPopup.replicantClient = replicantClient!;
 
         loginPopup.onAbort = () => {
@@ -129,21 +134,21 @@ export async function login (): Promise<boolean> {
     return result;
 }
 
-export function logout () {
+export function logout() {
     requireInit("playpass.account.logout");
 
-    replicantClient!.logout();
-    onLogout();
+  replicantClient!.logout();
+  onLogout();
 }
 
-export async function initLogin (gameId: string): Promise<void> {
+export async function initLogin(gameId: string): Promise<void> {
     // Pull the credentials out of async storage
     const CREDS_KEY = "replicantCreds";
-    let replicantCreds = await internalStorage.get(CREDS_KEY) as string;
+    let replicantCreds = (await internalStorage.get(CREDS_KEY)) as string;
 
     // Cover ourselves a bit with the storage override only supporting one key
     let lastUsedKey: string;
-    function validateKey (name: string) {
+    function validateKey(name: string) {
         if (lastUsedKey && lastUsedKey != name) {
             throw new Error("Multiple storage keys not supported");
         }
@@ -156,29 +161,29 @@ export async function initLogin (gameId: string): Promise<void> {
         replicant: {
             storageOverride: {
                 length: 1,
-                getItem (name) {
+                getItem(name) {
                     validateKey(name);
                     return replicantCreds;
                 },
-                setItem (name, value) {
+                setItem(name, value) {
                     validateKey(name);
                     replicantCreds = value;
                     internalStorage.set(CREDS_KEY, replicantCreds);
                 },
-                removeItem (name) {
+                removeItem(name) {
                     validateKey(name);
                     internalStorage.remove(CREDS_KEY);
                 },
-                clear () {
+                clear() {
                     throw new Error("Not implemented");
                 },
-                key () {
+                key() {
                     throw new Error("Not implemented");
                 },
             },
 
-            version: "1.4.2",
-            // endpoint: "https://replicant-lite.us-east-1.replicant-playpass.gc-internal.net/replicant-lite-dev",
+            version: "1.4.3-alpha3",
+            endpoint: "https://replicant-lite.us-east-1.replicant-playpass.gc-internal.net/replicant-lite-dev",
         },
         stripeAccountId: getStripeAccount(),
     });

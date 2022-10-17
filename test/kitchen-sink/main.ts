@@ -64,6 +64,7 @@ import { getReferrer } from "../../src/device"; // Private API!
             groupsInfo.push(`Group ${groupId} [players=${group.players.size}, storage=${testData.join("")}]`);
         }
         document.querySelector("#groupsInfo").textContent = groupsInfo.join("\n");
+        updateChatbotSubscriptionStatus();
     }
     updateUI();
 
@@ -98,6 +99,11 @@ import { getReferrer } from "../../src/device"; // Private API!
     function shareWithType (type) {
         const link = playpass.createLink(createLinkOpts);
         playpass.share({ text: `This is a test share:\n${link}`, type });
+    }
+
+    function updateChatbotSubscriptionStatus() {
+        const sub = playpass.account.isLoggedIn() ? playpass.notifications.isSubscribed() : null;
+        document.querySelector("#subscriptionStatus").innerHTML = sub ? "Subscribed" : "Not Subscribed";
     }
 
     function shareInReplyTo() {
@@ -215,6 +221,22 @@ import { getReferrer } from "../../src/device"; // Private API!
             await leaderboard.submitScore(score);
             updateLeaderboardUI();
         }
+    };
+
+
+    document.querySelector("#subscribeSms").onclick = async () => {
+        await playpass.notifications.subscribeSms("do you consent");
+        updateUI();
+    };
+
+    document.querySelector("#sendSms").onclick = async () => {
+        // in the "real world" you probably schedule this using airtable or similar.
+        await playpass.notifications.scheduleNotificationAfter({
+            message: `${document.getElementById("sendSmsInput").value!}`,
+            millis: 1000 * 60 * 1, // 1 minute
+            notificationId: "1-minute-notification" // this is effectively your dedupe key
+        });
+        updateUI();
     };
 })();
 
