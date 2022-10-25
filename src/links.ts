@@ -4,8 +4,6 @@
 
 import { analytics } from "./analytics";
 
-import { hasCustomDomain } from "./utils";
-
 // See playpass-opengrapher/lambda/src/app.ts
 type OpengrapherMetadata = {
     // Open Graph <meta> tag names and values
@@ -55,21 +53,26 @@ export function decode (): Payload {
     }
 
     try {
-        return cachedPayload = decodeRaw(location.href);
+        cachedPayload = decodeRaw(location.href);
     } catch (error: unknown) {
         console.error("Failed to decode payload", error);
+        cachedPayload = {};
         analytics.track("PayloadDecodeError", {url: location.href});
     }
-    return cachedPayload = {};
+    return cachedPayload;
 }
 
 export function decodeRaw (href: string): Payload {
     const url = new URL(href);
+    const urlLink = url.searchParams.get("link");
+    if (urlLink) {
+        return JSON.parse(urlLink) || {};
+    }
 
     const hash = new URL(url.hash.substring(1), url.origin);
-    const link = hash.searchParams.get("link");
-    if (link) {
-        return JSON.parse(link) || {};
+    const hashLink = hash.searchParams.get("link");
+    if (hashLink) {
+        return JSON.parse(hashLink) || {};
     }
 
     // LEGACY (2022-03-xx). Handle legacy link format where we stuck the JSON directly in the hash
@@ -143,9 +146,14 @@ export function stripPayloadsFromUrl (href: string): string {
             url.hash = "";
         }
     }
+    url.searchParams.delete("link");
 
     // Also remove our old gcinstant legacy payload param
     url.searchParams.delete("payload");
+
+    // Finally, remove any params added by ad networks
+    // url.searchParams.delete('fbclid');
+    // url.searchParams.delete('twclid');
 
     return url.toString();
 }

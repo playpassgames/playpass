@@ -10,9 +10,7 @@ declare global {
     }
 }
 
-export function initGTM(options: {
-    tagId: string
-}) {
+export function initGTM() {
     injectSecondaryAnalytics({
         track(name, props) {
             window.dataLayer.push({

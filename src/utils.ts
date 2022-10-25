@@ -11,8 +11,12 @@ export const hasCustomDomain = !location.port && !location.hostname.includes(".p
 const base62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 export function randomId (prefix: string) {
-    let str = prefix+"_";
-    for (let ii = 0; ii < 22; ++ii) {
+    return `${prefix}_${randomNoise(22)}`;
+}
+
+export function randomNoise (count: number): string {
+    let str = "";
+    for (let ii = 0; ii < count; ++ii) {
         str += base62.charAt(Math.random() * 62 >>> 0);
     }
     return str;

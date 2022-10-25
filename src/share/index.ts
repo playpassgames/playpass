@@ -5,8 +5,9 @@
 import { analytics } from "../analytics";
 import { encode, constructMetaPayload } from "../links";
 import { getPlayerId } from "../init";
-import { hasCustomDomain, shortHash, sendBackground, sendPost } from "../utils";
+import { hasCustomDomain, randomNoise, shortHash, sendBackground } from "../utils";
 import { getBestShareType, isWebview } from "../device";
+import { gcPlatform } from "../gcinstant";
 
 import { ShareType } from "./share-type";
 
@@ -104,6 +105,9 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
     };
     analytics.track("SharePrompted", trackParams);
 
+    // Also send SharePromptedConversion and ZeroSharePromptedConversion
+    gcPlatform.trackConversionEvent("SharePrompted", trackParams);
+
     const shareData = { files, text };
 
     let shareSent = false;
@@ -157,6 +161,13 @@ async function doShare (type: ShareType, text: string, options?: {inReplyTo?: st
         openNewTab("https://www.facebook.com/sharer/sharer.php", {
             quote: textNoUrls,
             u: urlMatch ? urlMatch[0] : createLink(),
+        });
+        return true;
+
+    case ShareType.Messenger:
+        // Untested on iOS!
+        openNewTab("fb-messenger://share/", {
+            link: urlMatch ? urlMatch[0] : createLink(),
         });
         return true;
 
@@ -255,7 +266,7 @@ export function createLink(opts?: CreateLinkOptions): string {
         tags.set("og:description", opts.description);
     }
     if (opts?.image) {
-        tags.set("og:image", opts.image);
+        tags.set("og:image", new URL(opts.image, location.href).href);
         tags.set("twitter:card", "summary_large_image");
     }
 
@@ -294,9 +305,9 @@ export function createLink(opts?: CreateLinkOptions): string {
  * @param opts - CreateLinkOptions
  * @returns Promise<string> A string representing the shortened url containing the payload data
  */
-export async function createContextLink(opts?: CreateLinkOptions): Promise<string> {
+export function createContextLink(opts?: CreateLinkOptions): string {
     // During local development or games hosted on *.playpass.games, use a fixed short domain
-    // const shortDomain = hasCustomDomain ? location.hostname : "playpass.link";
+    // const shortDomain = hasCustomDomain ? location.hostname : 'playpass.link';
     const shortDomain = hasCustomDomain ? location.hostname : "playpass.link";
     const shareServicePrefix = "share";
 
@@ -308,7 +319,7 @@ export async function createContextLink(opts?: CreateLinkOptions): Promise<strin
         tags.set("og:description", opts.description);
     }
     if (opts?.image) {
-        tags.set("og:image", opts.image);
+        tags.set("og:image", new URL(opts.image, location.href).href);
         tags.set("twitter:card", "summary_large_image");
     }
 
@@ -335,15 +346,12 @@ export async function createContextLink(opts?: CreateLinkOptions): Promise<strin
         trackProps,
     }, { tags, amplitudeKey });
 
-    const res: { contextId: string } = await sendPost(`https://${shortDomain}/${shareServicePrefix}/new`, { meta }).then(r => r.json());
-    if(!res.contextId) {
-        throw new Error("Unable to construct short link");
-    }
+    const contextId = randomNoise(8);
 
-    return `https://${shortDomain}/${shareServicePrefix}/${res.contextId}`;
+    sendBackground(`https://${shortDomain}/${shareServicePrefix}/new/${contextId}`, { meta });
+
+    return `https://${shortDomain}/${shareServicePrefix}/${contextId}`;
 }
-
-
 
 function toBlob (canvas: HTMLCanvasElement, type?: string): Promise<Blob> {
     return new Promise((resolve, reject) => {
