@@ -221,8 +221,8 @@ import { getReferrer } from "../../../src/device"; // Private API!
     };
 
     document.querySelector("#notificationsRequestPermission").onclick = async () => {
-        const installed = await playpass.notifications.requestPermission();
-        alert(`playpass.notifications.requestPermission() returned: ${installed}`);
+        const granted = await playpass.notifications.requestPermission();
+        alert(`playpass.notifications.requestPermission() returned: ${granted}`);
         updateUI();
     };
 

@@ -140,7 +140,7 @@ export function getInstallState (): InstallState {
 }
 
 /**
- * Requests the player to install the PWA.
+ * Requests the player to install the PWA to their home screen.
  * @returns Whether the installation was accepted by the player.
  */
 export async function requestInstall (): Promise<boolean> {
