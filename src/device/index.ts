@@ -123,7 +123,7 @@ export enum InstallState {
 
     // Installed = "installed",
 
-    /** The player's browser doesn't support PWA installation. */
+    /** The player's browser doesn't support PWA installation, or the PWA is misconfigured. */
     Unsupported = "unsupported",
 }
 

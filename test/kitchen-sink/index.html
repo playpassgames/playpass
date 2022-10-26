@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
   <title>Kitchen Sink</title>
-  <script type="module" src="/main.ts"></script>
+  <link rel="manifest" href="app.webmanifest">
+  <script type="module" src="/src/main.ts"></script>
 </head>
 <body>
   <h1>SDK Tests</h1>
@@ -50,6 +51,17 @@
     <button id="upload-temporary-image"><code>playpass.uploadTemporaryImage()</code></button>
     <a id="upload-temporary-image-result"></a>
   </p>
+
+  <h2>Notifications</h2>
+
+  <p><code>playpass.notifications.getPermissionState() == <span id="notificationsGetPermissionState">...</span></code></p>
+  <p><button id="notificationsRequestPermission"><code>playpass.notifications.requestPermission()</code></button></p>
+  <p><button id="notificationsSchedule"><code>playpass.notifications.schedule()</code></button></p>
+
+  <h2>Install to Homescreen (PWA)</h2>
+
+  <p><code>playpass.device.getInstallState() == <span id="deviceGetInstallState">...</span></code></p>
+  <p><button id="deviceRequestInstall"><code>playpass.device.requestInstall()</code></button></p>
 
   <h2>Subscription</h2>
 

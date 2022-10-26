@@ -7,7 +7,6 @@ import { encode, constructMetaPayload } from "../links";
 import { getPlayerId } from "../init";
 import { hasCustomDomain, randomNoise, shortHash, sendBackground } from "../utils";
 import { getBestShareType, isWebview } from "../device";
-import { gcPlatform } from "../gcinstant";
 
 import { ShareType } from "./share-type";
 
@@ -104,9 +103,6 @@ export async function share(opts?: ShareOptions): Promise<boolean> {
         ...opts?.trackProps,
     };
     analytics.track("SharePrompted", trackParams);
-
-    // Also send SharePromptedConversion and ZeroSharePromptedConversion
-    gcPlatform.trackConversionEvent("SharePrompted", trackParams);
 
     const shareData = { files, text };
 

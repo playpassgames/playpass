@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "vite --open --host",
-    "build": "vite build"
+    "build": "vite build && esbuild src/service-worker.ts --bundle --minify --outfile=dist/service-worker.js"
   },
   "dependencies": {
     "vite": "^2.9.1"

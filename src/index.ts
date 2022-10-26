@@ -13,6 +13,8 @@ export * as account from "./exports/account";
 export * as device from "./exports/device";
 export * as groups from "./exports/groups";
 export * as leaderboards from "./exports/leaderboards";
+export * as notifications from "./exports/notifications";
+// export * as serviceWorker from "./exports/serviceWorker";
 
 /** @hidden */
 export * as payments from "./exports/payments";

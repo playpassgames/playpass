@@ -8,7 +8,6 @@ import { cloudStorage, internalStorage } from "./storage";
 import { getStripeAccount, requireInit } from "./init";
 import { clearSubscriptionCache, initSubscriptionCache } from "./purchase";
 import { analytics } from "./analytics";
-import { subscribeSms } from "./notifications";
 
 import "./ui/login-popup";
 

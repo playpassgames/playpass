@@ -2,8 +2,8 @@
 // Playpass (c) Playco
 // https://github.com/playpassgames/playpass/blob/main/LICENSE.txt
 
-import * as playpass from "../../src";
-import { getReferrer } from "../../src/device"; // Private API!
+import * as playpass from "../../../src";
+import { getReferrer } from "../../../src/device"; // Private API!
 
 (async () => {
     document.querySelector("#bestShareType").textContent = playpass.device.getBestShareType();
@@ -14,6 +14,7 @@ import { getReferrer } from "../../src/device"; // Private API!
     await playpass.init({
         gameId: "kitchen-sink",
         stripeAccount: "acct_1KmOYpRSkLu3gu7q",
+        serviceWorker: "./service-worker.js",
     });
 
     const linkData = playpass.getLinkData();
@@ -56,6 +57,8 @@ import { getReferrer } from "../../src/device"; // Private API!
         document.querySelector("#getLinkData").textContent = JSON.stringify(playpass.getLinkData());
         document.querySelector("#getCounter").textContent = await playpass.storage.get("counter") || "unset";
         document.querySelector("#currentSub").textContent = playpass.account.isLoggedIn() ? await playpass.payments.getSubscription() || "null" : "null";
+        document.querySelector("#notificationsGetPermissionState").textContent = await playpass.notifications.getPermissionState();
+        document.querySelector("#deviceGetInstallState").textContent = playpass.device.getInstallState();
 
         const groupsInfo = [];
         for (const groupId of demoGroupIds) {
@@ -215,6 +218,26 @@ import { getReferrer } from "../../src/device"; // Private API!
             await leaderboard.submitScore(score);
             updateLeaderboardUI();
         }
+    };
+
+    document.querySelector("#notificationsRequestPermission").onclick = async () => {
+        const installed = await playpass.notifications.requestPermission();
+        alert(`playpass.notifications.requestPermission() returned: ${installed}`);
+        updateUI();
+    };
+
+    document.querySelector("#notificationsSchedule").onclick = async () => {
+        playpass.notifications.schedule("test", {
+            delay: 2*1000*60,
+            title: "Hello world!",
+        });
+        alert("Scheduled a test notification ~2 minutes from now.");
+    };
+
+    document.querySelector("#deviceRequestInstall").onclick = async () => {
+        const installed = await playpass.device.requestInstall();
+        alert(`playpass.device.requestInstall() returned: ${installed}`);
+        updateUI();
     };
 })();
 

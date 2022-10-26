@@ -72,20 +72,6 @@ class PlatformImpl extends PlatformWeb {
         this.setPlayerID(playerId);
     }
 
-    public async trackConversionEvent(
-        eventName: string,
-        eventProps: Record<string, unknown> = {}
-    ) {
-        const immediateReferrerId = this.entryData?.playerID;
-        const zeroGenerationReferrerId = this.entryData?.zeroEntrySourcePlayerID;
-        this.sendConversionEvents({
-            eventName,
-            eventProperties: eventProps,
-            immediateReferrerId,
-            zeroGenerationReferrerId,
-        });
-    }
-
     /** If gcinstant is set, use that. Otherwise fallback on the default gcinstant handling for `payload` */
     public override _getEntryPointDataForce(): AnalyticsProperties.EntryData {
         return entryPointData;
@@ -173,15 +159,7 @@ export async function initGCInstant(opts?: {
         entryFinalProperties?.lastEntryUserProperties || {});
 
     // Inject GCInstant-specific link parameters
-    setGCSharePayload(
-    gcPlatform.getPlatformPayloadData() as Record<string, string>
-    );
-
-    const onPointerDown = () => {
-        gcPlatform.trackConversionEvent("FirstScreenTap");
-        window.removeEventListener("pointerdown", onPointerDown);
-    };
-    window.addEventListener("pointerdown", onPointerDown);
+    setGCSharePayload(gcPlatform.getPlatformPayloadData() as Record<string, string>);
 }
 
 function sendEntryFinalAnalytics (
