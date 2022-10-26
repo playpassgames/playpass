@@ -42,6 +42,9 @@ export enum ShareType {
     /** Share on TikTok (not yet implemented). */
     TikTok = "tiktok",
 
+    /** Share on FB Messenger. */
+    Messenger = "messenger",
+
     /** Share as a SMS text message. */
     Sms = "sms",
 }

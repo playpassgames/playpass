@@ -18,12 +18,19 @@ export type InitOptions = {
     gameId: string;
     stripeAccount?: string;
 
+    /** Path to the service worker JS. */
+    serviceWorker?: string;
+
     /** Additional tracking properties that will be sent along with the Entry event. */
     trackProps?: Record<string,unknown>;
 }
 
 /** Initialize the Playpass SDK. */
 export async function init (opts?: InitOptions): Promise<void> {
+    if (opts?.serviceWorker && navigator.serviceWorker) {
+        navigator.serviceWorker.register(opts.serviceWorker);
+    }
+
     // Generate a player ID across sessions
     playerId = await internalStorage.get("playerId") as string;
     if (!playerId) {

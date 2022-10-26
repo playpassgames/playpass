@@ -39,9 +39,6 @@ function getEntryPointData(): AnalyticsProperties.EntryData {
     return {} as AnalyticsProperties.EntryData;
 }
 
-// we invoke this on load because the URL will get stripped when playpass inits. 
-export const entryPointData = getEntryPointData();
-
 class PlatformImpl extends PlatformWeb {
     /** Same as initializeAsync, but pass the player ID to initialize Amplitude. */
     async initializeAsync2 (playerId: string, config: GameConfig): Promise<void> {
@@ -81,7 +78,6 @@ class PlatformImpl extends PlatformWeb {
     }
 }
 
-
 export class AmplitudeAnalytics implements Analytics {
     track (name: string, props?: Record<string,unknown>) {
         gcAnalytics.pushEvent(name, props);
@@ -105,22 +101,23 @@ export class AmplitudeAnalytics implements Analytics {
     }
 }
 
-export async function initGCInstant (
-    opts?: { 
-        amplitude: string, 
-        abTestConfig?: ABConfig, 
-        hashFunction?: HashFunction, 
-        entryFinalProperties?: {
-            eventProperties?: {[key: string]: unknown},
-            firstEntryUserProperties?: {[key: string]: unknown},
-            lastEntryUserProperties?: {[key: string]: unknown},
-        },
-        version?: string,
-    },
-): Promise<void> {
-    injectSecondaryAnalytics(new AmplitudeAnalytics());
+injectSecondaryAnalytics(new AmplitudeAnalytics());
 
-    if(opts?.amplitude) {
+// we invoke this on load because the URL will get stripped when playpass inits.
+export const entryPointData = getEntryPointData();
+
+export async function initGCInstant(opts?: {
+  amplitude: string;
+  abTestConfig?: ABConfig;
+  hashFunction?: HashFunction;
+  entryFinalProperties?: {
+    eventProperties?: { [key: string]: unknown };
+    firstEntryUserProperties?: { [key: string]: unknown };
+    lastEntryUserProperties?: { [key: string]: unknown };
+  };
+  version?: string;
+}): Promise<void> {
+    if (opts?.amplitude) {
         setAmplitudeKey(opts.amplitude);
     }
 
@@ -162,7 +159,7 @@ export async function initGCInstant (
         entryFinalProperties?.lastEntryUserProperties || {});
 
     // Inject GCInstant-specific link parameters
-    setGCSharePayload(gcPlatform.getPlatformPayloadData() as Record<string,string>);
+    setGCSharePayload(gcPlatform.getPlatformPayloadData() as Record<string, string>);
 }
 
 function sendEntryFinalAnalytics (
@@ -174,8 +171,8 @@ function sendEntryFinalAnalytics (
     const app = bestShareType == "any" ? null : bestShareType;
     const webview = isWebview();
 
-    let referrer = null;
-    let toplevelHost = null;
+    let referrer: URL | null = null;
+    let toplevelHost: string | null = null;
     if (getReferrer()) {
         referrer = new URL(getReferrer());
         toplevelHost = referrer.hostname.split(".").slice(-2).join(".");

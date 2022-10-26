@@ -12,6 +12,8 @@ nav:
         - Add a Login Button: account.md
         - Show Highscore Leaderboards: leaderboards.md
         - Add Multiplayer with Groups: groups.md
+        - Installing to Home Screen: home-screen.md
+        - Sending Push Notifications: push-notifications.md
         # - Receive Payments: payments.md
         - Deploy Your Game: deploy.md
         - Managing Your Game: managing.md
@@ -21,6 +23,8 @@ nav:
         - playpass.device: api/modules/device.md
         - playpass.groups: api/modules/groups.md
         - playpass.leaderboards: api/modules/leaderboards.md
+        - playpass.notifications: api/modules/notifications.md
+        # - playpass.serviceWorker: api/modules/serviceWorker.md
     - Changelog: changelog.md
         # - playpass.payments: api/modules/payments.md
         # - Analytics: analytics.md

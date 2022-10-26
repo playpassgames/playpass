@@ -7,8 +7,15 @@ import { ReplicantLite } from "@playpass/replicant-lite";
 import { cloudStorage, internalStorage } from "./storage";
 import { getStripeAccount, requireInit } from "./init";
 import { clearSubscriptionCache, initSubscriptionCache } from "./purchase";
+import { analytics } from "./analytics";
 
 import "./ui/login-popup";
+
+/** Options to pass to {@link login}. */
+export type LoginOptions = {
+  /** Additional tracking properties that will be sent along with login events. */
+  trackProps?: Record<string,unknown>;
+}
 
 declare global {
     interface Window {
@@ -33,6 +40,7 @@ let pendingLogin: Promise<boolean> | undefined;
 let loggedIn = false;
 
 async function onLogin () {
+    analytics.setUserProperties({ "isLoggedIn": true });
     await Promise.all([
         cloudStorage.onLogin(replicantClient!),
         initSubscriptionCache(),
@@ -41,6 +49,7 @@ async function onLogin () {
 }
 
 function onLogout () {
+    analytics.setUserProperties({ "isLoggedIn": null });
     clearSubscriptionCache();
     loggedIn = false;
 }
@@ -59,7 +68,7 @@ export function isLoggedIn (): boolean {
     return loggedIn;
 }
 
-export async function login (): Promise<boolean> {
+export async function login (opts?: LoginOptions): Promise<boolean> {
     requireInit("playpass.account.login");
 
     if (isLoggedIn()) {
@@ -69,6 +78,9 @@ export async function login (): Promise<boolean> {
     if (pendingLogin) {
         return pendingLogin; // Reuse a previous request to login()
     }
+
+    const trackProps = opts?.trackProps;
+    analytics.track("LoginPrompted", trackProps);
 
     // country code drop down elements for phone
     if (!phoneCodeCss) {
@@ -177,8 +189,8 @@ export async function initLogin (gameId: string): Promise<void> {
                 },
             },
 
-            version: "1.4.2",
-            // endpoint: "https://replicant-lite.us-east-1.replicant-playpass.gc-internal.net/replicant-lite-dev",
+            version: "1.6.0",
+            // endpoint: 'https://replicant-lite.us-east-1.replicant-playpass.gc-internal.net/replicant-lite-dev',
         },
         stripeAccountId: getStripeAccount(),
     });
