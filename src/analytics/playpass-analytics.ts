@@ -29,7 +29,7 @@ type EventData = {
 
 // Sends a request to the backend API
 function record(body: RequestData) {
-    sendBackground("https://t.playpass.games/record", body);
+    // sendBackground("https://t.playpass.games/record", body);
 }
 
 export class PlaypassAnalytics implements Analytics {
